@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+{% block title %}Inscription · GoRun{% endblock %}
+{% block body %}
+<h1 class="text-2xl md:text-3xl font-bold mb-6">Créer un compte</h1>
+<div class="bg-white rounded-2xl shadow p-6 max-w-lg">
+  <form class="space-y-4">
+    <label class="block">
+      <span class="block text-sm font-medium text-gray-700">Prénom</span>
+      <input class="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Camille Runner" />
+    </label>
+    <label class="block">
+      <span class="block text-sm font-medium text-gray-700">Nom</span>
+      <input class="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Camille Runner" />
+    </label>
+    <label class="block">
+      <span class="block text-sm font-medium text-gray-700">Email</span>
+      <input type="email" class="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="vous@exemple.com" />
+    </label>
+    <label class="block">
+      <span class="block text-sm font-medium text-gray-700">Mot de passe</span>
+      <input type="password" class="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="••••••••" />
+    </label>
+    <label class="block">
+      <span class="block text-sm font-medium text-gray-700">Confirmer mot de passe</span>
+      <input type="password" class="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="••••••••" />
+    </label>
+    <button class="bg-green-600 text-white px-6 py-3 rounded-2xl font-semibold hover:bg-green-700">S'inscrire</button>
+    <p class="text-sm text-gray-600">Déjà un compte ? <a href="{{ path('app_login') }}" class="text-green-600 hover:underline">Se connecter</a></p>
+  </form>
+</div>
+{% endblock %}
