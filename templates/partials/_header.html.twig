@@ -1,0 +1,69 @@
+<header class="bg-white shadow-md sticky top-0 z-20">
+<div class="max-w-6xl mx-auto flex items-center justify-between p-4">
+<div class="flex items-center space-x-2">
+<img src="{{ asset('logo.png') }}" alt="Logo" class="h-10 w-10" />
+<a href="" class="text-xl font-bold text-green-600">RunTogether</a>
+</div>
+
+
+{# Desktop nav #}
+<nav class="hidden md:flex items-center space-x-6 font-medium">
+<a href="" class="hover:text-green-600">Événements</a>
+{% if app.user %}
+<a href="" class="hover:text-green-600">Mon profil</a>
+<a href="" class="hover:text-green-600">Créer</a>
+<a href="" class="hover:text-green-600">Déconnexion</a>
+{% else %}
+<a href="" class="hover:text-green-600">Inscription</a>
+<a href="" class="hover:text-green-600">Connexion</a>
+{% endif %}
+</nav>
+
+
+{# Mobile hamburger #}
+<button
+class="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-xl border text-green-700 hover:bg-gray-50"
+id="rt-menu-toggle"
+aria-label="Ouvrir le menu"
+aria-controls="rt-mobile-menu"
+aria-expanded="false"
+type="button"
+>
+<span aria-hidden="true">☰</span>
+</button>
+</div>
+
+
+{# Mobile menu panel #}
+<div id="rt-mobile-menu" class="md:hidden hidden border-t bg-white" aria-hidden="true">
+<nav class="max-w-6xl mx-auto py-3 px-4 grid gap-1 text-base">
+<a href="" class="px-3 py-2 rounded-xl hover:bg-gray-50">Événements</a>
+{% if app.user %}
+<a href="" class="px-3 py-2 rounded-xl hover:bg-gray-50">Mon profil</a>
+<a href="" class="px-3 py-2 rounded-xl hover:bg-gray-50">Créer</a>
+<a href="" class="px-3 py-2 rounded-xl hover:bg-gray-50">Déconnexion</a>
+{% else %}
+<a href="" class="px-3 py-2 rounded-xl hover:bg-gray-50">Inscription</a>
+<a href="" class="px-3 py-2 rounded-xl hover:bg-gray-50">Connexion</a>
+{% endif %}
+</nav>
+</div>
+</header>
+
+
+{# Minimal vanilla JS for toggle (scoped IDs to avoid collisions) #}
+<script>
+(function(){
+const btn = document.getElementById('rt-menu-toggle');
+const panel = document.getElementById('rt-mobile-menu');
+if (!btn || !panel) return;
+btn.addEventListener('click', function(){
+const isOpen = panel.classList.toggle('hidden') === false; // toggle returns boolean indicating if class was added
+const expanded = !panel.classList.contains('hidden');
+btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+panel.setAttribute('aria-hidden', expanded ? 'false' : 'true');
+// swap icon (☰ vs ✕)
+btn.innerHTML = expanded ? '<span aria-hidden="true">✕</span>' : '<span aria-hidden="true">☰</span>';
+});
+})();
+</script>
