@@ -74,12 +74,19 @@ class Event
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'event', orphanRemoval: true)]
     private Collection $comments;
 
+    /**
+     * @var Collection<int, Notification>
+     */
+    #[ORM\OneToMany(targetEntity: Notification::class, mappedBy: 'event')]
+    private Collection $notifications;
+
     public function __construct()
     {
         $this->creationDate = new \DateTimeImmutable();
         $this->status = EventStatus::DRAFT;
         $this->registrations = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->notifications = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -312,6 +319,36 @@ class Event
             // set the owning side to null (unless already changed)
             if ($comment->getEvent() === $this) {
                 $comment->setEvent(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Notification>
+     */
+    public function getNotifications(): Collection
+    {
+        return $this->notifications;
+    }
+
+    public function addNotification(Notification $notification): static
+    {
+        if (!$this->notifications->contains($notification)) {
+            $this->notifications->add($notification);
+            $notification->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNotification(Notification $notification): static
+    {
+        if ($this->notifications->removeElement($notification)) {
+            // set the owning side to null (unless already changed)
+            if ($notification->getEvent() === $this) {
+                $notification->setEvent(null);
             }
         }
 
