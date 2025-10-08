@@ -1,0 +1,261 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer une sortie running · GoRun{% endblock %}
+
+{% block body %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<section class="max-w-5xl mx-auto">
+  <div class="flex items-center mb-6">
+    <h1 class="text-2xl md:text-3xl font-bold">Créer une sortie running</h1>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow p-5 md:p-8">
+    <form id="sortie-form" class="grid grid-cols-1 md:grid-cols-12 gap-5">
+      <div class="md:col-span-8 space-y-5">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <label class="md:col-span-2 block">
+            <span class="block text-sm font-semibold text-gray-800 mb-1">Titre</span>
+            <input id="titre" required
+                   class="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
+                   placeholder="Ex : Footing recovery 6 km au parc">
+          </label>
+          <label class="block">
+            <span class="block text-sm font-semibold text-gray-800 mb-1">Niveau</span>
+            <select id="niveau"
+                    class="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
+              <option>Débutant</option>
+              <option>Intermédiaire</option>
+              <option>Confirmé</option>
+              <option selected>Tous niveaux</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <label class="block">
+            <span class="block text-sm font-semibold text-gray-800 mb-1">Date</span>
+            <input id="date" type="text" required
+                   class="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
+                   placeholder="jj/mm/aaaa">
+          </label>
+          <label class="block">
+            <span class="block text-sm font-semibold text-gray-800 mb-1">Heure</span>
+            <input id="heure" type="text" required inputmode="numeric"
+                   class="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
+                   placeholder="hh:mm">
+          </label>
+          <label class="block">
+            <span class="block text-sm font-semibold text-gray-800 mb-1">Distance (km)</span>
+            <input id="distance" type="number" step="0.1" min="0" placeholder="6.0"
+                   class="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
+          </label>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <label class="md:col-span-3 block">
+            <span class="block text-sm font-semibold text-gray-800 mb-1">Rythme prévu</span>
+            <input id="rythme" placeholder="ex : 6:00 / km"
+                   class="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
+          </label>
+        </div>
+
+        <label class="block">
+          <span class="block text-sm font-semibold text-gray-800 mb-1">Description</span>
+          <textarea id="description" rows="4" placeholder="Petit footing tranquille, tout niveau bienvenu."
+                    class="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+        </label>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+          <label class="md:col-span-9 block">
+            <span class="block text-sm font-semibold text-gray-800 mb-1">Adresse / Point de RDV</span>
+            <input id="adresse" placeholder="Parc de l’Orangerie, Strasbourg"
+                   class="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
+            <span class="block text-xs text-gray-500 mt-1">
+              Tape une adresse puis clique « Localiser » ou clique directement sur la carte pour placer le point de départ.
+            </span>
+          </label>
+          <div class="md:col-span-3 flex items-end">
+            <button type="button" id="btn-geocode"
+                    class="w-full px-4 py-3 rounded-2xl border font-semibold hover:bg-gray-50">
+              Localiser
+            </button>
+          </div>
+        </div>
+
+        <div class="rounded-xl overflow-hidden border border-gray-200">
+          <div id="map" class="h-96 w-full"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <label class="block">
+            <span class="block text-sm font-semibold text-gray-800 mb-1">Latitude</span>
+            <input id="lat" readonly placeholder="Auto"
+                   class="w-full px-4 py-3 rounded-2xl border border-gray-200 bg-gray-50 text-gray-700">
+          </label>
+          <label class="block">
+            <span class="block text-sm font-semibold text-gray-800 mb-1">Longitude</span>
+            <input id="lng" readonly placeholder="Auto"
+                   class="w-full px-4 py-3 rounded-2xl border border-gray-200 bg-gray-50 text-gray-700">
+          </label>
+        </div>
+      </div>
+
+      <aside class="md:col-span-4">
+        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5">
+          <h3 class="font-semibold mb-2">Aperçu</h3>
+          <p class="text-sm text-gray-700"><span class="font-medium">Titre :</span> <span id="ap-titre">—</span></p>
+          <p class="text-sm text-gray-700"><span class="font-medium">Date :</span> <span id="ap-date">—</span></p>
+          <p class="text-sm text-gray-700"><span class="font-medium">Heure :</span> <span id="ap-heure">—</span></p>
+          <p class="text-sm text-gray-700"><span class="font-medium">Distance :</span> <span id="ap-distance">—</span></p>
+          <p class="text-sm text-gray-700"><span class="font-medium">Niveau :</span> <span id="ap-niveau">—</span></p>
+          <p class="text-sm text-gray-700"><span class="font-medium">Adresse :</span> <span id="ap-adresse">—</span></p>
+
+          <p class="text-sm text-gray-700 mt-2"><span class="font-medium">Coordonnées :</span>
+            <span id="ap-lat">—</span>, <span id="ap-lng">—</span>
+          </p>
+        </div>
+
+        <div class="flex gap-3 justify-end mt-5">
+          <a href="{{ path('event_index') }}" class="px-5 py-3 rounded-2xl border font-semibold hover:bg-gray-50">Annuler</a>
+          <button class="px-5 py-3 rounded-2xl bg-green-600 text-white font-semibold hover:bg-green-700">
+            Enregistrer la sortie
+          </button>
+        </div>
+      </aside>
+    </form>
+  </div>
+</section>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+
+<script>
+  let map = L.map('map').setView([48.5734, 7.7521], 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  let marker;
+
+  function setMarker(lat, lon) {
+    if (marker) map.removeLayer(marker);
+    marker = L.marker([lat, lon], { draggable: true }).addTo(map);
+    map.setView([lat, lon], 15);
+
+    const latEl = document.getElementById('lat');
+    const lngEl = document.getElementById('lng');
+    latEl.value = Number(lat).toFixed(6);
+    lngEl.value = Number(lon).toFixed(6);
+
+    document.getElementById('ap-lat').textContent = latEl.value;
+    document.getElementById('ap-lng').textContent = lngEl.value;
+
+    marker.on('dragend', () => {
+      const p = marker.getLatLng();
+      latEl.value = p.lat.toFixed(6);
+      lngEl.value = p.lng.toFixed(6);
+      document.getElementById('ap-lat').textContent = latEl.value;
+      document.getElementById('ap-lng').textContent = lngEl.value;
+    });
+  }
+
+  map.on('click', (e) => {
+    setMarker(e.latlng.lat, e.latlng.lng);
+  });
+
+  document.getElementById('btn-geocode').addEventListener('click', async () => {
+    const q = document.getElementById('adresse').value.trim();
+    if (!q) { alert('Saisis une adresse.'); return; }
+    const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&addressdetails=1&q=${encodeURIComponent(q)}`;
+    try {
+      const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+      const data = await res.json();
+      if (data && data.length) {
+        const { lat, lon } = data[0];
+        setMarker(parseFloat(lat), parseFloat(lon));
+      } else {
+        alert('Adresse introuvable.');
+      }
+    } catch (e) {
+      alert('Erreur de géocodage.');
+    }
+  });
+
+  const fpDate = flatpickr("#date", {
+    locale: "fr",
+    dateFormat: "Y-m-d",
+    altInput: true,
+    altFormat: "d/m/Y", 
+    allowInput: true,
+    disableMobile: true
+  });
+
+  const fpTime = flatpickr("#heure", {
+    locale: "fr",
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "H:i", 
+    time_24hr: true,
+    minuteIncrement: 1,
+    allowInput: true,
+    disableMobile: true
+  });
+
+  const formatDateFR = (yyyyMmDd) => {
+    if (!yyyyMmDd) return '—';
+    const [y, m, d] = yyyyMmDd.split('-').map(Number);
+    const dt = new Date(y, (m || 1) - 1, d || 1);
+    return dt.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  };
+
+  const bindPreview = (inputId, previewId, format = v => v || '—', useAltIfAny = false) => {
+    const el = document.getElementById(inputId);
+    const out = document.getElementById(previewId);
+    const update = () => {
+      let val = el.value;
+      if (useAltIfAny && el._flatpickr && el._flatpickr.altInput) {
+        const alt = el._flatpickr.altInput.value;
+        out.textContent = alt || '—';
+        return;
+      }
+      out.textContent = format(val);
+    };
+  
+    el.addEventListener('input', update);
+    if (useAltIfAny && el._flatpickr && el._flatpickr.altInput) {
+      el._flatpickr.altInput.addEventListener('input', update);
+      el._flatpickr.config.onChange.push(update);
+    }
+    update();
+  };
+
+  bindPreview('titre', 'ap-titre');
+  bindPreview('date', 'ap-date', (v) => formatDateFR(v), true);
+  bindPreview('heure', 'ap-heure');
+  bindPreview('distance', 'ap-distance', v => v ? `${v} km` : '—');
+  bindPreview('niveau', 'ap-niveau');
+  bindPreview('adresse', 'ap-adresse');
+
+
+  document.getElementById('sortie-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const date = document.getElementById('date').value;  
+    const heure = document.getElementById('heure').value; 
+    const localIso = date && heure ? `${date}T${heure}:00` : null;
+
+    alert(
+      'Démo : le formulaire serait envoyé à Symfony avec ces données :\n' +
+      'Date (YYYY-MM-DD): ' + (date || '—') + '\n' +
+      'Heure (HH:MM): ' + (heure || '—') + '\n' +
+      'DateTime recomposé: ' + (localIso || '—') + '\n' +
+      'Lat: ' + (document.getElementById('lat').value || '—') + ' / ' +
+      'Lng: ' + (document.getElementById('lng').value || '—')
+    );
+  });
+</script>
+{% endblock %}

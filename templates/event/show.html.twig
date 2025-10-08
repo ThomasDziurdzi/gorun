@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+{% block title %}Détail évènement · GoRun{% endblock %}
+{% block body %}
+{% set e = e is defined ? e : {
+  'id':'paris-montsouris-10k',
+  'title':"Sortie 10K – Parc Montsouris",
+  'city':"Paris",
+  'date':"2025-10-12T09:00:00",
+  'distanceKm':10,
+  'pace':"5'30/km",
+  'elevation':"+120 m",
+  'meeting':"Entrée Porte d'Orléans, côté lac",
+  'organizer': {'name':"Camille R.", 'rating':4.9},
+  'description':"Sortie accessible à tous, allure régulière, pauses hydratation prévues. Vestiaires au point de rendez-vous.",
+  'cover':"https://images.unsplash.com/photo-1520975922284-9f8a3551c2f0?q=80&w=1200&auto=format&fit=crop",
+  'gpxUrl':"#",
+  'spotsLeft':8
+} %}
+
+<section class="relative rounded-2xl overflow-hidden">
+  <img src="{{ e.cover }}" alt="" class="h-72 w-full object-cover" />
+  <div class="absolute inset-0 bg-black/40"></div>
+  <div class="absolute inset-0 flex items-end">
+    <div class="max-w-6xl mx-auto px-4 md:px-6 pb-6">
+      <h1 class="text-3xl md:text-4xl font-extrabold text-white drop-shadow">{{ e.title }}</h1>
+      <p class="text-white/90 mt-2">{{ e.date|date('l d F H:i') }} • {{ e.city }} • {{ e.distanceKm }}K • Allure {{ e.pace }}</p>
+    </div>
+  </div>
+</section>
+
+<main class="py-8 grid lg:grid-cols-3 gap-8">
+  <article class="lg:col-span-2">
+    <div class="bg-white rounded-2xl shadow p-6">
+      <h2 class="text-xl font-bold mb-4">À propos</h2>
+      <p class="text-gray-700 mb-6">{{ e.description }}</p>
+
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div class="p-4 rounded-2xl bg-gray-50">
+          <h3 class="font-semibold">Rendez-vous</h3>
+          <p class="text-gray-700">{{ e.meeting }}</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-gray-50">
+          <h3 class="font-semibold">Dénivelé</h3>
+          <p class="text-gray-700">{{ e.elevation }}</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-gray-50">
+          <h3 class="font-semibold">Allure prévue</h3>
+          <p class="text-gray-700">{{ e.pace }}</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-gray-50">
+          <h3 class="font-semibold">Fichier GPX</h3>
+          <a href="{{ e.gpxUrl }}" class="text-green-600 hover:underline">Télécharger</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow p-6 mt-6">
+      <h2 class="text-xl font-bold mb-4">Parcours (aperçu)</h2>
+      <div class="rounded-2xl overflow-hidden border">
+        <iframe title="Carte" src="https://www.openstreetmap.org/export/embed.html?bbox=2.32%2C48.81%2C2.35%2C48.83&layer=mapnik" class="w-full h-72"></iframe>
+      </div>
+    </div>
+  </article>
+
+  <aside class="lg:col-span-1 space-y-6">
+    <div class="bg-white rounded-2xl shadow p-6">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-semibold">Inscription</h3>
+        <span class="text-sm text-gray-600">{{ e.spotsLeft }} places restantes</span>
+      </div>
+      <a href="{{ path('event_register', {id: e.id}) }}" class="block w-full text-center bg-green-600 text-white py-3 rounded-2xl font-semibold hover:bg-green-700">Je m'inscris</a>
+      <p class="text-xs text-gray-500 mt-2">Gratuit • Annulation possible jusqu'à 24h avant</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow p-6">
+      <h3 class="font-semibold mb-2">Organisateur</h3>
+      <div class="flex items-center gap-3">
+        <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center font-bold text-green-700">C</div>
+        <div>
+          <p>{{ e.organizer.name }}</p>
+          <p class="text-sm text-gray-600">Note {{ e.organizer.rating }} / 5</p>
+        </div>
+      </div>
+      <a href="#" class="inline-block mt-3 text-green-600 hover:underline">Contacter l'organisateur</a>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow p-6">
+      <h3 class="font-semibold mb-3">Infos pratiques</h3>
+      <ul class="text-sm text-gray-700 space-y-2 list-disc ml-4">
+        <li>Vestiaires et point d'eau sur place</li>
+        <li>Casque audio autorisé, pas d'animaux</li>
+        <li>Prévoir frontale pour les sorties de soir</li>
+      </ul>
+    </div>
+  </aside>
+</main>
+{% endblock %}

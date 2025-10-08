@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+{% block title %}Mon profil · Gorun{% endblock %}
+{% block body %}
+<h1 class="text-2xl md:text-3xl font-bold mb-6">Mon profil</h1>
+<div class="grid md:grid-cols-3 gap-6">
+  <div class="md:col-span-2">
+    <div class="bg-white rounded-2xl shadow p-6 space-y-4">
+      <label class="block">
+        <span class="block text-sm font-medium text-gray-700">Nom</span>
+        <input class="w-full px-4 py-3 rounded-2xl border border-gray-300" />
+      </label>
+      <label class="block">
+        <span class="block text-sm font-medium text-gray-700">Ville</span>
+        <input class="w-full px-4 py-3 rounded-2xl border border-gray-300" />
+      </label>
+      <label class="block">
+        <span class="block text-sm font-medium text-gray-700">Allure préférée</span>
+        <input class="w-full px-4 py-3 rounded-2xl border border-gray-300" placeholder="5'30/km" />
+      </label>
+      <label class="block">
+        <span class="block text-sm font-medium text-gray-700">Niveau</span>
+        <select class="w-full px-4 py-3 rounded-2xl border border-gray-300">
+          <option>Débutant</option><option>Intermédiaire</option><option>Avancé</option>
+        </select>
+      </label>
+      <label class="block">
+        <span class="block text-sm font-medium text-gray-700">Bio</span>
+        <textarea rows="4" class="w-full px-4 py-3 rounded-2xl border border-gray-300" placeholder="Parlez de vous, de vos objectifs…"></textarea>
+      </label>
+      <button class="bg-green-600 text-white px-6 py-3 rounded-2xl font-semibold hover:bg-green-700">Enregistrer</button>
+    </div>
+  </div>
+  <div>
+    <div class="bg-white rounded-2xl shadow p-6">
+      <h3 class="font-semibold mb-2">Aperçu public</h3>
+      <p class="text-sm text-gray-700"><strong>Votre nom</strong></p>
+      <p class="text-sm text-gray-600">Ville • Intermédiaire</p>
+      <p class="text-sm text-gray-600">Allure: 5'30/km</p>
+      <p class="text-sm text-gray-700 mt-2">Votre bio apparaîtra ici.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
