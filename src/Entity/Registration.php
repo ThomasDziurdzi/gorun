@@ -1,0 +1,123 @@
+<?php
+
+namespace App\Entity;
+
+use App\Enum\RegistrationStatus;
+use App\Repository\RegistrationRepository;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: RegistrationRepository::class)]
+#[ORM\Table(name: 'registration')]
+#[ORM\UniqueConstraint(name: 'UNIQ_USER_EVENT', columns: ['user_id', 'event_id'])]
+class Registration
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $registrationDate = null;
+
+    #[ORM\Column(type: Types::STRING, enumType: RegistrationStatus::class)]
+    private RegistrationStatus $status = RegistrationStatus::CONFIRMED;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $cancellationDate = null;
+
+    #[ORM\ManyToOne(inversedBy: 'registrations')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
+    #[ORM\ManyToOne(inversedBy: 'registrations')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Event $event = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getRegistrationDate(): ?\DateTimeInterface
+    {
+        return $this->registrationDate;
+    }
+
+    public function setRegistrationDate(\DateTimeInterface $registrationDate): static
+    {
+        $this->registrationDate = $registrationDate;
+        return $this;
+    }
+
+    public function getStatus(): RegistrationStatus
+    {
+        return $this->status;
+    }
+
+    public function setStatus(RegistrationStatus $status): static
+    {
+        $this->status = $status;
+        return $this;
+    }
+
+    public function getCancellationDate(): ?\DateTimeInterface
+    {
+        return $this->cancellationDate;
+    }
+
+    public function setCancellationDate(?\DateTimeInterface $cancellationDate): static
+    {
+        $this->cancellationDate = $cancellationDate;
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+    public function getEvent(): ?Event
+    {
+        return $this->event;
+    }
+
+    public function setEvent(?Event $event): static
+    {
+        $this->event = $event;
+        return $this;
+    }
+
+    public function cancel(): void
+    {
+        $this->status = RegistrationStatus::CANCELLED;
+        $this->cancellationDate = new \DateTime();
+    }
+
+    public function confirm(): void
+    {
+        $this->status = RegistrationStatus::CONFIRMED;
+        $this->cancellationDate = null;
+    }
+
+    public function isConfirmed(): bool
+    {
+        return $this->status === RegistrationStatus::CONFIRMED;
+    }
+
+    public function isCancelled(): bool
+    {
+        return $this->status === RegistrationStatus::CANCELLED;
+    }
+
+    public function isPending(): bool
+    {
+        return $this->status === RegistrationStatus::PENDING;
+    }
+}

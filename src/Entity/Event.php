@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Enum\EventStatus;
 use App\Enum\RunningLevel;
 use App\Repository\EventRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -60,10 +62,17 @@ class Event
     #[ORM\JoinColumn(nullable: false)]
     private ?User $organizer = null;
 
+    /**
+     * @var Collection<int, Registration>
+     */
+    #[ORM\OneToMany(targetEntity: Registration::class, mappedBy: 'event')]
+    private Collection $registrations;
+
     public function __construct()
     {
         $this->creationDate = new \DateTimeImmutable();
         $this->status = EventStatus::DRAFT;
+        $this->registrations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -238,6 +247,36 @@ class Event
     public function setOrganizer(?User $organizer): static
     {
         $this->organizer = $organizer;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Registration>
+     */
+    public function getRegistrations(): Collection
+    {
+        return $this->registrations;
+    }
+
+    public function addRegistration(Registration $registration): static
+    {
+        if (!$this->registrations->contains($registration)) {
+            $this->registrations->add($registration);
+            $registration->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRegistration(Registration $registration): static
+    {
+        if ($this->registrations->removeElement($registration)) {
+            // set the owning side to null (unless already changed)
+            if ($registration->getEvent() === $this) {
+                $registration->setEvent(null);
+            }
+        }
 
         return $this;
     }
