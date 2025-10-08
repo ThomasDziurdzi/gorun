@@ -1,0 +1,302 @@
+<?php
+
+namespace App\Entity;
+
+use App\Repository\UserRepository;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+
+#[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(length: 255, unique: true)]
+    private ?string $email = null;
+
+    /**
+     * @var list<string> The user roles
+     */
+    #[ORM\Column]
+    private array $roles = [];
+
+    /**
+     * @var string The hashed password
+     */
+    #[ORM\Column]
+    private ?string $password = null;
+
+    #[ORM\Column(length: 50)]
+    private ?string $firstname = null;
+
+    #[ORM\Column(length: 50)]
+    private ?string $lastname = null;
+
+    #[ORM\Column(length: 15, nullable: true)]
+    private ?string $phoneNumber = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTime $birthDate = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $profilePicture = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $bio = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $preferredPace = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $runningLevel = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $city = null;
+
+    #[ORM\Column]
+    private ?bool $isVerified = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $lastLogin = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private ?\DateTimeImmutable $registrationDate = null;
+
+    public function __construct()
+    {
+        $this->roles = ['ROLE_USER'];
+        $this->isVerified = false;
+        $this->registrationDate = new \DateTimeImmutable();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    /**
+     * @param list<string> $roles
+     */
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
+     */
+    public function __serialize(): array
+    {
+        $data = (array) $this;
+        $data["\0" . self::class . "\0password"] = hash('crc32c', $this->password);
+
+        return $data;
+    }
+
+    #[\Deprecated]
+    public function eraseCredentials(): void
+    {
+        // @deprecated, to be removed when upgrading to Symfony 8
+    }
+
+    public function getFirstname(): ?string
+    {
+        return $this->firstname;
+    }
+
+    public function setFirstname(string $firstname): static
+    {
+        $this->firstname = $firstname;
+
+        return $this;
+    }
+
+    public function getLastname(): ?string
+    {
+        return $this->lastname;
+    }
+
+    public function setLastname(string $lastname): static
+    {
+        $this->lastname = $lastname;
+
+        return $this;
+    }
+
+    public function getPhoneNumber(): ?string
+    {
+        return $this->phoneNumber;
+    }
+
+    public function setPhoneNumber(?string $phoneNumber): static
+    {
+        $this->phoneNumber = $phoneNumber;
+
+        return $this;
+    }
+
+    public function getBirthDate(): ?\DateTime
+    {
+        return $this->birthDate;
+    }
+
+    public function setBirthDate(?\DateTime $birthDate): static
+    {
+        $this->birthDate = $birthDate;
+
+        return $this;
+    }
+
+    public function getProfilePicture(): ?string
+    {
+        return $this->profilePicture;
+    }
+
+    public function setProfilePicture(?string $profilePicture): static
+    {
+        $this->profilePicture = $profilePicture;
+
+        return $this;
+    }
+
+    public function getBio(): ?string
+    {
+        return $this->bio;
+    }
+
+    public function setBio(?string $bio): static
+    {
+        $this->bio = $bio;
+
+        return $this;
+    }
+
+    public function getPreferredPace(): ?string
+    {
+        return $this->preferredPace;
+    }
+
+    public function setPreferredPace(?string $preferredPace): static
+    {
+        $this->preferredPace = $preferredPace;
+
+        return $this;
+    }
+
+    public function getRunningLevel(): ?string
+    {
+        return $this->runningLevel;
+    }
+
+    public function setRunningLevel(?string $runningLevel): static
+    {
+        $this->runningLevel = $runningLevel;
+
+        return $this;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(?string $city): static
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    public function isVerified(): ?bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): static
+    {
+        $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    public function getLastLogin(): ?\DateTimeImmutable
+    {
+        return $this->lastLogin;
+    }
+
+    public function setLastLogin(?\DateTimeImmutable $lastLogin): static
+    {
+        $this->lastLogin = $lastLogin;
+
+        return $this;
+    }
+
+    public function getRegistrationDate(): ?\DateTimeImmutable
+    {
+        return $this->registrationDate;
+    }
+
+    public function setRegistrationDate(\DateTimeImmutable $registrationDate): static
+    {
+        $this->registrationDate = $registrationDate;
+
+        return $this;
+    }
+}
