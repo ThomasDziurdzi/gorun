@@ -1,7 +1,9 @@
 <?php
+
 namespace App\Controller;
 
 use App\Entity\Event;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -9,11 +11,15 @@ use Symfony\Component\Routing\Annotation\Route;
 class EventController extends AbstractController
 {
     #[Route('/evenements', name: 'event_index')]
-    public function index(): Response
+    public function index(EntityManagerInterface $em): Response
     {
-        return $this->render('event/index.html.twig');
+        $events = $em->getRepository(Event::class)->findAll();
+
+        return $this->render('event/index.html.twig', [
+            'events' => $events
+        ]);
     }
-    
+
     #[Route('/evenement/nouveau', name: 'event_new')]
     public function new(): Response
     {
@@ -24,7 +30,8 @@ class EventController extends AbstractController
     public function show(Event $event): Response
     {
         return $this->render('event/show.html.twig', [
-            'e' => $event]);
+            'e' => $event
+        ]);
     }
 
 

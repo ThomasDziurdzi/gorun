@@ -10,42 +10,58 @@
       <option>Paris</option><option>Lyon</option><option>Marseille</option>
     </select>
     <select class="px-4 py-3 rounded-2xl border focus:outline-none focus:ring-2 focus:ring-green-500">
-      <option>Tous niveaux</option><option>Débutant</option><option>Intermédiaire</option><option>Avancé</option>
+      <option value="">Tous niveaux</option>
+      <option value="BEGINNER">Débutant</option>
+      <option value="INTERMEDIATE">Intermédiaire</option>
+      <option value="ADVANCED">Confirmé</option>
     </select>
     <a href="{{ path('event_new') }}" class="px-4 py-3 rounded-2xl bg-green-600 text-white text-center font-semibold hover:bg-green-700">Proposer un évènement</a>
   </div>
 </section>
 
-{% set events = [
-  { 'id':'paris-montsouris-10k', 'title':"Sortie 10K – Parc Montsouris", 'city':"Paris", 'date':"2025-10-12T09:00:00", 'distanceKm':10, 'pace':"5'30/km", 'spotsLeft':8, 'cover':"https://images.unsplash.com/photo-1546483875-ad9014c88eba?q=80&w=1200&auto=format&fit=crop" },
-  { 'id':'lyon-berges-5k', 'title':"Jogging convivial – Berges du Rhône (5K)", 'city':"Lyon", 'date':"2025-10-18T19:00:00", 'distanceKm':5, 'pace':"6'00/km", 'spotsLeft':14, 'cover':"https://images.unsplash.com/photo-1535747790212-30c585ab486d?q=80&w=1200&auto=format&fit=crop" },
-  { 'id':'marseille-calanques-trail', 'title':"Trail découverte – Calanques (12K)", 'city':"Marseille", 'date':"2025-11-02T08:30:00", 'distanceKm':12, 'pace':"6'15/km", 'spotsLeft':5, 'cover':"https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=1200&auto=format&fit=crop" }
-] %}
-
 <main class="py-10">
   <h1 class="text-2xl md:text-3xl font-bold mb-6">Tous les événements</h1>
-  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    {% for e in events %}
-      <article class="bg-white rounded-2xl shadow hover:shadow-lg transition overflow-hidden flex flex-col h-full">
-        <img src="{{ e.cover }}" alt="" class="h-40 w-full object-cover" />
+  
+  {% if events is empty %}
+    <p class="text-gray-600">Aucun événement disponible pour le moment.</p>
+  {% else %}
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for event in events %}
+        {% set confirmedCount = event.registrations|filter(r => r.status.value == 'CONFIRMED')|length %}
+        {% set spotsLeft = event.maxParticipants - confirmedCount %}
+        
+        <article class="bg-white rounded-2xl shadow hover:shadow-lg transition overflow-hidden flex flex-col h-full">
+          <img src="{{ event.coverImage ? asset('uploads/events/' ~ event.coverImage) : 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=1200&auto=format&fit=crop' }}" 
+               alt="{{ event.title }}" 
+               class="h-40 w-full object-cover" />
 
-        <div class="p-5 flex flex-col flex-1">
-          <h2 class="text-lg font-semibold mb-1 line-clamp-2">{{ e.title }}</h2>
-          <p class="text-sm text-gray-600 mb-3">
-            {{ e.date|date('l d F H:i')|capitalize }} • {{ e.city }} • {{ e.distanceKm }}K • Allure {{ e.pace }}
-          </p>
+          <div class="p-5 flex flex-col flex-1">
+            <h2 class="text-lg font-semibold mb-1 line-clamp-2">{{ event.title }}</h2>
+            <p class="text-sm text-gray-600 mb-3">
+              {{ event.eventDate|date('l d F Y H:i')|capitalize }} • 
+              {{ event.location.city }} • 
+              {{ event.distance }}km
+              {% if event.pace %} • Allure {{ event.pace }}{% endif %}
+            </p>
 
-          <div class="mt-auto flex items-center justify-between">
-            <span class="text-sm text-gray-700">
-              {% if e.spotsLeft == 0 %}Complet{% else %}{{ e.spotsLeft }} places restantes{% endif %}
-            </span>
-            <a href="{{ path('event_show', {id: e.id}) }}" class="text-green-600 font-medium hover:underline">
-              Voir le détail →
-            </a>
+            <div class="mt-auto flex items-center justify-between">
+              <span class="text-sm text-gray-700">
+                {% if spotsLeft == 0 %}
+                  <span class="text-red-600 font-medium">Complet</span>
+                {% else %}
+                  <span class="{{ spotsLeft <= 5 ? 'text-amber-600' : 'text-green-600' }} font-medium">
+                    {{ spotsLeft }} place{{ spotsLeft > 1 ? 's' : '' }}
+                  </span>
+                {% endif %}
+              </span>
+              <a href="{{ path('event_show', {id: event.id}) }}" class="text-green-600 font-medium hover:underline">
+                Voir le détail →
+              </a>
+            </div>
           </div>
-        </div>
-      </article>
-    {% endfor %}
-  </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% endif %}
 </main>
 {% endblock %}
