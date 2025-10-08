@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 
+use App\Entity\Event;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -20,9 +21,10 @@ class EventController extends AbstractController
     }
 
     #[Route('/evenement/{id}', name: 'event_show')]
-    public function show(string $id): Response
+    public function show(Event $event): Response
     {
-        return $this->render('event/show.html.twig', ['id' => $id]);
+        return $this->render('event/show.html.twig', [
+            'e' => $event]);
     }
 
 
