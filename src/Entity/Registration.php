@@ -17,14 +17,14 @@ class Registration
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $registrationDate = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private ?\DateTimeImmutable $registrationDate = null;
 
     #[ORM\Column(type: Types::STRING, enumType: RegistrationStatus::class)]
     private RegistrationStatus $status = RegistrationStatus::CONFIRMED;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $cancellationDate = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $cancellationDate = null;
 
     #[ORM\ManyToOne(inversedBy: 'registrations')]
     #[ORM\JoinColumn(nullable: false)]
@@ -34,19 +34,26 @@ class Registration
     #[ORM\JoinColumn(nullable: false)]
     private ?Event $event = null;
 
+    public function __construct()
+    {
+        $this->registrationDate = new \DateTimeImmutable();
+        $this->status = RegistrationStatus::CONFIRMED;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getRegistrationDate(): ?\DateTimeInterface
+    public function getRegistrationDate(): ?\DateTimeImmutable
     {
         return $this->registrationDate;
     }
 
-    public function setRegistrationDate(\DateTimeInterface $registrationDate): static
+    public function setRegistrationDate(\DateTimeImmutable $registrationDate): static
     {
         $this->registrationDate = $registrationDate;
+
         return $this;
     }
 
@@ -58,17 +65,19 @@ class Registration
     public function setStatus(RegistrationStatus $status): static
     {
         $this->status = $status;
+
         return $this;
     }
 
-    public function getCancellationDate(): ?\DateTimeInterface
+    public function getCancellationDate(): ?\DateTimeImmutable
     {
         return $this->cancellationDate;
     }
 
-    public function setCancellationDate(?\DateTimeInterface $cancellationDate): static
+    public function setCancellationDate(?\DateTimeImmutable $cancellationDate): static
     {
         $this->cancellationDate = $cancellationDate;
+
         return $this;
     }
 
@@ -80,6 +89,7 @@ class Registration
     public function setUser(?User $user): static
     {
         $this->user = $user;
+
         return $this;
     }
 
@@ -91,13 +101,14 @@ class Registration
     public function setEvent(?Event $event): static
     {
         $this->event = $event;
+
         return $this;
     }
 
     public function cancel(): void
     {
         $this->status = RegistrationStatus::CANCELLED;
-        $this->cancellationDate = new \DateTime();
+        $this->cancellationDate = new \DateTimeImmutable();
     }
 
     public function confirm(): void

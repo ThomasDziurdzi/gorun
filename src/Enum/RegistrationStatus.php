@@ -7,7 +7,7 @@ enum RegistrationStatus: string
     case PENDING = 'PENDING';
     case CONFIRMED = 'CONFIRMED';
     case CANCELLED = 'CANCELLED';
-
+    
     public function label(): string
     {
         return match($this) {
@@ -16,7 +16,7 @@ enum RegistrationStatus: string
             self::CANCELLED => 'Annulée',
         };
     }
-
+    
     public function badgeClass(): string
     {
         return match($this) {
@@ -25,7 +25,7 @@ enum RegistrationStatus: string
             self::CANCELLED => 'badge-secondary',
         };
     }
-
+    
     public function icon(): string
     {
         return match($this) {
