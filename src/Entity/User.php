@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\RunningLevel;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -55,8 +56,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $preferredPace = null;
 
-    #[ORM\Column(length: 50, nullable: true)]
-    private ?string $runningLevel = null;
+    #[ORM\Column(length: 50, nullable: true, enumType: RunningLevel::class)]
+    private ?RunningLevel $runningLevel = null;
 
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $city = null;
@@ -76,12 +77,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Location::class, mappedBy: 'createdBy')]
     private Collection $locations;
 
+    /**
+     * @var Collection<int, Event>
+     */
+    #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'organizer')]
+    private Collection $organizedEvents;
+
     public function __construct()
     {
         $this->roles = ['ROLE_USER'];
         $this->isVerified = false;
         $this->registrationDate = new \DateTimeImmutable();
         $this->locations = new ArrayCollection();
+        $this->organizedEvents = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -249,12 +257,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getRunningLevel(): ?string
+    public function getRunningLevel(): ?RunningLevel
     {
         return $this->runningLevel;
     }
 
-    public function setRunningLevel(?string $runningLevel): static
+    public function setRunningLevel(?RunningLevel $runningLevel): static
     {
         $this->runningLevel = $runningLevel;
 
@@ -333,6 +341,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($location->getCreatedBy() === $this) {
                 $location->setCreatedBy(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Event>
+     */
+    public function getOrganizedEvents(): Collection
+    {
+        return $this->organizedEvents;
+    }
+
+    public function addOrganizedEvent(Event $organizedEvent): static
+    {
+        if (!$this->organizedEvents->contains($organizedEvent)) {
+            $this->organizedEvents->add($organizedEvent);
+            $organizedEvent->setOrganizer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrganizedEvent(Event $organizedEvent): static
+    {
+        if ($this->organizedEvents->removeElement($organizedEvent)) {
+            // set the owning side to null (unless already changed)
+            if ($organizedEvent->getOrganizer() === $this) {
+                $organizedEvent->setOrganizer(null);
             }
         }
 
