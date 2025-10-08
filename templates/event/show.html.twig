@@ -2,28 +2,67 @@
 {% block title %}Détail évènement · GoRun{% endblock %}
 {% block body %}
 {% set e = e is defined ? e : {
-  'id':'paris-montsouris-10k',
-  'title':"Sortie 10K – Parc Montsouris",
-  'city':"Paris",
-  'date':"2025-10-12T09:00:00",
-  'distanceKm':10,
-  'pace':"5'30/km",
-  'elevation':"+120 m",
-  'meeting':"Entrée Porte d'Orléans, côté lac",
-  'organizer': {'name':"Camille R.", 'rating':4.9},
-  'description':"Sortie accessible à tous, allure régulière, pauses hydratation prévues. Vestiaires au point de rendez-vous.",
-  'cover':"https://images.unsplash.com/photo-1520975922284-9f8a3551c2f0?q=80&w=1200&auto=format&fit=crop",
-  'gpxUrl':"#",
-  'spotsLeft':8
+  'id': 1,
+  'title': "Sortie 10K — Parc Montsouris",
+  'description': "Sortie accessible à tous, allure régulière, pauses hydratation prévues. Venez découvrir ce magnifique parc parisien en courant !",
+  'eventDate': "2025-10-12T09:00:00",
+  'estimateDuration': 60,
+  'distance': "10.00",
+  'maxParticipants': 20,
+  'requiredLevel': ['BEGINNER', 'INTERMEDIATE'],
+  'pace': "5'30/km",
+  'coverImage': "https://images.unsplash.com/photo-1520975922284-9f8a3551c2f0?q=80&w=1200&auto=format&fit=crop",
+  'status': 'PUBLISHED',
+  'location': {
+    'locationName': "Parc Montsouris",
+    'address': "2 Rue Gazan",
+    'postalCode': "75014",
+    'city': "Paris",
+    'country': "France",
+    'latitude': "48.8223",
+    'longitude': "2.3387",
+    'description': "Grand parc du 14ème arrondissement",
+    'meetingPoint': "Entrée Porte d'Orléans, côté lac"
+  },
+  'organizer': {
+    'firstname': "Camille",
+    'lastname': "R.",
+    'city': "Paris",
+    'runningLevel': "INTERMEDIATE",
+    'bio': "Passionnée de running depuis 5 ans"
+  },
+  'registrations': [
+    {'status': 'CONFIRMED'},
+    {'status': 'CONFIRMED'},
+    {'status': 'CONFIRMED'},
+    {'status': 'CONFIRMED'},
+    {'status': 'CONFIRMED'},
+    {'status': 'CONFIRMED'},
+    {'status': 'CONFIRMED'},
+    {'status': 'CONFIRMED'},
+    {'status': 'CONFIRMED'},
+    {'status': 'CONFIRMED'},
+    {'status': 'CONFIRMED'},
+    {'status': 'CONFIRMED'}
+  ],
+  'comments': []
 } %}
 
+{% set confirmedCount = e.registrations|filter(r => r.status == 'CONFIRMED')|length %}
+{% set spotsLeft = e.maxParticipants - confirmedCount %}
+
 <section class="relative rounded-2xl overflow-hidden">
-  <img src="{{ e.cover }}" alt="" class="h-72 w-full object-cover" />
+  <img src="{{ e.coverImage ?: 'https://images.unsplash.com/photo-1520975922284-9f8a3551c2f0?q=80&w=1200&auto=format&fit=crop' }}" alt="{{ e.title }}" class="h-72 w-full object-cover" />
   <div class="absolute inset-0 bg-black/40"></div>
   <div class="absolute inset-0 flex items-end">
     <div class="max-w-6xl mx-auto px-4 md:px-6 pb-6">
       <h1 class="text-3xl md:text-4xl font-extrabold text-white drop-shadow">{{ e.title }}</h1>
-      <p class="text-white/90 mt-2">{{ e.date|date('l d F H:i') }} • {{ e.city }} • {{ e.distanceKm }}K • Allure {{ e.pace }}</p>
+      <p class="text-white/90 mt-2">
+        {{ e.eventDate|date('l d F Y à H:i')|capitalize }} • 
+        {{ e.location.city }} • 
+        {{ e.distance }} km
+        {% if e.pace %} • Allure {{ e.pace }}{% endif %}
+      </p>
     </div>
   </div>
 </section>
@@ -32,64 +71,199 @@
   <article class="lg:col-span-2">
     <div class="bg-white rounded-2xl shadow p-6">
       <h2 class="text-xl font-bold mb-4">À propos</h2>
-      <p class="text-gray-700 mb-6">{{ e.description }}</p>
+      <p class="text-gray-700 mb-6">{{ e.description ?: "Aucune description disponible." }}</p>
 
       <div class="grid sm:grid-cols-2 gap-4">
         <div class="p-4 rounded-2xl bg-gray-50">
-          <h3 class="font-semibold">Rendez-vous</h3>
-          <p class="text-gray-700">{{ e.meeting }}</p>
+          <h3 class="font-semibold mb-1">Date et heure</h3>
+          <p class="text-gray-700">{{ e.eventDate|date('d/m/Y à H:i') }}</p>
         </div>
         <div class="p-4 rounded-2xl bg-gray-50">
-          <h3 class="font-semibold">Dénivelé</h3>
-          <p class="text-gray-700">{{ e.elevation }}</p>
+          <h3 class="font-semibold mb-1">Durée estimée</h3>
+          <p class="text-gray-700">
+            {% if e.estimateDuration %}
+              {{ (e.estimateDuration / 60)|round(0, 'floor') }}h{{ e.estimateDuration % 60 }}min
+            {% else %}
+              Non précisée
+            {% endif %}
+          </p>
         </div>
         <div class="p-4 rounded-2xl bg-gray-50">
-          <h3 class="font-semibold">Allure prévue</h3>
-          <p class="text-gray-700">{{ e.pace }}</p>
+          <h3 class="font-semibold mb-1">Distance</h3>
+          <p class="text-gray-700">{{ e.distance }} km</p>
         </div>
         <div class="p-4 rounded-2xl bg-gray-50">
-          <h3 class="font-semibold">Fichier GPX</h3>
-          <a href="{{ e.gpxUrl }}" class="text-green-600 hover:underline">Télécharger</a>
+          <h3 class="font-semibold mb-1">Allure prévue</h3>
+          <p class="text-gray-700">{{ e.pace ?: "Non précisée" }}</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-gray-50">
+          <h3 class="font-semibold mb-1">Niveau requis</h3>
+          <p class="text-gray-700">
+            {% if e.requiredLevel is empty %}
+              Tous niveaux
+            {% else %}
+              {% set levels = {
+                'BEGINNER': 'Débutant',
+                'INTERMEDIATE': 'Intermédiaire',
+                'ADVANCED': 'Avancé',
+                'EXPERT': 'Expert'
+              } %}
+              {{ e.requiredLevel|map(l => levels[l] ?? l)|join(', ') }}
+            {% endif %}
+          </p>
+        </div>
+        <div class="p-4 rounded-2xl bg-gray-50">
+          <h3 class="font-semibold mb-1">Participants</h3>
+          <p class="text-gray-700">{{ confirmedCount }} / {{ e.maxParticipants }}</p>
         </div>
       </div>
     </div>
 
     <div class="bg-white rounded-2xl shadow p-6 mt-6">
-      <h2 class="text-xl font-bold mb-4">Parcours (aperçu)</h2>
+      <h2 class="text-xl font-bold mb-4">Lieu de rendez-vous</h2>
+      
+      <div class="mb-4">
+        <h3 class="font-semibold mb-2">{{ e.location.locationName }}</h3>
+        <p class="text-gray-700">
+          {{ e.location.address }}<br>
+          {{ e.location.postalCode }} {{ e.location.city }}
+          {% if e.location.country %}, {{ e.location.country }}{% endif %}
+        </p>
+        {% if e.location.meetingPoint %}
+          <p class="text-sm text-gray-600 mt-2">
+            <strong>Point de RDV précis :</strong> {{ e.location.meetingPoint }}
+          </p>
+        {% endif %}
+        {% if e.location.description %}
+          <p class="text-sm text-gray-600 mt-2">{{ e.location.description }}</p>
+        {% endif %}
+      </div>
+
       <div class="rounded-2xl overflow-hidden border">
-        <iframe title="Carte" src="https://www.openstreetmap.org/export/embed.html?bbox=2.32%2C48.81%2C2.35%2C48.83&layer=mapnik" class="w-full h-72"></iframe>
+        <iframe 
+          title="Carte du lieu" 
+          src="https://www.openstreetmap.org/export/embed.html?bbox={{ e.location.longitude - 0.01 }}%2C{{ e.location.latitude - 0.01 }}%2C{{ e.location.longitude + 0.01 }}%2C{{ e.location.latitude + 0.01 }}&layer=mapnik&marker={{ e.location.latitude }}%2C{{ e.location.longitude }}" 
+          class="w-full h-72"
+        ></iframe>
+      </div>
+      <p class="text-xs text-gray-500 mt-2">
+        Coordonnées : {{ e.location.latitude }}, {{ e.location.longitude }}
+      </p>
+    </div>
+
+    {% if e.comments is not empty %}
+    <div class="bg-white rounded-2xl shadow p-6 mt-6">
+      <h2 class="text-xl font-bold mb-4">Commentaires ({{ e.comments|length }})</h2>
+      <div class="space-y-4">
+        {% for comment in e.comments %}
+          <div class="border-b pb-4 last:border-b-0">
+            <div class="flex items-start gap-3">
+              <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center font-bold text-green-700 shrink-0">
+                {{ comment.author.firstname|first }}{{ comment.author.lastname|first }}
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center justify-between mb-1">
+                  <p class="font-semibold">{{ comment.author.firstname }} {{ comment.author.lastname|first }}.</p>
+                  <p class="text-xs text-gray-500">{{ comment.publicationDate|date('d/m/Y à H:i') }}</p>
+                </div>
+                {% if comment.rating %}
+                  <div class="flex items-center gap-1 mb-2">
+                    {% for i in 1..5 %}
+                      <span class="{% if i <= comment.rating %}text-yellow-500{% else %}text-gray-300{% endif %}">★</span>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+                <p class="text-gray-700 text-sm">{{ comment.content }}</p>
+                {% if comment.updatedDate %}
+                  <p class="text-xs text-gray-400 mt-1">Modifié le {{ comment.updatedDate|date('d/m/Y') }}</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
       </div>
     </div>
+    {% endif %}
   </article>
 
   <aside class="lg:col-span-1 space-y-6">
     <div class="bg-white rounded-2xl shadow p-6">
-      <div class="flex items-center justify-between mb-2">
+      <div class="flex items-center justify-between mb-3">
         <h3 class="font-semibold">Inscription</h3>
-        <span class="text-sm text-gray-600">{{ e.spotsLeft }} places restantes</span>
+        {% if spotsLeft > 0 %}
+          <span class="text-sm font-medium {{ spotsLeft <= 5 ? 'text-amber-600' : 'text-green-600' }}">
+            {{ spotsLeft }} place{{ spotsLeft > 1 ? 's' : '' }} restante{{ spotsLeft > 1 ? 's' : '' }}
+          </span>
+        {% else %}
+          <span class="text-sm font-medium text-red-600">Complet</span>
+        {% endif %}
       </div>
-      <a href="{{ path('event_register', {id: e.id}) }}" class="block w-full text-center bg-green-600 text-white py-3 rounded-2xl font-semibold hover:bg-green-700">Je m'inscris</a>
-      <p class="text-xs text-gray-500 mt-2">Gratuit • Annulation possible jusqu'à 24h avant</p>
+      
+      {% if spotsLeft > 0 %}
+        <a href="{{ path('event_register', {id: e.id}) }}" class="block w-full text-center bg-green-600 text-white py-3 rounded-2xl font-semibold hover:bg-green-700 transition">
+          Je m'inscris
+        </a>
+      {% else %}
+        <button disabled class="block w-full text-center bg-gray-400 text-white py-3 rounded-2xl font-semibold cursor-not-allowed">
+          Complet
+        </button>
+      {% endif %}
+      
     </div>
 
     <div class="bg-white rounded-2xl shadow p-6">
-      <h3 class="font-semibold mb-2">Organisateur</h3>
-      <div class="flex items-center gap-3">
-        <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center font-bold text-green-700">C</div>
-        <div>
-          <p>{{ e.organizer.name }}</p>
-          <p class="text-sm text-gray-600">Note {{ e.organizer.rating }} / 5</p>
+      <h3 class="font-semibold mb-3">Organisateur</h3>
+      <div class="flex items-start gap-3">
+        <div class="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center font-bold text-green-700 shrink-0">
+          {{ e.organizer.firstname|first }}{{ e.organizer.lastname|first }}
+        </div>
+        <div class="flex-1">
+          <p class="font-medium">{{ e.organizer.firstname }} {{ e.organizer.lastname }}</p>
+          {% if e.organizer.city %}
+            <p class="text-sm text-gray-600">{{ e.organizer.city }}</p>
+          {% endif %}
+          {% if e.organizer.runningLevel %}
+            {% set levels = {
+              'BEGINNER': 'Débutant',
+              'INTERMEDIATE': 'Intermédiaire',
+              'ADVANCED': 'Avancé',
+              'EXPERT': 'Expert'
+            } %}
+            <p class="text-sm text-gray-600">Niveau : {{ levels[e.organizer.runningLevel] ?? e.organizer.runningLevel }}</p>
+          {% endif %}
+          {% if e.organizer.bio %}
+            <p class="text-sm text-gray-700 mt-2">{{ e.organizer.bio }}</p>
+          {% endif %}
         </div>
       </div>
-      <a href="#" class="inline-block mt-3 text-green-600 hover:underline">Contacter l'organisateur</a>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow p-6">
+      <h3 class="font-semibold mb-3">Statut de l'événement</h3>
+      {% set statusLabels = {
+        'DRAFT': 'Brouillon',
+        'PUBLISHED': 'Publié',
+        'CANCELLED': 'Annulé',
+        'COMPLETED': 'Terminé'
+      } %}
+      {% set statusColors = {
+        'DRAFT': 'bg-gray-100 text-gray-700',
+        'PUBLISHED': 'bg-green-100 text-green-700',
+        'CANCELLED': 'bg-red-100 text-red-700',
+        'COMPLETED': 'bg-blue-100 text-blue-700'
+      } %}
+      <span class="inline-block px-3 py-1 rounded-full text-sm font-medium {{ statusColors[e.status] ?? 'bg-gray-100 text-gray-700' }}">
+        {{ statusLabels[e.status] ?? e.status }}
+      </span>
     </div>
 
     <div class="bg-white rounded-2xl shadow p-6">
       <h3 class="font-semibold mb-3">Infos pratiques</h3>
       <ul class="text-sm text-gray-700 space-y-2 list-disc ml-4">
-        <li>Vestiaires et point d'eau sur place</li>
-        <li>Casque audio autorisé, pas d'animaux</li>
-        <li>Prévoir frontale pour les sorties de soir</li>
+        <li>Pensez à vous hydrater avant et après</li>
+        <li>Prévoyez une tenue adaptée à la météo</li>
+        <li>Arrivez 10 minutes avant l'heure de départ</li>
+        <li>Respectez les autres coureurs et l'environnement</li>
       </ul>
     </div>
   </aside>
