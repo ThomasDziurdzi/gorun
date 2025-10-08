@@ -58,6 +58,7 @@ class Location
 
     public function __construct()
     {
+        $this->creationDate = new \DateTimeImmutable();
         $this->events = new ArrayCollection();
     }
 

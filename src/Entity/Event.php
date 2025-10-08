@@ -25,7 +25,7 @@ class Event
     private ?string $description = null;
 
     #[ORM\Column]
-    private ?\DateTime $eventDate = null;
+    private ?\DateTimeImmutable $eventDate = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $estimateDuration = null;
@@ -118,12 +118,12 @@ class Event
         return $this;
     }
 
-    public function getEventDate(): ?\DateTime
+    public function getEventDate(): ?\DateTimeImmutable
     {
         return $this->eventDate;
     }
 
-    public function setEventDate(\DateTime $eventDate): static
+    public function setEventDate(\DateTimeImmutable $eventDate): static
     {
         $this->eventDate = $eventDate;
 
@@ -286,7 +286,6 @@ class Event
     public function removeRegistration(Registration $registration): static
     {
         if ($this->registrations->removeElement($registration)) {
-            // set the owning side to null (unless already changed)
             if ($registration->getEvent() === $this) {
                 $registration->setEvent(null);
             }
@@ -316,7 +315,6 @@ class Event
     public function removeComment(Comment $comment): static
     {
         if ($this->comments->removeElement($comment)) {
-            // set the owning side to null (unless already changed)
             if ($comment->getEvent() === $this) {
                 $comment->setEvent(null);
             }
@@ -346,7 +344,6 @@ class Event
     public function removeNotification(Notification $notification): static
     {
         if ($this->notifications->removeElement($notification)) {
-            // set the owning side to null (unless already changed)
             if ($notification->getEvent() === $this) {
                 $notification->setEvent(null);
             }
