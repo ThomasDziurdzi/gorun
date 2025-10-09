@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Event;
+use App\Entity\Location;
 use App\Form\EventType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,14 +29,17 @@ class EventController extends AbstractController
     public function new(Request $request, EntityManagerInterface $em): Response
     {
         $event = new Event();
+        $location = new Location();
 
         $event->setOrganizer($this->getUser());
+        $location->setCreatedBy($this->getUser());
 
         $form = $this->createForm(EventType::class, $event);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($location);
             $em->persist($event);
             $em->flush();
 
