@@ -122,19 +122,8 @@ class EventType extends AbstractType
                 ]
             ])
             
-            ->add('location', EntityType::class, [
-                'label' => 'Lieu',
-                'class' => Location::class,
-                'choice_label' => function(Location $location) {
-                    return $location->getLocationName() . ' - ' . $location->getCity();
-                },
-                'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500'
-                ],
-                'placeholder' => 'Sélectionnez un lieu',
-                'constraints' => [
-                    new NotBlank(['message' => 'Le lieu est obligatoire']),
-                ]
+            ->add('location', LocationType::class, [
+                'label' => false,
             ])
             
             ->add('status', ChoiceType::class, [
