@@ -18,6 +18,21 @@ security:
             lazy: true
             provider: app_user_provider
 
+            form_login:
+                login_path: app_login
+                check_path: app_login
+                enable_csrf: true
+                default_target_path: event_index
+
+            logout:
+                path: app_logout
+                target: app_default
+
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800
+                path: /
+
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
 
@@ -27,8 +42,13 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/connexion, roles: PUBLIC_ACCESS }
+        - { path: ^/inscription, roles: PUBLIC_ACCESS }
+        - { path: ^/mot-de-passe-oublie, roles: PUBLIC_ACCESS }
+        - { path: ^/profil, roles: ROLE_USER }
+        - { path: ^/evenement/nouveau, roles: ROLE_ADMIN }
+        - { path: ^/evenement/.*/edit, roles: ROLE_ADMIN }
+        - { path: ^/evenement/.*/delete, roles: ROLE_ADMIN }
 
 when@test:
     security:
