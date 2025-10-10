@@ -164,4 +164,35 @@ class EventController extends AbstractController
 
         return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
     }
+
+    #[Route('/evenement/{id}/desinscription', name: 'event_unregister', methods: ['POST'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function unregister(Event $event, Request $request, EntityManagerInterface $em): Response
+    {
+        if (!$this->isCsrfTokenValid('unregister' . $event->getId(), $request->request->get('_token'))) {
+           $this->addFlash('error', 'Token de sécurité invalide.');
+           return $this->redirectToRoute('event_show', ['id' => $event->getId()]); 
+        }
+
+        $user = $this->getUser();
+
+        $registration = $em->getRepository(Registration::class)->findOneBy([
+            'user' => $user,
+            'event' => $event,
+            'status' => RegistrationStatus::CONFIRMED
+        ]);
+
+        if (!$registration) {
+            $this->addFlash('warning', 'Vous n\'êtes pas inscrit à un évènement.');
+            return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
+        }
+
+        $em->remove($registration);
+
+        $em->flush();
+
+        $this->addFlash('success', 'Votre inscription a été annulée.');
+
+        return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
+    }
 }
