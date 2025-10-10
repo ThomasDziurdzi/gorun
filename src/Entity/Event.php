@@ -36,8 +36,8 @@ class Event
     #[ORM\Column(nullable: true)]
     private ?int $maxParticipants = null;
 
-    #[ORM\Column(type: Types::SIMPLE_ARRAY, enumType: RunningLevel::class)]
-    private array $requiredLevel = [];
+    #[ORM\Column(length: 20, enumType: RunningLevel::class)]
+    private ?RunningLevel $requiredLevel = null;
 
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $pace = null;
@@ -84,6 +84,7 @@ class Event
     {
         $this->creationDate = new \DateTimeImmutable();
         $this->status = EventStatus::DRAFT;
+         $this->requiredLevel = RunningLevel::ALL_LEVELS;
         $this->registrations = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->notifications = new ArrayCollection();
@@ -166,15 +167,12 @@ class Event
         return $this;
     }
 
-    /**
-     * @return RunningLevel[]
-     */
-    public function getRequiredLevel(): array
+    public function getRequiredLevel(): RunningLevel
     {
         return $this->requiredLevel;
     }
 
-    public function setRequiredLevel(array $requiredLevel): static
+    public function setRequiredLevel(RunningLevel $requiredLevel): static
     {
         $this->requiredLevel = $requiredLevel;
 

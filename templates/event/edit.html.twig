@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Créer une sortie running · GoRun{% endblock %}
+{% block title %}Modifier l'événement · GoRun{% endblock %}
 
 {% block stylesheets %}
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -10,9 +10,9 @@
 {% block body %}
 <section class="max-w-5xl mx-auto">
   <div class="flex items-center justify-between mb-6">
-    <h1 class="text-2xl md:text-3xl font-bold">Créer une sortie running</h1>
-    <a href="{{ path('event_index') }}" class="text-gray-600 hover:text-gray-900 text-sm">
-      ← Retour à la liste
+    <h1 class="text-2xl md:text-3xl font-bold">Modifier l'événement</h1>
+    <a href="{{ path('event_show', {id: event.id}) }}" class="text-gray-600 hover:text-gray-900 text-sm">
+      ← Retour à l'événement
     </a>
   </div>
 
@@ -172,11 +172,11 @@
         </div>
 
         <div class="flex gap-3 justify-end mt-5">
-          <a href="{{ path('event_index') }}" class="px-5 py-3 rounded-2xl border font-semibold hover:bg-gray-50">
+          <a href="{{ path('event_show', {id: event.id}) }}" class="px-5 py-3 rounded-2xl border font-semibold hover:bg-gray-50">
             Annuler
           </a>
           <button type="submit" class="px-5 py-3 rounded-2xl bg-green-600 text-white font-semibold hover:bg-green-700">
-            Créer l'événement
+            Enregistrer les modifications
           </button>
         </div>
       </aside>

@@ -3,10 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Event;
+use App\Entity\Location;
+use App\Form\EventType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class EventController extends AbstractController
 {
@@ -21,9 +25,33 @@ class EventController extends AbstractController
     }
 
     #[Route('/evenement/nouveau', name: 'event_new')]
-    public function new(): Response
+    #[IsGranted('ROLE_ADMIN', message: 'Seuls les administrateurs peuvent créer des évènements.')]
+    public function new(Request $request, EntityManagerInterface $em): Response
     {
-        return $this->render('event/new.html.twig');
+        $event = new Event();
+        $location = new Location();
+
+        $event->setOrganizer($this->getUser());
+        $location->setCreatedBy($this->getUser());
+
+        $event->setLocation($location);
+
+        $form = $this->createForm(EventType::class, $event);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($location);
+            $em->persist($event);
+            $em->flush();
+
+            $this->addFlash('success', 'L\'évènement a été créé avec succès!');
+
+            return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
+        }
+
+        return $this->render('event/new.html.twig', [
+            'eventForm' => $form->createView(),
+        ]);
     }
 
     #[Route('/evenement/{id}', name: 'event_show')]
@@ -34,15 +62,75 @@ class EventController extends AbstractController
         ]);
     }
 
+    #[Route('/evenement/{id}/modifier', name: 'event_edit')]
+    #[IsGranted('ROLE_ADMIN', message: 'Seuls les administrateurs peuvent modifier des évènements.')]
+    public function edit(Event $event, Request $request, EntityManagerInterface $em): Response
+    {
+        $form = $this->createForm(EventType::class, $event);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $event->setUpdatedDate(new \DateTimeImmutable());
+
+            $location = $event->getLocation();
+            if ($location) {
+                $em->persist($location);
+            }
+
+            $em->flush();
+
+            $this->addFlash('success', 'L\'événement a été modifié avec succès !');
+
+            return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
+        }
+
+        return $this->render('event/edit.html.twig', [
+            'eventForm' => $form->createView(),
+            'event' => $event,
+        ]);
+    }
+
+    #[Route('/evenement/{id}/supprimer', name: 'event_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN', message: 'Seuls les administrateurs peuvent supprimer des évènements.')]
+    public function delete(Event $event, Request $request, EntityManagerInterface $em): Response
+    {
+        if ($this->isCsrfTokenValid('delete' . $event->getId(), $request->request->get('_token'))) {
+
+            $registrations = $event->getRegistrations();
+            foreach ($registrations as $registration) {
+                $em->remove($registration);
+            }
+
+            $comments = $event->getComments();
+            foreach ($comments as $comment) {
+                $em->remove($comment);
+            }
+
+            $notifications = $event->getNotifications();
+            foreach ($notifications as $notification) {
+                $em->remove($notification);
+            }
+            
+            $em->remove($event);
+            $em->flush();
+
+            $this->addFlash('success', 'L\'évènement a été supprimé avec succès.');
+        } else {
+            $this->addFlash('error', 'Token de sécurité invalide. La suppression a échoué.');
+        }
+
+        return $this->redirectToRoute('event_index');
+    }   
+
 
     #[Route('/evenement/{id}/inscription', name: 'event_register')]
-    public function register(string $id): Response
+    public function register(Event $event): Response
     {
         $this->addFlash(
             'success',
-            sprintf('Inscription simulée à l\'évènement "%s" (UI uniquement).', $id)
+            sprintf('Inscription simulée à l\'évènement "%s" (UI uniquement).', $event->getId())
         );
 
-        return $this->redirectToRoute('event_show', ['id' => $id]);
+        return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
     }
 }
