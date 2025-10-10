@@ -83,12 +83,28 @@ class EventController extends AbstractController
 
             return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
         }
-        
+
         return $this->render('event/edit.html.twig', [
             'eventForm' => $form->createView(),
             'event' => $event,
         ]);
     }
+
+    #[Route('/evenement/{id}/supprimer', name: 'event_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN', message: 'Seuls les administrateurs peuvent supprimer des évènements.')]
+    public function delete(Event $event, Request $request, EntityManagerInterface $em): Response
+    {
+        if ($this->isCsrfTokenValid('delete' . $event->getId(), $request->request->get('_token'))) {
+            $em->remove($event);
+            $em->flush();
+
+            $this->addFlash('success', 'L\'évènement a été supprimé avec succès.');
+        } else {
+            $this->addFlash('error', 'Token de sécurité invalide. La suppression a échoué.');
+        }
+
+        return $this->redirectToRoute('event_index');
+    }   
 
 
     #[Route('/evenement/{id}/inscription', name: 'event_register')]
