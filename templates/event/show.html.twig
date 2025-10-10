@@ -54,17 +54,7 @@
         <div class="p-4 rounded-2xl bg-gray-50">
           <h3 class="font-semibold mb-1">Niveau requis</h3>
           <p class="text-gray-700">
-            {% if e.requiredLevel is empty %}
-              Tous niveaux
-            {% else %}
-              {% set levels = {
-                'BEGINNER': 'Débutant',
-                'INTERMEDIATE': 'Intermédiaire',
-                'ADVANCED': 'Avancé',
-                'EXPERT': 'Expert'
-              } %}
-              {{ e.requiredLevel|map(l => levels[l.value] ?? l.value)|join(', ') }}
-            {% endif %}
+            {{ e.requiredLevel.label }}
           </p>
         </div>
         <div class="p-4 rounded-2xl bg-gray-50">
@@ -194,7 +184,7 @@
     </div>
 
     <div class="bg-white rounded-2xl shadow p-6">
-      <h3 class="font-semibold mb-3">Statut de l'événement</h3>
+      <h3 class="font-semibold mb-3">Statut de l'évènement</h3>
       {% set statusLabels = {
         'DRAFT': 'Brouillon',
         'PUBLISHED': 'Publié',

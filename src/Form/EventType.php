@@ -35,7 +35,7 @@ class EventType extends AbstractType
                     new NotBlank(['message' => 'Le titre est obligatoire']),
                 ]
             ])
-            
+
             ->add('description', TextareaType::class, [
                 'label' => 'Description',
                 'required' => false,
@@ -45,7 +45,7 @@ class EventType extends AbstractType
                     'placeholder' => 'Décrivez l\'événement, le parcours, l\'ambiance...'
                 ]
             ])
-            
+
             ->add('eventDate', DateTimeType::class, [
                 'label' => 'Date et heure',
                 'widget' => 'single_text',
@@ -60,7 +60,7 @@ class EventType extends AbstractType
                     ])
                 ]
             ])
-            
+
             ->add('estimateDuration', IntegerType::class, [
                 'label' => 'Durée estimée (minutes)',
                 'required' => false,
@@ -72,7 +72,7 @@ class EventType extends AbstractType
                     new Positive(['message' => 'La durée doit être positive'])
                 ]
             ])
-            
+
             ->add('distance', NumberType::class, [
                 'label' => 'Distance (km)',
                 'required' => false,
@@ -85,7 +85,7 @@ class EventType extends AbstractType
                     new Positive(['message' => 'La distance doit être positive'])
                 ]
             ])
-            
+
             ->add('maxParticipants', IntegerType::class, [
                 'label' => 'Nombre maximum de participants',
                 'attr' => [
@@ -97,22 +97,24 @@ class EventType extends AbstractType
                     new Positive(['message' => 'Doit être un nombre positif'])
                 ]
             ])
-            
+
             ->add('requiredLevel', ChoiceType::class, [
                 'label' => 'Niveau(x) requis',
                 'choices' => [
+                    'Tous niveaux' => RunningLevel::ALL_LEVELS,
                     'Débutant' => RunningLevel::BEGINNER,
                     'Intermédiaire' => RunningLevel::INTERMEDIATE,
                     'Avancé' => RunningLevel::ADVANCED,
-                    'Tous niveaux' => RunningLevel::ALL_LEVELS,
                 ],
-                'multiple' => true,
-                'expanded' => true,
+                'expanded' => false,
+                'multiple' => false,
+                'data' => RunningLevel::ALL_LEVELS,
+                'placeholder' => false,
                 'attr' => [
-                    'class' => 'space-y-2'
+                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500'
                 ]
             ])
-            
+
             ->add('pace', TextType::class, [
                 'label' => 'Allure prévue',
                 'required' => false,
@@ -121,11 +123,11 @@ class EventType extends AbstractType
                     'placeholder' => 'Ex: 5\'30/km'
                 ]
             ])
-            
+
             ->add('location', LocationType::class, [
                 'label' => false,
             ])
-            
+
             ->add('status', ChoiceType::class, [
                 'label' => 'Statut',
                 'choices' => [

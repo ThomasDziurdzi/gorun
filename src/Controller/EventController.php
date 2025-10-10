@@ -34,8 +34,9 @@ class EventController extends AbstractController
         $event->setOrganizer($this->getUser());
         $location->setCreatedBy($this->getUser());
 
-        $form = $this->createForm(EventType::class, $event);
+        $event->setLocation($location);
 
+        $form = $this->createForm(EventType::class, $event);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

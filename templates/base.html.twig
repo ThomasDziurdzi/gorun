@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}GoRun{% endblock %}</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  {% block stylesheets %}{% endblock %}
 </head>
 <body class="min-h-screen flex flex-col bg-gray-50 text-gray-800">
   {% include 'partials/_header.html.twig' %}
@@ -17,5 +18,6 @@
     {% block body %}{% endblock %}
   </main>
   {% include 'partials/_footer.html.twig' %}
+  {% block javascripts %}{% endblock %}
 </body>
 </html>
