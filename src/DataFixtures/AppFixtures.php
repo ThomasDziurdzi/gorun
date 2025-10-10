@@ -173,7 +173,7 @@ class AppFixtures extends Fixture
                 ->setEstimateDuration($this->faker->numberBetween(30, 180))
                 ->setDistance((string) $this->faker->randomFloat(2, 5, 42))
                 ->setMaxParticipants($this->faker->optional(0.7)->numberBetween(10, 50))
-                ->setRequiredLevel([$this->faker->randomElement(RunningLevel::cases())])
+                ->setRequiredLevel($this->faker->randomElement(RunningLevel::cases()))
                 ->setPace($this->faker->randomElement(['5:00 min/km', '5:30 min/km', '6:00 min/km', '6:30 min/km', '7:00 min/km']))
                 ->setStatus($status)
                 ->setCreationDate($creationDate)
