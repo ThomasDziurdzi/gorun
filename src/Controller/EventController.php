@@ -95,6 +95,22 @@ class EventController extends AbstractController
     public function delete(Event $event, Request $request, EntityManagerInterface $em): Response
     {
         if ($this->isCsrfTokenValid('delete' . $event->getId(), $request->request->get('_token'))) {
+
+            $registrations = $event->getRegistrations();
+            foreach ($registrations as $registration) {
+                $em->remove($registration);
+            }
+
+            $comments = $event->getComments();
+            foreach ($comments as $comment) {
+                $em->remove($comment);
+            }
+
+            $notifications = $event->getNotifications();
+            foreach ($notifications as $notification) {
+                $em->remove($notification);
+            }
+            
             $em->remove($event);
             $em->flush();
 
