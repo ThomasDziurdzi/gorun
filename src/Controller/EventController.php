@@ -62,13 +62,41 @@ class EventController extends AbstractController
         ]);
     }
 
+    #[Route('/evenement/{id}/modifier', name: 'event_edit')]
+    #[IsGranted('ROLE_ADMIN', message: 'Seuls les administrateurs peuvent modifier des évènements.')]
+    public function edit(Event $event, Request $request, EntityManagerInterface $em): Response
+    {
+        $form = $this->createForm(EventType::class, $event);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $event->setUpdatedDate(new \DateTimeImmutable());
+
+            $location = $event->getLocation();
+            if ($location) {
+                $em->persist($location);
+            }
+
+            $em->flush();
+
+            $this->addFlash('success', 'L\'événement a été modifié avec succès !');
+
+            return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
+        }
+        
+        return $this->render('event/edit.html.twig', [
+            'eventForm' => $form->createView(),
+            'event' => $event,
+        ]);
+    }
+
 
     #[Route('/evenement/{id}/inscription', name: 'event_register')]
     public function register(Event $event): Response
     {
         $this->addFlash(
             'success',
-            sprintf('Inscription simulée à l\'évènement "%s" (UI uniquement).',$event->getId())
+            sprintf('Inscription simulée à l\'évènement "%s" (UI uniquement).', $event->getId())
         );
 
         return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
