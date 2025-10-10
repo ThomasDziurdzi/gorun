@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Event;
 use App\Entity\Location;
+use App\Entity\Registration;
+use App\Enum\RegistrationStatus;
 use App\Form\EventType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -123,13 +125,73 @@ class EventController extends AbstractController
     }   
 
 
-    #[Route('/evenement/{id}/inscription', name: 'event_register')]
-    public function register(Event $event): Response
+    #[Route('/evenement/{id}/inscription', name: 'event_register', methods: ['POST'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function register(Event $event, Request $request, EntityManagerInterface $em): Response
     {
-        $this->addFlash(
-            'success',
-            sprintf('Inscription simulée à l\'évènement "%s" (UI uniquement).', $event->getId())
-        );
+
+        if (!$this->isCsrfTokenValid('register' . $event->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token de sécurité invalide.');
+            return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
+        }
+
+        $user = $this->getUser();
+
+        $existingRegistration = $em->getRepository(Registration::class)->findOneBy([
+            'user' => $user,
+            'event' => $event,
+            'status' => RegistrationStatus::CONFIRMED
+        ]);
+
+        if ($existingRegistration) {
+            $this->addFlash('warning', 'Vous êtes déjà inscrit à cet évènement.');
+            return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
+        }
+
+        $registration = new Registration();
+        $registration->setUser($user);
+        $registration->setEvent($event);
+        $registration->setStatus(RegistrationStatus::CONFIRMED);
+
+        $em->persist($registration);
+        $em->flush();
+
+        $this->addFlash('success', sprintf(
+            'Inscription confirmée pour "%s" ! Rendez vous le %s.',
+            $event->getTitle(),
+            $event->getEventDate()->format('d/m/Y à h:i')
+        ));
+
+        return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
+    }
+
+    #[Route('/evenement/{id}/desinscription', name: 'event_unregister', methods: ['POST'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function unregister(Event $event, Request $request, EntityManagerInterface $em): Response
+    {
+        if (!$this->isCsrfTokenValid('unregister' . $event->getId(), $request->request->get('_token'))) {
+           $this->addFlash('error', 'Token de sécurité invalide.');
+           return $this->redirectToRoute('event_show', ['id' => $event->getId()]); 
+        }
+
+        $user = $this->getUser();
+
+        $registration = $em->getRepository(Registration::class)->findOneBy([
+            'user' => $user,
+            'event' => $event,
+            'status' => RegistrationStatus::CONFIRMED
+        ]);
+
+        if (!$registration) {
+            $this->addFlash('warning', 'Vous n\'êtes pas inscrit à un évènement.');
+            return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
+        }
+
+        $em->remove($registration);
+
+        $em->flush();
+
+        $this->addFlash('success', 'Votre inscription a été annulée.');
 
         return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
     }
