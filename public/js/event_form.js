@@ -11,7 +11,17 @@ function initMap() {
   }
 
   try {
-    map = L.map('map').setView([48.5734, 7.7521], 12);
+   
+    const latField = document.getElementById('event_location_latitude');
+    const lngField = document.getElementById('event_location_longitude');
+    
+    const existingLat = latField?.value ? parseFloat(latField.value) : 48.5734;
+    const existingLng = lngField?.value ? parseFloat(lngField.value) : 7.7521;
+    
+    console.log('Coordonnées initiales:', existingLat, existingLng);
+    
+  
+    map = L.map('map').setView([existingLat, existingLng], 12);
     
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
@@ -19,6 +29,13 @@ function initMap() {
     }).addTo(map);
 
     console.log('Carte initialisée avec succès');
+
+    
+    if (latField?.value && lngField?.value) {
+      console.log('Mode édition détecté - placement du marqueur existant');
+      setMarker(existingLat, existingLng);
+      map.setView([existingLat, existingLng], 15);
+    }
 
     map.on('click', (e) => {
       console.log('Clic sur la carte:', e.latlng);
