@@ -18,8 +18,7 @@ class RegistrationController extends AbstractController
         Request $request,
         UserPasswordHasherInterface $passwordHasher,
         EntityManagerInterface $em
-    ): Response
-    {
+    ): Response {
         if ($this->getUser()) {
             return $this->redirectToRoute('event_index');
         }
@@ -31,6 +30,16 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $existingUser = $em->getRepository(User::class)->findOneBy([
+                'email' => $user->getEmail()
+            ]);
+
+            if ($existingUser) {
+                $this->addFlash('error', 'Un compte existe déjà avec cet email.');
+                return $this->redirectToRoute('app_register');
+            }
+
             $plaintextPassword = $form->get('plainPassword')->getData();
 
             $hashedPassword = $passwordHasher->hashPassword($user, $plaintextPassword);
