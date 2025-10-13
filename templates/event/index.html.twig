@@ -15,7 +15,9 @@
       <option value="INTERMEDIATE">Intermédiaire</option>
       <option value="ADVANCED">Confirmé</option>
     </select>
+    {% if is_granted('ROLE_ADMIN') %}
     <a href="{{ path('event_new') }}" class="px-4 py-3 rounded-2xl bg-green-600 text-white text-center font-semibold hover:bg-green-700">Proposer un évènement</a>
+    {% endif %}
   </div>
 </section>
 

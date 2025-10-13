@@ -8,12 +8,14 @@
       <a href="{{ path('event_index') }}" class="hover:text-green-600">Événements</a>
       {% if app.user %}
         <a href="{{ path('app_profile') }}" class="hover:text-green-600">Mon profil</a>
+        {% if is_granted('ROLE_ADMIN') %}
         <a href="{{ path('event_new') }}" class="hover:text-green-600">Créer</a>
+        {% endif %}
         <a href="{{ path('app_logout') }}" class="hover:text-green-600">Déconnexion</a>
       {% else %}
         <a href="{{ path('app_register') }}" class="hover:text-green-600">Inscription</a>
         <a href="{{ path('app_login') }}" class="hover:text-green-600">Connexion</a>
-      {% endif %}
+      {% endif %} 
     </nav>
     <button class="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-xl border text-green-700 hover:bg-gray-50"
       id="rt-menu-toggle" aria-label="Ouvrir le menu" aria-controls="rt-mobile-menu" aria-expanded="false" type="button">
@@ -25,7 +27,9 @@
       <a href="{{ path('event_index') }}" class="px-3 py-2 rounded-xl hover:bg-gray-50">Événements</a>
       {% if app.user %}
         <a href="{{ path('app_profile') }}" class="px-3 py-2 rounded-xl hover:bg-gray-50">Mon profil</a>
+        {% if is_granted('ROLE_ADMIN') %}
         <a href="{{ path('event_new') }}" class="px-3 py-2 rounded-xl hover:bg-gray-50">Créer</a>
+        {% endif %}
         <a href="{{ path('app_logout') }}" class="px-3 py-2 rounded-xl hover:bg-gray-50">Déconnexion</a>
       {% else %}
         <a href="{{ path('app_register') }}" class="px-3 py-2 rounded-xl hover:bg-gray-50">Inscription</a>
