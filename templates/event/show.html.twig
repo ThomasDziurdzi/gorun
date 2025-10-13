@@ -3,7 +3,6 @@
 {% block body %}
 {% set confirmedCount = e.registrations|filter(r => r.status.value == 'CONFIRMED')|length %}
 
-{% set confirmedCount = e.registrations|filter(r => r.status == 'CONFIRMED')|length %}
 {% set spotsLeft = e.maxParticipants - confirmedCount %}
 
 <section class="relative rounded-2xl overflow-hidden">
