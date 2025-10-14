@@ -10,7 +10,7 @@
   />
   <div class="absolute inset-0 bg-black/50"></div>
   <div class="relative z-10 text-white max-w-3xl">
-    <h1 class="text-4xl md:text-6xl font-extrabold mb-6">Courir ensemble, c’est mieux</h1>
+    <h1 class="text-4xl md:text-6xl font-extrabold mb-6">Courir ensemble, c'est mieux</h1>
     <p class="text-lg md:text-xl max-w-2xl mb-8 mx-auto">
       Rejoignez une communauté passionnée de running. Participez à des sorties,
       rencontrez des coureurs de votre ville et dépassez vos limites.
@@ -21,51 +21,66 @@
   </div>
 </section>
 
-{% set events = [
-  { 'id':'paris-montsouris-10k', 'title':"Sortie 10K – Parc Montsouris", 'city':"Paris", 'date':"2025-10-12T09:00:00", 'distanceKm':10, 'pace':"5'30/km", 'spotsLeft':8, 'cover':"https://images.unsplash.com/photo-1546483875-ad9014c88eba?q=80&w=1200&auto=format&fit=crop" },
-  { 'id':'lyon-berges-5k', 'title':"Jogging convivial – Berges du Rhône (5K)", 'city':"Lyon", 'date':"2025-10-18T19:00:00", 'distanceKm':5, 'pace':"6'00/km", 'spotsLeft':14, 'cover':"https://images.unsplash.com/photo-1535747790212-30c585ab486d?q=80&w=1200&auto=format&fit=crop" },
-  { 'id':'marseille-calanques-trail', 'title':"Trail découverte – Calanques (12K)", 'city':"Marseille", 'date':"2025-11-02T08:30:00", 'distanceKm':12, 'pace':"6'15/km", 'spotsLeft':5, 'cover':"https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=1200&auto=format&fit=crop" }
-] %}
-
 <section id="evenements" class="px-0 py-12">
   <h2 class="text-3xl font-bold text-center mb-10">Événements à venir</h2>
 
-  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    {% for e in events|slice(0,3) %}
-      {% set statusColor = e.spotsLeft == 0 ? 'bg-red-600' : (e.spotsLeft <= 5 ? 'bg-amber-500' : 'bg-green-600') %}
+  {% if upcomingEvents is defined and upcomingEvents|length > 0 %}
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for event in upcomingEvents %}
+        {% set confirmedCount = event.registrations|filter(r => r.status.value == 'CONFIRMED')|length %}
+        {% set spotsLeft = event.maxParticipants ? event.maxParticipants - confirmedCount : 'Illimité' %}
+        {% set statusColor = spotsLeft == 0 ? 'bg-red-600' : (spotsLeft is same as('Illimité') ? 'bg-blue-600' : (spotsLeft <= 5 ? 'bg-amber-500' : 'bg-green-600')) %}
 
-      
-      <article class="relative bg-white rounded-2xl shadow hover:shadow-lg transition overflow-hidden flex flex-col h-full">
-        <div class="relative">
-          <img src="{{ e.cover }}" alt="Illustration {{ e.title }}" class="h-48 w-full object-cover" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent"></div>
+        <article class="relative bg-white rounded-2xl shadow hover:shadow-lg transition overflow-hidden flex flex-col h-full">
+          <div class="relative">
+            <img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?q=80&w=1200&auto=format&fit=crop" 
+                 alt="{{ event.title }}" 
+                 class="h-48 w-full object-cover" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent"></div>
 
-          <div class="absolute left-4 top-4">
-            <span class="inline-flex items-center px-3 py-1 rounded-full bg-white/90 text-gray-900 text-sm font-medium shadow">
-              {{ e.city }} • {{ e.distanceKm }}K • {{ e.pace }}
-            </span>
+            <div class="absolute left-4 top-4">
+              <span class="inline-flex items-center px-3 py-1 rounded-full bg-white/90 text-gray-900 text-sm font-medium shadow">
+                {{ event.location.city }} • {{ event.distance }}K • {{ event.pace }}
+              </span>
+            </div>
+            <div class="absolute right-0 top-4">
+              {# <span class="inline-block {{ statusColor }} text-white text-xs font-semibold px-3 py-1 rounded-l-full shadow">
+                {% if spotsLeft == 0 %}
+                  Complet
+                {% elseif spotsLeft is same as('Illimité') %}
+                  Places illimitées
+                {% else %}
+                  {{ spotsLeft }} places restantes
+                {% endif %}
+              </span> #}
+            </div>
           </div>
-          <div class="absolute right-0 top-4">
-            <span class="inline-block {{ statusColor }} text-white text-xs font-semibold px-3 py-1 rounded-l-full shadow">
-              {% if e.spotsLeft == 0 %}Complet{% else %}{{ e.spotsLeft }} places restantes{% endif %}
-            </span>
-          </div>
-        </div>
 
-        
-        <div class="p-5 flex flex-col flex-1">
-          <h3 class="text-lg font-semibold mb-1">{{ e.title }}</h3>
-          <p class="text-sm text-gray-600 mb-3">
-            {{ e.date|date('l d F H:i')|capitalize }} • {{ e.city }}
-          </p>
+          <div class="p-5 flex flex-col flex-1">
+            <h3 class="text-lg font-semibold mb-1">{{ event.title }}</h3>
+            <p class="text-sm text-gray-600 mb-3">
+              {{ event.eventDate|date('l d F Y à H:i', 'Europe/Paris')|capitalize }} • {{ event.location.city }}
+            </p>
 
-          <div class="mt-auto flex items-center justify-between">
-            <a href="{{ path('event_show', {id: e.id}) }}" class="text-green-600 font-medium hover:underline">Voir le détail →</a>
+            <div class="mt-auto flex items-center justify-between">
+              <a href="{{ path('event_show', {id: event.id}) }}" class="text-green-600 font-medium hover:underline">
+                Voir le détail →
+              </a>
+            </div>
           </div>
-        </div>
-      </article>
-    {% endfor %}
-  </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center py-12">
+      <p class="text-gray-600 text-lg mb-4">Aucun événement à venir pour le moment.</p>
+      {% if is_granted('ROLE_ADMIN') %}
+        <a href="{{ path('event_new') }}" class="inline-block bg-green-600 text-white px-6 py-3 rounded-2xl hover:bg-green-700 transition">
+          Créer le premier événement
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
 </section>
 
 <section id="inscription" class="bg-green-600 text-white py-16 text-center rounded-2xl mt-8">
