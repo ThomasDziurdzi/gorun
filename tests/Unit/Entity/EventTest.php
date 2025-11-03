@@ -26,7 +26,7 @@ class EventTest extends TestCase
     public function testTitle(): void
     {
         $this->assertNull($this->event->getTitle());
-        
+
         $this->event->setTitle('Sortie 10K Paris');
         $this->assertEquals('Sortie 10K Paris', $this->event->getTitle());
     }
@@ -34,7 +34,7 @@ class EventTest extends TestCase
     public function testDescription(): void
     {
         $this->assertNull($this->event->getDescription());
-        
+
         $description = 'Belle sortie dans Paris';
         $this->event->setDescription($description);
         $this->assertEquals($description, $this->event->getDescription());
@@ -44,7 +44,7 @@ class EventTest extends TestCase
     {
         $date = new \DateTimeImmutable('2025-12-31 10:00:00');
         $this->event->setEventDate($date);
-        
+
         $this->assertInstanceOf(\DateTimeImmutable::class, $this->event->getEventDate());
         $this->assertEquals('2025-12-31', $this->event->getEventDate()->format('Y-m-d'));
     }
@@ -52,7 +52,7 @@ class EventTest extends TestCase
     public function testDistance(): void
     {
         $this->assertNull($this->event->getDistance());
-        
+
         $this->event->setDistance('10.5');
         $this->assertEquals('10.5', $this->event->getDistance());
     }
@@ -60,7 +60,7 @@ class EventTest extends TestCase
     public function testMaxParticipants(): void
     {
         $this->assertNull($this->event->getMaxParticipants());
-        
+
         $this->event->setMaxParticipants(20);
         $this->assertEquals(20, $this->event->getMaxParticipants());
     }
@@ -68,7 +68,7 @@ class EventTest extends TestCase
     public function testRequiredLevel(): void
     {
         $this->assertEquals(RunningLevel::ALL_LEVELS, $this->event->getRequiredLevel());
-        
+
         $this->event->setRequiredLevel(RunningLevel::INTERMEDIATE);
         $this->assertEquals(RunningLevel::INTERMEDIATE, $this->event->getRequiredLevel());
     }
@@ -76,7 +76,7 @@ class EventTest extends TestCase
     public function testStatus(): void
     {
         $this->assertEquals(EventStatus::DRAFT, $this->event->getStatus());
-        
+
         $this->event->setStatus(EventStatus::PUBLISHED);
         $this->assertEquals(EventStatus::PUBLISHED, $this->event->getStatus());
     }
@@ -84,11 +84,11 @@ class EventTest extends TestCase
     public function testOrganizer(): void
     {
         $this->assertNull($this->event->getOrganizer());
-        
+
         $user = new User();
         $user->setEmail('test@example.com');
         $this->event->setOrganizer($user);
-        
+
         $this->assertInstanceOf(User::class, $this->event->getOrganizer());
         $this->assertEquals('test@example.com', $this->event->getOrganizer()->getEmail());
     }
@@ -96,11 +96,11 @@ class EventTest extends TestCase
     public function testLocation(): void
     {
         $this->assertNull($this->event->getLocation());
-        
+
         $location = new Location();
         $location->setCity('Paris');
         $this->event->setLocation($location);
-        
+
         $this->assertInstanceOf(Location::class, $this->event->getLocation());
         $this->assertEquals('Paris', $this->event->getLocation()->getCity());
     }

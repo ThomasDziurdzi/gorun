@@ -29,10 +29,6 @@ class SecurityController extends AbstractController
     #[Route('/deconnexion', name: 'app_logout')]
     public function logout(): void
     {
-
-        throw new \LogicException(
-            'Cette méthode doit être interceptée par le firewall. ' .
-            'Vérifiez votre configuration security.yaml (section logout).'
-        );
+        throw new \LogicException('Cette méthode doit être interceptée par le firewall. Vérifiez votre configuration security.yaml (section logout).');
     }
 }

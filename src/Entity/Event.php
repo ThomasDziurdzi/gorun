@@ -84,7 +84,7 @@ class Event
     {
         $this->creationDate = new \DateTimeImmutable();
         $this->status = EventStatus::DRAFT;
-         $this->requiredLevel = RunningLevel::ALL_LEVELS;
+        $this->requiredLevel = RunningLevel::ALL_LEVELS;
         $this->registrations = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->notifications = new ArrayCollection();
