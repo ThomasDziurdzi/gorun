@@ -3,10 +3,8 @@
 namespace App\Form;
 
 use App\Entity\Event;
-use App\Entity\Location;
 use App\Enum\EventStatus;
 use App\Enum\RunningLevel;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -22,80 +20,83 @@ use Symfony\Component\Validator\Constraints\Positive;
 
 class EventType extends AbstractType
 {
+
+     private const BASE_INPUT_CLASS = 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500';
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('title', TextType::class, [
                 'label' => 'Titre de l\'événement',
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
-                    'placeholder' => 'Ex: Sortie 10km - Forêt de la Robertsau'
+                    'class' => self::BASE_INPUT_CLASS,
+                    'placeholder' => 'Ex: Sortie 10km - Forêt de la Robertsau',
                 ],
                 'constraints' => [
-                    new NotBlank(['message' => 'Le titre est obligatoire']),
-                ]
+                     new NotBlank(message: 'Le titre est obligatoire'),
+                ],
             ])
 
             ->add('description', TextareaType::class, [
                 'label' => 'Description',
                 'required' => false,
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
+                    'class' => self::BASE_INPUT_CLASS,
                     'rows' => 5,
-                    'placeholder' => 'Décrivez l\'événement, le parcours, l\'ambiance...'
-                ]
+                    'placeholder' => 'Décrivez l\'événement, le parcours, l\'ambiance...',
+                ],
             ])
 
             ->add('eventDate', DateTimeType::class, [
                 'label' => 'Date et heure',
                 'widget' => 'single_text',
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500'
+                    'class' => self::BASE_INPUT_CLASS,
                 ],
                 'constraints' => [
-                    new NotBlank(['message' => 'La date est obligatoire']),
-                    new GreaterThan([
-                        'value' => 'now',
-                        'message' => 'La date doit être dans le futur'
-                    ])
-                ]
+                    new NotBlank(message: 'La date est obligatoire'),
+                    new GreaterThan(
+                        value: 'now',
+                        message: 'La date doit être dans le futur'
+                    ),
+                ],
             ])
 
             ->add('estimateDuration', IntegerType::class, [
                 'label' => 'Durée estimée (minutes)',
                 'required' => false,
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
-                    'placeholder' => '60'
+                    'class' => self::BASE_INPUT_CLASS,
+                    'placeholder' => '60',
                 ],
                 'constraints' => [
-                    new Positive(['message' => 'La durée doit être positive'])
-                ]
+                    new Positive(message: 'La durée doit être positive'),
+                ],
             ])
 
             ->add('distance', NumberType::class, [
                 'label' => 'Distance (km)',
                 'required' => false,
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
+                    'class' => self::BASE_INPUT_CLASS,
                     'placeholder' => '10.0',
-                    'step' => '0.1'
+                    'step' => '0.1',
                 ],
                 'constraints' => [
-                    new Positive(['message' => 'La distance doit être positive'])
-                ]
+                    new Positive(message: 'La distance doit être positive'),
+                ],
             ])
 
             ->add('maxParticipants', IntegerType::class, [
                 'label' => 'Nombre maximum de participants',
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
-                    'placeholder' => '20'
+                    'class' => self::BASE_INPUT_CLASS,
+                    'placeholder' => '20',
                 ],
                 'constraints' => [
-                    new NotBlank(['message' => 'Le nombre de participants est obligatoire']),
-                    new Positive(['message' => 'Doit être un nombre positif'])
-                ]
+                    new NotBlank(message: 'Le nombre de participants est obligatoire'),
+                    new Positive(message: 'Doit être un nombre positif'),
+                ],
             ])
 
             ->add('requiredLevel', ChoiceType::class, [
@@ -111,17 +112,17 @@ class EventType extends AbstractType
                 'data' => RunningLevel::ALL_LEVELS,
                 'placeholder' => false,
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500'
-                ]
+                    'class' => self::BASE_INPUT_CLASS,
+                ],
             ])
 
             ->add('pace', TextType::class, [
                 'label' => 'Allure prévue',
                 'required' => false,
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
-                    'placeholder' => 'Ex: 5\'30/km'
-                ]
+                    'class' => self::BASE_INPUT_CLASS,
+                    'placeholder' => 'Ex: 5\'30/km',
+                ],
             ])
 
             ->add('location', LocationType::class, [
@@ -137,8 +138,8 @@ class EventType extends AbstractType
                     'Terminé' => EventStatus::COMPLETED,
                 ],
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500'
-                ]
+                    'class' => self::BASE_INPUT_CLASS,
+                ],
             ])
         ;
     }

@@ -12,20 +12,18 @@ use Symfony\Component\Security\Http\Authorization\AccessDeniedHandlerInterface;
 class AccessDeniedHandler implements AccessDeniedHandlerInterface
 {
     public function __construct(
-        private UrlGeneratorInterface $urlGenerator
+        private UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
     public function handle(Request $request, AccessDeniedException $accessDeniedException): ?Response
     {
-        $request->getSession()->getFlashBag()->add(
-            'error',
-            'Vous n\'avez pas les droits pour accéder à cette page.'
+        // Stocker le message dans la session manuellement
+        $session = $request->getSession();
+        $session->set('_security.access_denied_message', 'Vous n\'avez pas les droits pour accéder à cette page.');
+
+        return new RedirectResponse(
+            $this->urlGenerator->generate('event_index')
         );
-
-    return new RedirectResponse(
-        $this->urlGenerator->generate('event_index')
-    );
-
     }
 }

@@ -18,7 +18,7 @@ final class VersionXXXXXXXX extends AbstractMigration
     {
         // Modifier la colonne pour être un simple VARCHAR
         $this->addSql('ALTER TABLE event MODIFY required_level VARCHAR(20) NOT NULL');
-        
+
         // Si vous avez des données existantes, nettoyer les valeurs invalides
         $this->addSql("UPDATE event SET required_level = 'ALL_LEVELS' WHERE required_level NOT IN ('ALL_LEVELS', 'BEGINNER', 'INTERMEDIATE', 'ADVANCED')");
     }

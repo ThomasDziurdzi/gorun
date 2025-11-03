@@ -7,28 +7,28 @@ enum RegistrationStatus: string
     case PENDING = 'PENDING';
     case CONFIRMED = 'CONFIRMED';
     case CANCELLED = 'CANCELLED';
-    
+
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::PENDING => 'En attente',
             self::CONFIRMED => 'Confirmée',
             self::CANCELLED => 'Annulée',
         };
     }
-    
+
     public function badgeClass(): string
     {
-        return match($this) {
+        return match ($this) {
             self::PENDING => 'badge-warning',
             self::CONFIRMED => 'badge-success',
             self::CANCELLED => 'badge-secondary',
         };
     }
-    
+
     public function icon(): string
     {
-        return match($this) {
+        return match ($this) {
             self::PENDING => '⏳',
             self::CONFIRMED => '✅',
             self::CANCELLED => '❌',

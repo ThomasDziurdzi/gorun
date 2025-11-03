@@ -119,16 +119,16 @@ class Registration
 
     public function isConfirmed(): bool
     {
-        return $this->status === RegistrationStatus::CONFIRMED;
+        return RegistrationStatus::CONFIRMED === $this->status;
     }
 
     public function isCancelled(): bool
     {
-        return $this->status === RegistrationStatus::CANCELLED;
+        return RegistrationStatus::CANCELLED === $this->status;
     }
 
     public function isPending(): bool
     {
-        return $this->status === RegistrationStatus::PENDING;
+        return RegistrationStatus::PENDING === $this->status;
     }
 }

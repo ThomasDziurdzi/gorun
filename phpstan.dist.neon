@@ -1,0 +1,14 @@
+parameters:
+    level: 5
+    paths:
+        - src/
+        - tests/
+    excludePaths:
+        - src/Kernel.php
+        - src/DataFixtures/
+    tmpDir: var/cache/phpstan
+    ignoreErrors:
+        # Doctrine auto-increment IDs (false positive)
+        - '#Property App\\Entity\\.*::\$id \(int\|null\) is never assigned int#'
+        # Bootstrap Symfony check (generated code)
+        - '#Call to function method_exists\(\) .* will always evaluate to true#'

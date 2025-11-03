@@ -8,7 +8,7 @@ enum EventStatus: string
     case PUBLISHED = 'PUBLISHED';
     case CANCELLED = 'CANCELLED';
     case COMPLETED = 'COMPLETED';
-    
+
     public function label(): string
     {
         return match ($this) {

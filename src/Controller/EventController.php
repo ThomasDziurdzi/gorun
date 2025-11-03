@@ -22,7 +22,7 @@ class EventController extends AbstractController
         $events = $em->getRepository(Event::class)->findAll();
 
         return $this->render('event/index.html.twig', [
-            'events' => $events
+            'events' => $events,
         ]);
     }
 
@@ -33,8 +33,11 @@ class EventController extends AbstractController
         $event = new Event();
         $location = new Location();
 
-        $event->setOrganizer($this->getUser());
-        $location->setCreatedBy($this->getUser());
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        $event->setOrganizer($user);
+        $location->setCreatedBy($user);
 
         $event->setLocation($location);
 
@@ -60,7 +63,7 @@ class EventController extends AbstractController
     public function show(Event $event): Response
     {
         return $this->render('event/show.html.twig', [
-            'e' => $event
+            'e' => $event,
         ]);
     }
 
@@ -96,8 +99,7 @@ class EventController extends AbstractController
     #[IsGranted('ROLE_ADMIN', message: 'Seuls les administrateurs peuvent supprimer des évènements.')]
     public function delete(Event $event, Request $request, EntityManagerInterface $em): Response
     {
-        if ($this->isCsrfTokenValid('delete' . $event->getId(), $request->request->get('_token'))) {
-
+        if ($this->isCsrfTokenValid('delete'.$event->getId(), $request->request->get('_token'))) {
             $registrations = $event->getRegistrations();
             foreach ($registrations as $registration) {
                 $em->remove($registration);
@@ -112,7 +114,7 @@ class EventController extends AbstractController
             foreach ($notifications as $notification) {
                 $em->remove($notification);
             }
-            
+
             $em->remove($event);
             $em->flush();
 
@@ -122,29 +124,30 @@ class EventController extends AbstractController
         }
 
         return $this->redirectToRoute('event_index');
-    }   
-
+    }
 
     #[Route('/evenement/{id}/inscription', name: 'event_register', methods: ['POST'])]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function register(Event $event, Request $request, EntityManagerInterface $em): Response
     {
-
-        if (!$this->isCsrfTokenValid('register' . $event->getId(), $request->request->get('_token'))) {
+        if (!$this->isCsrfTokenValid('register'.$event->getId(), $request->request->get('_token'))) {
             $this->addFlash('error', 'Token de sécurité invalide.');
+
             return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
         }
 
+        /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
         $existingRegistration = $em->getRepository(Registration::class)->findOneBy([
             'user' => $user,
             'event' => $event,
-            'status' => RegistrationStatus::CONFIRMED
+            'status' => RegistrationStatus::CONFIRMED,
         ]);
 
         if ($existingRegistration) {
             $this->addFlash('warning', 'Vous êtes déjà inscrit à cet évènement.');
+
             return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
         }
 
@@ -169,9 +172,10 @@ class EventController extends AbstractController
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function unregister(Event $event, Request $request, EntityManagerInterface $em): Response
     {
-        if (!$this->isCsrfTokenValid('unregister' . $event->getId(), $request->request->get('_token'))) {
-           $this->addFlash('error', 'Token de sécurité invalide.');
-           return $this->redirectToRoute('event_show', ['id' => $event->getId()]); 
+        if (!$this->isCsrfTokenValid('unregister'.$event->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token de sécurité invalide.');
+
+            return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
         }
 
         $user = $this->getUser();
@@ -179,11 +183,12 @@ class EventController extends AbstractController
         $registration = $em->getRepository(Registration::class)->findOneBy([
             'user' => $user,
             'event' => $event,
-            'status' => RegistrationStatus::CONFIRMED
+            'status' => RegistrationStatus::CONFIRMED,
         ]);
 
         if (!$registration) {
             $this->addFlash('warning', 'Vous n\'êtes pas inscrit à un évènement.');
+
             return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
         }
 

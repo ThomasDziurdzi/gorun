@@ -17,7 +17,7 @@ class RegistrationController extends AbstractController
     public function register(
         Request $request,
         UserPasswordHasherInterface $passwordHasher,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
     ): Response {
         if ($this->getUser()) {
             return $this->redirectToRoute('event_index');
@@ -30,13 +30,13 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $existingUser = $em->getRepository(User::class)->findOneBy([
-                'email' => $user->getEmail()
+                'email' => $user->getEmail(),
             ]);
 
             if ($existingUser) {
                 $this->addFlash('error', 'Un compte existe déjà avec cet email.');
+
                 return $this->redirectToRoute('app_register');
             }
 
@@ -57,7 +57,7 @@ class RegistrationController extends AbstractController
         }
 
         return $this->render('registration/register.html.twig', [
-            'registrationForm'  => $form->createView(),
+            'registrationForm' => $form->createView(),
         ]);
     }
 }
