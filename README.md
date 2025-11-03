@@ -1,5 +1,7 @@
 #  GoRun - Plateforme de running collaboratif
 
+![CI Pipeline](https://github.com/ThomasDziurdzi/gorun/actions/workflows/ci.yml/badge.svg)
+
 Application web permettant aux coureurs de créer, découvrir et s'inscrire à des événements de course à pied.
 
 ##  Projet
