@@ -20,17 +20,20 @@ use Symfony\Component\Validator\Constraints\Positive;
 
 class EventType extends AbstractType
 {
+
+     private const BASE_INPUT_CLASS = 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500';
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('title', TextType::class, [
                 'label' => 'Titre de l\'événement',
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
+                    'class' => self::BASE_INPUT_CLASS,
                     'placeholder' => 'Ex: Sortie 10km - Forêt de la Robertsau',
                 ],
                 'constraints' => [
-                    new NotBlank(['message' => 'Le titre est obligatoire']),
+                     new NotBlank(message: 'Le titre est obligatoire'),
                 ],
             ])
 
@@ -38,7 +41,7 @@ class EventType extends AbstractType
                 'label' => 'Description',
                 'required' => false,
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
+                    'class' => self::BASE_INPUT_CLASS,
                     'rows' => 5,
                     'placeholder' => 'Décrivez l\'événement, le parcours, l\'ambiance...',
                 ],
@@ -48,14 +51,14 @@ class EventType extends AbstractType
                 'label' => 'Date et heure',
                 'widget' => 'single_text',
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
+                    'class' => self::BASE_INPUT_CLASS,
                 ],
                 'constraints' => [
-                    new NotBlank(['message' => 'La date est obligatoire']),
-                    new GreaterThan([
-                        'value' => 'now',
-                        'message' => 'La date doit être dans le futur',
-                    ]),
+                    new NotBlank(message: 'La date est obligatoire'),
+                    new GreaterThan(
+                        value: 'now',
+                        message: 'La date doit être dans le futur'
+                    ),
                 ],
             ])
 
@@ -63,11 +66,11 @@ class EventType extends AbstractType
                 'label' => 'Durée estimée (minutes)',
                 'required' => false,
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
+                    'class' => self::BASE_INPUT_CLASS,
                     'placeholder' => '60',
                 ],
                 'constraints' => [
-                    new Positive(['message' => 'La durée doit être positive']),
+                    new Positive(message: 'La durée doit être positive'),
                 ],
             ])
 
@@ -75,24 +78,24 @@ class EventType extends AbstractType
                 'label' => 'Distance (km)',
                 'required' => false,
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
+                    'class' => self::BASE_INPUT_CLASS,
                     'placeholder' => '10.0',
                     'step' => '0.1',
                 ],
                 'constraints' => [
-                    new Positive(['message' => 'La distance doit être positive']),
+                    new Positive(message: 'La distance doit être positive'),
                 ],
             ])
 
             ->add('maxParticipants', IntegerType::class, [
                 'label' => 'Nombre maximum de participants',
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
+                    'class' => self::BASE_INPUT_CLASS,
                     'placeholder' => '20',
                 ],
                 'constraints' => [
-                    new NotBlank(['message' => 'Le nombre de participants est obligatoire']),
-                    new Positive(['message' => 'Doit être un nombre positif']),
+                    new NotBlank(message: 'Le nombre de participants est obligatoire'),
+                    new Positive(message: 'Doit être un nombre positif'),
                 ],
             ])
 
@@ -109,7 +112,7 @@ class EventType extends AbstractType
                 'data' => RunningLevel::ALL_LEVELS,
                 'placeholder' => false,
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
+                    'class' => self::BASE_INPUT_CLASS,
                 ],
             ])
 
@@ -117,7 +120,7 @@ class EventType extends AbstractType
                 'label' => 'Allure prévue',
                 'required' => false,
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
+                    'class' => self::BASE_INPUT_CLASS,
                     'placeholder' => 'Ex: 5\'30/km',
                 ],
             ])
@@ -135,7 +138,7 @@ class EventType extends AbstractType
                     'Terminé' => EventStatus::COMPLETED,
                 ],
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
+                    'class' => self::BASE_INPUT_CLASS,
                 ],
             ])
         ;

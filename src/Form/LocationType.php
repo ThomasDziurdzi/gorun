@@ -13,29 +13,31 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class LocationType extends AbstractType
 {
+    private const BASE_INPUT_CLASS = 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500';
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('locationName', TextType::class, [
                 'label' => 'Nom du lieu',
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
+                    'class' => self::BASE_INPUT_CLASS,
                     'placeholder' => 'Ex: Parc de l\'Orangerie',
                 ],
                 'constraints' => [
-                    new NotBlank(['message' => 'Le nom du lieu est obligatoire']),
+                    new NotBlank(message: 'Le nom du lieu est obligatoire'),
                 ],
             ])
 
             ->add('address', TextType::class, [
                 'label' => 'Adresse',
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
+                    'class' => self::BASE_INPUT_CLASS,
                     'placeholder' => 'Avenue de l\'Europe',
                     'id' => 'location_address',
                 ],
                 'constraints' => [
-                    new NotBlank(['message' => 'L\'adresse est obligatoire']),
+                    new NotBlank(message: 'L\'adresse est obligatoire'),
                 ],
             ])
 
@@ -43,7 +45,7 @@ class LocationType extends AbstractType
                 'label' => 'Code postal',
                 'required' => false,
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
+                    'class' => self::BASE_INPUT_CLASS,
                     'placeholder' => '67000',
                 ],
             ])
@@ -51,11 +53,11 @@ class LocationType extends AbstractType
             ->add('city', TextType::class, [
                 'label' => 'Ville',
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
+                    'class' => self::BASE_INPUT_CLASS,
                     'placeholder' => 'Strasbourg',
                 ],
                 'constraints' => [
-                    new NotBlank(['message' => 'La ville est obligatoire']),
+                    new NotBlank(message: 'La ville est obligatoire'),
                 ],
             ])
 
@@ -64,21 +66,21 @@ class LocationType extends AbstractType
                 'required' => false,
                 'data' => 'France',
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
+                    'class' => self::BASE_INPUT_CLASS,
                 ],
             ])
 
             ->add('latitude', HiddenType::class, [
                 'attr' => ['id' => 'location_latitude'],
                 'constraints' => [
-                    new NotBlank(['message' => 'Veuillez placer un point sur la carte']),
+                    new NotBlank(message: 'Veuillez placer un point sur la carte'),
                 ],
             ])
 
             ->add('longitude', HiddenType::class, [
                 'attr' => ['id' => 'location_longitude'],
                 'constraints' => [
-                    new NotBlank(['message' => 'Veuillez placer un point sur la carte']),
+                    new NotBlank(message: 'Veuillez placer un point sur la carte'),
                 ],
             ])
 
@@ -86,7 +88,7 @@ class LocationType extends AbstractType
                 'label' => 'Point de RDV précis',
                 'required' => false,
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
+                    'class' => self::BASE_INPUT_CLASS,
                     'placeholder' => 'Ex: Devant la fontaine',
                 ],
             ])
@@ -95,7 +97,7 @@ class LocationType extends AbstractType
                 'label' => 'Description du lieu',
                 'required' => false,
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
+                    'class' => self::BASE_INPUT_CLASS,
                     'rows' => 3,
                     'placeholder' => 'Indications complémentaires...',
                 ],
