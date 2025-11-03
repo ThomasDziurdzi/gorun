@@ -1,4 +1,6 @@
 {
+    "name": "thomasdziurdzi/gorun",
+    "description": "Plateforme collaborative de running - Projet CDA",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",
