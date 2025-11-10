@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Comment;
 use App\Entity\Event;
 use App\Entity\Location;
 use App\Entity\Registration;
 use App\Enum\RegistrationStatus;
+use App\Form\CommentType;
 use App\Form\EventType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -60,10 +62,22 @@ class EventController extends AbstractController
     }
 
     #[Route('/evenement/{id}', name: 'event_show')]
-    public function show(Event $event): Response
+    public function show(Event $event, Request $request, EntityManagerInterface $em): Response
     {
+        $comments = $em->getRepository(Comment::class)->findBy(
+            ['event' => $event],
+            ['publicationDate' => 'DESC']
+        );
+
+        $comment = new Comment();
+        $commentForm = $this->createForm(CommentType::class, $comment);
+
+        $commentForm->handleRequest($request);
+
         return $this->render('event/show.html.twig', [
             'e' => $event,
+            'comments' => $comments,
+            'commentForm' => $commentForm,
         ]);
     }
 

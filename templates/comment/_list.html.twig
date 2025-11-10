@@ -1,0 +1,63 @@
+<div class="space-y-4">
+    {% if comments is empty %}
+        <p class="text-gray-500 italic">Aucun commentaire pour le moment. Soyez le premier à commenter !</p>
+    {% else %}
+        {% for comment in comments %}
+            <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                {# En-tête du commentaire #}
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                            {{ comment.author.firstname|first }}{{ comment.author.lastname|first }}
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-800">
+                                {{ comment.author.firstname }} {{ comment.author.lastname }}
+                            </p>
+                            <p class="text-sm text-gray-500">
+                                {{ comment.publicationDate|date('d/m/Y à H:i') }}
+                                {% if comment.updatedDate %}
+                                    <span class="italic">(modifié le {{ comment.updatedDate|date('d/m/Y') }})</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    {% if comment.rating %}
+                        <div class="flex items-center gap-1 text-yellow-500">
+                            {% for i in 1..comment.rating %}
+                                ⭐
+                            {% endfor %}
+                            <span class="text-sm text-gray-600 ml-1">{{ comment.rating }}/5</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <p class="text-gray-700 whitespace-pre-line">{{ comment.content }}</p>
+                </div>
+
+                {% if app.user and (comment.author == app.user or is_granted('ROLE_ADMIN')) %}
+                    <div class="flex gap-3 pt-3 border-t border-gray-100">
+                        {% if comment.author == app.user %}
+                            <a href="{{ path('comment_edit', {id: comment.id}) }}" 
+                               class="text-sm text-blue-600 hover:text-blue-800">
+                                ✏️ Modifier
+                            </a>
+                        {% endif %}
+
+                        <form method="post" 
+                              action="{{ path('comment_delete', {id: comment.id}) }}" 
+                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');"
+                              class="inline">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ comment.id) }}">
+                            <button type="submit" class="text-sm text-red-600 hover:text-red-800">
+                                🗑️ Supprimer
+                            </button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>

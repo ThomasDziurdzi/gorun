@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le commentaire{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8 max-w-2xl">
+    <h1 class="text-3xl font-bold mb-6">Modifier le commentaire</h1>
+
+    {{ form_start(form, {'attr': {'class': 'space-y-4'}}) }}
+        {{ form_row(form.content) }}
+        {{ form_row(form.rating) }}
+
+        <div class="flex gap-4">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg">
+                Enregistrer
+            </button>
+            <a href="{{ path('event_show', {id: comment.event.id}) }}" 
+               class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded-lg inline-block">
+                Annuler
+            </a>
+        </div>
+    {{ form_end(form) }}
+</div>
+{% endblock %}
