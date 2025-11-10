@@ -25,15 +25,15 @@ class CommentType extends AbstractType
                     'class' => 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
                 ],
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Le commentaire ne peut pas être vide.',
-                    ]),
-                    new Length([
-                        'min' => 2,
-                        'max' => 10,
-                        'minMessage' => 'Votre commentaire doit contenir au moins {{ limit }} caractères.',
-                        'maxMessage' => 'Votre commentaire ne peut pas dépasser {{ limit }} caractères.',
-                    ]),
+                    new NotBlank(
+                        message: 'Le commentaire ne peut pas être vide.',
+                    ),
+                    new Length(
+                        min: 2,
+                        max: 10,
+                        minMessage: 'Votre commentaire doit contenir au moins {{ limit }} caractères.',
+                        maxMessage: 'Votre commentaire ne peut pas dépasser {{ limit }} caractères.',
+                    ),
                 ],
             ])
             ->add('rating', ChoiceType::class, [
@@ -51,10 +51,10 @@ class CommentType extends AbstractType
                     'class' => 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500',
                 ],
                 'constraints' => [
-                    new Range([
-                        'min' => 1,
-                        'max' => 5,
-                    ]),
+                    new Range(
+                        min: 1,
+                        max: 5,
+                    ),
                 ],
             ])
         ;
