@@ -29,8 +29,8 @@ class CommentType extends AbstractType
                         message: 'Le commentaire ne peut pas être vide.',
                     ),
                     new Length(
-                        min: 2,
-                        max: 10,
+                        min: 1,
+                        max: 1000,
                         minMessage: 'Votre commentaire doit contenir au moins {{ limit }} caractères.',
                         maxMessage: 'Votre commentaire ne peut pas dépasser {{ limit }} caractères.',
                     ),
