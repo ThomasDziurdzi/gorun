@@ -94,41 +94,24 @@
         Coordonnées : {{ e.location.latitude }}, {{ e.location.longitude }}
       </p>
     </div>
+  </article>
 
-    {% if e.comments is not empty %}
+  <div class="lg:col-span-2">
     <div class="bg-white rounded-2xl shadow p-6 mt-6">
-      <h2 class="text-xl font-bold mb-4">Commentaires ({{ e.comments|length }})</h2>
-      <div class="space-y-4">
-        {% for comment in e.comments %}
-          <div class="border-b pb-4 last:border-b-0">
-            <div class="flex items-start gap-3">
-              <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center font-bold text-green-700 shrink-0">
-                {{ comment.author.firstname|first }}{{ comment.author.lastname|first }}
-              </div>
-              <div class="flex-1">
-                <div class="flex items-center justify-between mb-1">
-                  <p class="font-semibold">{{ comment.author.firstname }} {{ comment.author.lastname|first }}.</p>
-                  <p class="text-xs text-gray-500">{{ comment.publicationDate|date('d/m/Y à H:i') }}</p>
-                </div>
-                {% if comment.rating %}
-                  <div class="flex items-center gap-1 mb-2">
-                    {% for i in 1..5 %}
-                      <span class="{% if i <= comment.rating %}text-yellow-500{% else %}text-gray-300{% endif %}">★</span>
-                    {% endfor %}
-                  </div>
-                {% endif %}
-                <p class="text-gray-700 text-sm">{{ comment.content }}</p>
-                {% if comment.updatedDate %}
-                  <p class="text-xs text-gray-400 mt-1">Modifié le {{ comment.updatedDate|date('d/m/Y') }}</p>
-                {% endif %}
-              </div>
-            </div>
-          </div>
-        {% endfor %}
+      <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+       Commentaires 
+        <span class="text-lg text-gray-500">({{ comments|length }})</span>
+      </h2>
+      <div class="space-y-8">
+        {% include 'comment/_form.html.twig' with {'event': e, 'commentForm': commentForm} %}
+        <div>
+          <h3 class="text-xl font-semibold mb-4">Tous les commentaires</h3>
+          {% include 'comment/_list.html.twig' with {'comments': comments} %}
+        </div>
       </div>
     </div>
-    {% endif %}
-  </article>
+  </div>
+
 
   <aside class="lg:col-span-1 space-y-6">
    <div class="bg-white rounded-2xl shadow p-6">

@@ -20,8 +20,7 @@ use Symfony\Component\Validator\Constraints\Positive;
 
 class EventType extends AbstractType
 {
-
-     private const BASE_INPUT_CLASS = 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500';
+    private const BASE_INPUT_CLASS = 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500';
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -33,7 +32,7 @@ class EventType extends AbstractType
                     'placeholder' => 'Ex: Sortie 10km - Forêt de la Robertsau',
                 ],
                 'constraints' => [
-                     new NotBlank(message: 'Le titre est obligatoire'),
+                    new NotBlank(message: 'Le titre est obligatoire'),
                 ],
             ])
 
