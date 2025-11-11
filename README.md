@@ -1,6 +1,8 @@
 #  GoRun - Plateforme de running collaboratif
 
 ![CI Pipeline](https://github.com/ThomasDziurdzi/gorun/actions/workflows/ci.yml/badge.svg)
+![PHP Version](https://img.shields.io/badge/PHP-8.2%2B-blue)
+![Symfony Version](https://img.shields.io/badge/Symfony-7.3-black)
 
 Application web permettant aux coureurs de créer, découvrir et s'inscrire à des événements de course à pied.
 
@@ -49,6 +51,9 @@ php bin/console doctrine:schema:update --force
 # Charger les données de test (optionnel)
 php bin/console doctrine:fixtures:load
 
+# Générer le secret Symfony
+php bin/console secrets:generate-keys
+
 # Lancer le serveur
 symfony serve
 # ou
@@ -69,6 +74,18 @@ php -S localhost:8000 -t public
 # Tests avec détails
 ./vendor/bin/phpunit --testdox
 ```
+
+## Comptes de test
+
+### Administrateur
+- **Email** : `admin@test.com`
+- **Mot de passe** : `password`
+- **Rôle** : ROLE_ADMIN (peut créer/modifier/supprimer événements)
+
+### Utilisateur standard
+- **Email** : Voir les fixtures (20 utilisateurs générés)
+- **Mot de passe** : `password`
+- **Rôle** : ROLE_USER
 
 
 ## Structure du projet
