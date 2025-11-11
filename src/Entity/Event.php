@@ -9,8 +9,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
+#[Vich\Uploadable]
 class Event
 {
     #[ORM\Id]
@@ -44,6 +48,14 @@ class Event
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $coverImage = null;
+
+    #[Assert\File(
+        maxSize: '2M',
+        mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+        mimeTypesMessage: 'Veuillez uploader une image valide (JPG, PNG ou WEBP)'
+    )]
+    #[Vich\UploadableField(mapping: 'event_images', fileNameProperty: 'coverImage')]
+    private ?File $imageFile = null;
 
     #[ORM\Column(length: 20, enumType: EventStatus::class)]
     private ?EventStatus $status = null;
@@ -283,10 +295,11 @@ class Event
 
     public function removeRegistration(Registration $registration): static
     {
-        if ($this->registrations->removeElement($registration)) {
-            if ($registration->getEvent() === $this) {
-                $registration->setEvent(null);
-            }
+        if (
+            $this->registrations->removeElement($registration)
+            && $registration->getEvent() === $this
+        ) {
+            $registration->setEvent(null);
         }
 
         return $this;
@@ -312,10 +325,11 @@ class Event
 
     public function removeComment(Comment $comment): static
     {
-        if ($this->comments->removeElement($comment)) {
-            if ($comment->getEvent() === $this) {
-                $comment->setEvent(null);
-            }
+        if (
+            $this->comments->removeElement($comment)
+            && $comment->getEvent() === $this
+        ) {
+            $comment->setEvent(null);
         }
 
         return $this;
@@ -341,12 +355,27 @@ class Event
 
     public function removeNotification(Notification $notification): static
     {
-        if ($this->notifications->removeElement($notification)) {
-            if ($notification->getEvent() === $this) {
-                $notification->setEvent(null);
-            }
+        if (
+            $this->notifications->removeElement($notification)
+            && $notification->getEvent() === $this
+        ) {
+            $notification->setEvent(null);
         }
 
         return $this;
+    }
+
+    public function setImageFile(?File $imageFile = null): void
+    {
+        $this->imageFile = $imageFile;
+
+        if (null !== $imageFile) {
+            $this->updatedDate = new \DateTimeImmutable();
+        }
+    }
+
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
     }
 }

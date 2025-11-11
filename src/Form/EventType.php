@@ -17,6 +17,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Positive;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class EventType extends AbstractType
 {
@@ -83,6 +84,22 @@ class EventType extends AbstractType
                 ],
                 'constraints' => [
                     new Positive(message: 'La distance doit être positive'),
+                ],
+            ])
+
+            ->add('imageFile', VichImageType::class, [
+                'required' => false,
+                'allow_delete' => true,
+                'delete_label' => 'Supprimer l\'image',
+                'download_uri' => false,
+                'label' => 'Image de couverture',
+                'help' => 'Formats acceptés : JPG, PNG, WEBP. Taille max : 2 MB',
+                'help_attr' => [
+                    'class' => 'text-xs text-gray-500 mt-1',
+                ],
+                'attr' => [
+                    'accept' => 'image/jpeg,image/png',
+                    'class' => 'block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none',
                 ],
             ])
 
