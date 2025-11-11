@@ -30,3 +30,6 @@ phpstan.neon
 /.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
 
+###> vich/uploader-bundle ###
+/public/uploads/
+###< vich/uploader-bundle ###

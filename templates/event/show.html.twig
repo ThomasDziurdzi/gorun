@@ -6,7 +6,7 @@
 {% set spotsLeft = e.maxParticipants - confirmedCount %}
 
 <section class="relative rounded-2xl overflow-hidden">
-  <img src="{{ e.coverImage ?: 'https://images.unsplash.com/photo-1520975922284-9f8a3551c2f0?q=80&w=1200&auto=format&fit=crop' }}" alt="{{ e.title }}" class="h-72 w-full object-cover" />
+  <img src="{{ e.coverImage ? vich_uploader_asset(e, 'imageFile') : 'https://images.unsplash.com/photo-1520975922284-9f8a3551c2f0?q=80&w=1200&auto=format&fit=crop' }}" alt="{{ e.title }}" class="h-72 w-full object-cover" />
   <div class="absolute inset-0 bg-black/40"></div>
   <div class="absolute inset-0 flex items-end">
     <div class="max-w-6xl mx-auto px-4 md:px-6 pb-6">

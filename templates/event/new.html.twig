@@ -1,195 +1,223 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Créer une sortie running · GoRun{% endblock %}
+{% block title %}Créer une sortie running · GoRun
+{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 {% endblock %}
 
 {% block body %}
-<section class="max-w-5xl mx-auto">
-  <div class="flex items-center justify-between mb-6">
-    <h1 class="text-2xl md:text-3xl font-bold">Créer une sortie running</h1>
-    <a href="{{ path('event_index') }}" class="text-gray-600 hover:text-gray-900 text-sm">
-      ← Retour à la liste
-    </a>
-  </div>
+	<section class="max-w-5xl mx-auto">
+		<div class="flex items-center justify-between mb-6">
+			<h1 class="text-2xl md:text-3xl font-bold">Créer une sortie running</h1>
+			<a href="{{ path('event_index') }}" class="text-gray-600 hover:text-gray-900 text-sm">
+				← Retour à la liste
+			</a>
+		</div>
 
-  <div class="bg-white rounded-2xl shadow p-5 md:p-8">
-    {{ form_start(eventForm, {'attr': {'id': 'event-form', 'class': 'grid grid-cols-1 md:grid-cols-12 gap-5'}}) }}
-      
-      <div class="md:col-span-8 space-y-5">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="md:col-span-2">
-            {{ form_label(eventForm.title, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
-            {{ form_widget(eventForm.title) }}
-            {{ form_errors(eventForm.title) }}
-          </div>
-          <div>
-            {{ form_label(eventForm.requiredLevel, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
-            {{ form_widget(eventForm.requiredLevel) }}
-            {{ form_errors(eventForm.requiredLevel) }}
-          </div>
-        </div>
+		<div class="bg-white rounded-2xl shadow p-5 md:p-8">
+			{{ form_start(eventForm, {'attr': {'id': 'event-form', 'class': 'grid grid-cols-1 md:grid-cols-12 gap-5'}}) }}
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            {{ form_label(eventForm.eventDate, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
-            {{ form_widget(eventForm.eventDate) }}
-            {{ form_errors(eventForm.eventDate) }}
-          </div>
-          <div>
-            {{ form_label(eventForm.estimateDuration, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
-            {{ form_widget(eventForm.estimateDuration) }}
-            {{ form_errors(eventForm.estimateDuration) }}
-          </div>
-          <div>
-            {{ form_label(eventForm.distance, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
-            {{ form_widget(eventForm.distance) }}
-            {{ form_errors(eventForm.distance) }}
-          </div>
-        </div>
+			<div class="md:col-span-8 space-y-5">
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+					<div class="md:col-span-2">
+						{{ form_label(eventForm.title, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+						{{ form_widget(eventForm.title) }}
+						{{ form_errors(eventForm.title) }}
+					</div>
+					<div>
+						{{ form_label(eventForm.requiredLevel, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+						{{ form_widget(eventForm.requiredLevel) }}
+						{{ form_errors(eventForm.requiredLevel) }}
+					</div>
+				</div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            {{ form_label(eventForm.pace, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
-            {{ form_widget(eventForm.pace) }}
-            {{ form_errors(eventForm.pace) }}
-          </div>
-          <div>
-            {{ form_label(eventForm.maxParticipants, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
-            {{ form_widget(eventForm.maxParticipants) }}
-            {{ form_errors(eventForm.maxParticipants) }}
-          </div>
-        </div>
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+					<div>
+						{{ form_label(eventForm.eventDate, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+						{{ form_widget(eventForm.eventDate) }}
+						{{ form_errors(eventForm.eventDate) }}
+					</div>
+					<div>
+						{{ form_label(eventForm.estimateDuration, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+						{{ form_widget(eventForm.estimateDuration) }}
+						{{ form_errors(eventForm.estimateDuration) }}
+					</div>
+					<div>
+						{{ form_label(eventForm.distance, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+						{{ form_widget(eventForm.distance) }}
+						{{ form_errors(eventForm.distance) }}
+					</div>
+				</div>
 
-        <div>
-          {{ form_label(eventForm.description, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
-          {{ form_widget(eventForm.description) }}
-          {{ form_errors(eventForm.description) }}
-        </div>
+				<div>
+					{{ form_label(eventForm.imageFile, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+					{{ form_widget(eventForm.imageFile) }}
+					{{ form_errors(eventForm.imageFile) }}
+					{{ form_help(eventForm.imageFile) }}
+				</div>
 
-        <div>
-          {{ form_label(eventForm.status, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
-          {{ form_widget(eventForm.status) }}
-          {{ form_errors(eventForm.status) }}
-        </div>
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<div>
+						{{ form_label(eventForm.pace, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+						{{ form_widget(eventForm.pace) }}
+						{{ form_errors(eventForm.pace) }}
+					</div>
+					<div>
+						{{ form_label(eventForm.maxParticipants, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+						{{ form_widget(eventForm.maxParticipants) }}
+						{{ form_errors(eventForm.maxParticipants) }}
+					</div>
+				</div>
 
-        <div class="border-t pt-5 space-y-5">
-          <h2 class="text-xl font-semibold text-gray-800">Lieu de rendez-vous</h2>
-          
-          <div>
-            {{ form_label(eventForm.location.locationName, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
-            {{ form_widget(eventForm.location.locationName) }}
-            {{ form_errors(eventForm.location.locationName) }}
-          </div>
+				<div>
+					{{ form_label(eventForm.description, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+					{{ form_widget(eventForm.description) }}
+					{{ form_errors(eventForm.description) }}
+				</div>
 
-          <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-            <div class="md:col-span-9">
-              {{ form_label(eventForm.location.address, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
-              {{ form_widget(eventForm.location.address) }}
-              <span class="block text-xs text-gray-500 mt-1">
-                Tapez une adresse puis cliquez « Localiser » ou cliquez directement sur la carte pour placer le point de départ.
-              </span>
-              {{ form_errors(eventForm.location.address) }}
-            </div>
-            <div class="md:col-span-3 flex items-end">
-              <button type="button" id="btn-geocode"
-                      class="w-full px-4 py-3 rounded-2xl border font-semibold hover:bg-gray-50">
-                Localiser
-              </button>
-            </div>
-          </div>
+				<div>
+					{{ form_label(eventForm.status, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+					{{ form_widget(eventForm.status) }}
+					{{ form_errors(eventForm.status) }}
+				</div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              {{ form_label(eventForm.location.city, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
-              {{ form_widget(eventForm.location.city) }}
-              {{ form_errors(eventForm.location.city) }}
-            </div>
-            <div>
-              {{ form_label(eventForm.location.postalCode, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
-              {{ form_widget(eventForm.location.postalCode) }}
-              {{ form_errors(eventForm.location.postalCode) }}
-            </div>
-            <div>
-              {{ form_label(eventForm.location.country, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
-              {{ form_widget(eventForm.location.country) }}
-              {{ form_errors(eventForm.location.country) }}
-            </div>
-          </div>
+				<div class="border-t pt-5 space-y-5">
+					<h2 class="text-xl font-semibold text-gray-800">Lieu de rendez-vous</h2>
 
-          <div>
-            <label class="block text-sm font-semibold text-gray-800 mb-2">Positionnement sur la carte</label>
-            <div class="rounded-xl overflow-hidden border border-gray-200">
-              <div id="map" class="h-96 w-full"></div>
-            </div>
-          </div>
+					<div>
+						{{ form_label(eventForm.location.locationName, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+						{{ form_widget(eventForm.location.locationName) }}
+						{{ form_errors(eventForm.location.locationName) }}
+					</div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-semibold text-gray-800 mb-1">Latitude</label>
-              {{ form_widget(eventForm.location.latitude, {'attr': {'readonly': true, 'class': 'w-full px-4 py-3 rounded-2xl border border-gray-200 bg-gray-50 text-gray-700'}}) }}
-              {{ form_errors(eventForm.location.latitude) }}
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-800 mb-1">Longitude</label>
-              {{ form_widget(eventForm.location.longitude, {'attr': {'readonly': true, 'class': 'w-full px-4 py-3 rounded-2xl border border-gray-200 bg-gray-50 text-gray-700'}}) }}
-              {{ form_errors(eventForm.location.longitude) }}
-            </div>
-          </div>
+					<div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+						<div class="md:col-span-9">
+							{{ form_label(eventForm.location.address, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+							{{ form_widget(eventForm.location.address) }}
+							<span class="block text-xs text-gray-500 mt-1">
+								Tapez une adresse puis cliquez « Localiser » ou cliquez directement sur la carte pour placer le point de départ.
+							</span>
+							{{ form_errors(eventForm.location.address) }}
+						</div>
+						<div class="md:col-span-3 flex items-end">
+							<button type="button" id="btn-geocode" class="w-full px-4 py-3 rounded-2xl border font-semibold hover:bg-gray-50">
+								Localiser
+							</button>
+						</div>
+					</div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              {{ form_label(eventForm.location.meetingPoint, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
-              {{ form_widget(eventForm.location.meetingPoint) }}
-              {{ form_errors(eventForm.location.meetingPoint) }}
-            </div>
-            <div>
-              {{ form_label(eventForm.location.description, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
-              {{ form_widget(eventForm.location.description) }}
-              {{ form_errors(eventForm.location.description) }}
-            </div>
-          </div>
-        </div>
-      </div>
+					<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+						<div>
+							{{ form_label(eventForm.location.city, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+							{{ form_widget(eventForm.location.city) }}
+							{{ form_errors(eventForm.location.city) }}
+						</div>
+						<div>
+							{{ form_label(eventForm.location.postalCode, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+							{{ form_widget(eventForm.location.postalCode) }}
+							{{ form_errors(eventForm.location.postalCode) }}
+						</div>
+						<div>
+							{{ form_label(eventForm.location.country, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+							{{ form_widget(eventForm.location.country) }}
+							{{ form_errors(eventForm.location.country) }}
+						</div>
+					</div>
 
-      <aside class="md:col-span-4">
-        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5">
-          <h3 class="font-semibold mb-2">Aperçu</h3>
-          <p class="text-sm text-gray-700"><span class="font-medium">Titre :</span> <span id="preview-title">—</span></p>
-          <p class="text-sm text-gray-700"><span class="font-medium">Date :</span> <span id="preview-date">—</span></p>
-          <p class="text-sm text-gray-700"><span class="font-medium">Durée :</span> <span id="preview-duration">—</span></p>
-          <p class="text-sm text-gray-700"><span class="font-medium">Distance :</span> <span id="preview-distance">—</span></p>
-          <p class="text-sm text-gray-700"><span class="font-medium">Niveau :</span> <span id="preview-level">—</span></p>
-          <p class="text-sm text-gray-700"><span class="font-medium">Lieu :</span> <span id="preview-location">—</span></p>
-          <p class="text-sm text-gray-700"><span class="font-medium">Adresse :</span> <span id="preview-address">—</span></p>
-          <p class="text-sm text-gray-700 mt-2">
-            <span class="font-medium">Coordonnées :</span>
-            <span id="preview-coords">—</span>
-          </p>
-        </div>
+					<div>
+						<label class="block text-sm font-semibold text-gray-800 mb-2">Positionnement sur la carte</label>
+						<div class="rounded-xl overflow-hidden border border-gray-200">
+							<div id="map" class="h-96 w-full"></div>
+						</div>
+					</div>
 
-        <div class="flex gap-3 justify-end mt-5">
-          <a href="{{ path('event_index') }}" class="px-5 py-3 rounded-2xl border font-semibold hover:bg-gray-50">
-            Annuler
-          </a>
-          <button type="submit" class="px-5 py-3 rounded-2xl bg-green-600 text-white font-semibold hover:bg-green-700">
-            Créer l'événement
-          </button>
-        </div>
-      </aside>
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+						<div>
+							<label class="block text-sm font-semibold text-gray-800 mb-1">Latitude</label>
+							{{ form_widget(eventForm.location.latitude, {'attr': {'readonly': true, 'class': 'w-full px-4 py-3 rounded-2xl border border-gray-200 bg-gray-50 text-gray-700'}}) }}
+							{{ form_errors(eventForm.location.latitude) }}
+						</div>
+						<div>
+							<label class="block text-sm font-semibold text-gray-800 mb-1">Longitude</label>
+							{{ form_widget(eventForm.location.longitude, {'attr': {'readonly': true, 'class': 'w-full px-4 py-3 rounded-2xl border border-gray-200 bg-gray-50 text-gray-700'}}) }}
+							{{ form_errors(eventForm.location.longitude) }}
+						</div>
+					</div>
 
-    {{ form_end(eventForm) }}
-  </div>
-</section>
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+						<div>
+							{{ form_label(eventForm.location.meetingPoint, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+							{{ form_widget(eventForm.location.meetingPoint) }}
+							{{ form_errors(eventForm.location.meetingPoint) }}
+						</div>
+						<div>
+							{{ form_label(eventForm.location.description, null, {'label_attr': {'class': 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+							{{ form_widget(eventForm.location.description) }}
+							{{ form_errors(eventForm.location.description) }}
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<aside class="md:col-span-4">
+				<div class="bg-gray-50 border border-gray-200 rounded-2xl p-5">
+					<h3 class="font-semibold mb-2">Aperçu</h3>
+					<p class="text-sm text-gray-700">
+						<span class="font-medium">Titre :</span>
+						<span id="preview-title">—</span>
+					</p>
+					<p class="text-sm text-gray-700">
+						<span class="font-medium">Date :</span>
+						<span id="preview-date">—</span>
+					</p>
+					<p class="text-sm text-gray-700">
+						<span class="font-medium">Durée :</span>
+						<span id="preview-duration">—</span>
+					</p>
+					<p class="text-sm text-gray-700">
+						<span class="font-medium">Distance :</span>
+						<span id="preview-distance">—</span>
+					</p>
+					<p class="text-sm text-gray-700">
+						<span class="font-medium">Niveau :</span>
+						<span id="preview-level">—</span>
+					</p>
+					<p class="text-sm text-gray-700">
+						<span class="font-medium">Lieu :</span>
+						<span id="preview-location">—</span>
+					</p>
+					<p class="text-sm text-gray-700">
+						<span class="font-medium">Adresse :</span>
+						<span id="preview-address">—</span>
+					</p>
+					<p class="text-sm text-gray-700 mt-2">
+						<span class="font-medium">Coordonnées :</span>
+						<span id="preview-coords">—</span>
+					</p>
+				</div>
+
+				<div class="flex gap-3 justify-end mt-5">
+					<a href="{{ path('event_index') }}" class="px-5 py-3 rounded-2xl border font-semibold hover:bg-gray-50">
+						Annuler
+					</a>
+					<button type="submit" class="px-5 py-3 rounded-2xl bg-green-600 text-white font-semibold hover:bg-green-700">
+						Créer l'événement
+					</button>
+				</div>
+			</aside>
+
+			{{ form_end(eventForm) }}
+		</div>
+	</section>
 {% endblock %}
 
 {% block javascripts %}
-    {{ parent() }}
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
-    <script src="{{ asset('js/event_form.js') }}"></script>
+	{{ parent() }}
+	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+	<script src="{{ asset('js/event_form.js') }}"></script>
 {% endblock %}
