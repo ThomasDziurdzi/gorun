@@ -1,29 +1,93 @@
+{# templates/event/index.html.twig #}
 {% extends 'base.html.twig' %}
+
 {% block title %}Événements · GoRun{% endblock %}
+
 {% block body %}
 <section class="px-0 py-6 bg-white border rounded-2xl">
-  <div class="max-w-6xl mx-auto grid gap-4 md:grid-cols-4 p-4">
-    <input placeholder="Rechercher un évènement, une ville…"
-           class="px-4 py-3 rounded-2xl border focus:outline-none focus:ring-2 focus:ring-green-500" />
-    <select class="px-4 py-3 rounded-2xl border focus:outline-none focus:ring-2 focus:ring-green-500">
-      <option>Toutes les villes</option>
-      <option>Paris</option><option>Lyon</option><option>Marseille</option>
-    </select>
-    <select class="px-4 py-3 rounded-2xl border focus:outline-none focus:ring-2 focus:ring-green-500">
-      <option value="">Tous niveaux</option>
-      <option value="BEGINNER">Débutant</option>
-      <option value="INTERMEDIATE">Intermédiaire</option>
-      <option value="ADVANCED">Confirmé</option>
-    </select>
-    {% if is_granted('ROLE_ADMIN') %}
-    <a href="{{ path('event_new') }}" class="px-4 py-3 rounded-2xl bg-green-600 text-white text-center font-semibold hover:bg-green-700">Proposer un évènement</a>
-    {% endif %}
+  <div class="max-w-6xl mx-auto flex flex-col gap-4 p-4">
+    <div class="flex items-center justify-between">
+      <h1 class="text-2xl md:text-3xl font-bold">Tous les événements</h1>
+      {% if is_granted('ROLE_ADMIN') %}
+        <a href="{{ path('event_new') }}" class="px-4 py-3 rounded-2xl bg-green-600 text-white font-semibold hover:bg-green-700">
+        Proposer un évènement
+        </a>
+      {% endif %}
+    </div>
+
+
+    <div class="bg-white rounded-2xl border shadow-sm p-5">
+      <h2 class="text-xl font-semibold mb-4">Rechercher et filtrer</h2>
+
+      {{ form_start(searchForm, {'attr': {'class': 'space-y-4'}}) }}
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div>
+            {{ form_label(searchForm.query) }}
+            {{ form_widget(searchForm.query, {
+              attr: {
+                class: 'w-full px-4 py-3 rounded-2xl border focus:outline-none focus:ring-2 focus:ring-green-500'
+              }
+            }) }}
+          </div>
+
+          <div>
+            {{ form_label(searchForm.level) }}
+            {{ form_widget(searchForm.level, {
+              attr: {
+                class: 'w-full px-4 py-3 rounded-2xl border focus:outline-none focus:ring-2 focus:ring-green-500'
+              }
+            }) }}
+          </div>
+
+          <div>
+            {{ form_label(searchForm.status) }}
+            {{ form_widget(searchForm.status, {
+              attr: {
+                class: 'w-full px-4 py-3 rounded-2xl border focus:outline-none focus:ring-2 focus:ring-green-500'
+              }
+            }) }}
+          </div>
+
+          <div>
+            {{ form_label(searchForm.dateFrom) }}
+            {{ form_widget(searchForm.dateFrom, {
+              attr: {
+                class: 'w-full px-4 py-3 rounded-2xl border focus:outline-none focus:ring-2 focus:ring-green-500'
+              }
+            }) }}
+          </div>
+
+          <div>
+            {{ form_label(searchForm.dateTo) }}
+            {{ form_widget(searchForm.dateTo, {
+              attr: {
+                class: 'w-full px-4 py-3 rounded-2xl border focus:outline-none focus:ring-2 focus:ring-green-500'
+              }
+            }) }}
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-4 pt-2">
+          <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg">
+            Rechercher
+          </button>
+          <a href="{{ path('event_index') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-lg">
+            Réinitialiser
+          </a>
+        </div>
+
+      {{ form_end(searchForm) }}
+    </div>
+
+    <div class="text-gray-600">
+  {{ events|length }}
+  {{ events|length == 1 ? 'évènement trouvé' : 'évènements trouvés' }}
+</div>
   </div>
 </section>
 
 <main class="py-10">
-  <h1 class="text-2xl md:text-3xl font-bold mb-6">Tous les événements</h1>
-  
   {% if events is empty %}
     <p class="text-gray-600">Aucun événement disponible pour le moment.</p>
   {% else %}
@@ -31,24 +95,25 @@
       {% for event in events %}
         {% set confirmedCount = event.registrations|filter(r => r.status.value == 'CONFIRMED')|length %}
         {% set spotsLeft = event.maxParticipants - confirmedCount %}
-        
+
         <article class="bg-white rounded-2xl shadow hover:shadow-lg transition overflow-hidden flex flex-col h-full">
-          <img src="{{ event.coverImage ? asset('uploads/events/' ~ event.coverImage) : 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=1200&auto=format&fit=crop' }}" 
-               alt="{{ event.title }}" 
-               class="h-40 w-full object-cover" />
+          <img
+            src="{{ event.coverImage ? asset('uploads/events/' ~ event.coverImage) : 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=1200&auto=format&fit=crop' }}"
+            alt="{{ event.title }}"
+            class="h-40 w-full object-cover" />
 
           <div class="p-5 flex flex-col flex-1">
             <h2 class="text-lg font-semibold mb-1 line-clamp-2">{{ event.title }}</h2>
             <p class="text-sm text-gray-600 mb-3">
-              {{ event.eventDate|date('l d F Y H:i')|capitalize }} • 
-              {{ event.location.city }} • 
+              {{ event.eventDate|date('l d F Y H:i')|capitalize }} •
+              {{ event.location.city }} •
               {{ event.distance }}km
               {% if event.pace %} • Allure {{ event.pace }}{% endif %}
             </p>
 
             <div class="mt-auto flex items-center justify-between">
               <span class="text-sm text-gray-700">
-                {% if spotsLeft == 0 %}
+                {% if spotsLeft <= 0 %}
                   <span class="text-red-600 font-medium">Complet</span>
                 {% else %}
                   <span class="{{ spotsLeft <= 5 ? 'text-amber-600' : 'text-green-600' }} font-medium">
