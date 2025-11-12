@@ -87,7 +87,7 @@ class AppFixtures extends Fixture
                 ->setRunningLevel($this->faker->randomElement(RunningLevel::cases()))
                 ->setPreferredPace($this->faker->randomElement(['5:00 min/km', '5:30 min/km', '6:00 min/km', '6:30 min/km']))
                 ->setBio($this->faker->optional()->paragraph())
-                ->setPhoneNumber($this->faker->optional()->phoneNumber())
+                ->setPhoneNumber($this->faker->optional()->numerify('06########'))
                 ->setBirthDate($this->faker->optional()->dateTimeBetween('-50 years', '-18 years'));
 
             if ($user->isVerified() && $this->faker->boolean(70)) {
