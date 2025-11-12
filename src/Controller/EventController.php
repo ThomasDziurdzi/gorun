@@ -6,9 +6,12 @@ use App\Entity\Comment;
 use App\Entity\Event;
 use App\Entity\Location;
 use App\Entity\Registration;
+use App\Enum\EventStatus;
 use App\Enum\RegistrationStatus;
 use App\Form\CommentType;
+use App\Form\EventSearchType;
 use App\Form\EventType;
+use App\Repository\EventRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,13 +21,25 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class EventController extends AbstractController
 {
-    #[Route('/evenements', name: 'event_index')]
-    public function index(EntityManagerInterface $em): Response
+    #[Route('/evenements', name: 'event_index', methods: ['GET'])]
+    public function index(Request $request, EventRepository $eventRepository): Response
     {
-        $events = $em->getRepository(Event::class)->findAll();
+        $searchForm = $this->createForm(EventSearchType::class);
+        $searchForm->handleRequest($request);
+
+        if ($searchForm->isSubmitted()) {
+            $criteria = $searchForm->getData();
+            $events = $eventRepository->search($criteria);
+        } else {
+            $events = $eventRepository->findBy(
+                ['status' => EventStatus::PUBLISHED],
+                ['eventDate' => 'DESC']
+            );
+        }
 
         return $this->render('event/index.html.twig', [
             'events' => $events,
+            'searchForm' => $searchForm,
         ]);
     }
 
