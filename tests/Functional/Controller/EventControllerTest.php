@@ -58,7 +58,7 @@ class EventControllerTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', self::EVENT_NEW_URL);
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+        $this->assertResponseRedirects(self:: EVENT_INDEX_URL);
     }
 
     public function testEventNewIsAccessibleForAdmin(): void

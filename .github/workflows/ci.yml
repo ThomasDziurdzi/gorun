@@ -11,6 +11,20 @@ jobs:
     name: Tests (PHP ${{ matrix.php-version }})
     runs-on: ubuntu-latest
     
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: gorun_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+    
     strategy:
       fail-fast: false
       matrix:
@@ -24,7 +38,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, dom, filter, gd, json, mbstring, pdo
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, dom, filter, gd, json
           coverage: none
 
       - name: Check PHP Version
@@ -47,10 +61,15 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
 
-      - name: Create test database
+      - name: Wait for MySQL
         run: |
-          php bin/console doctrine:database:create --env=test
-          php bin/console doctrine:schema:create --env=test
+          until mysqladmin ping -h 127.0.0.1 -u root -proot --silent; do
+            echo 'Waiting for MySQL...'
+            sleep 2
+          done
+
+      - name: Create test database schema
+        run: php bin/console doctrine:schema:create --env=test
 
       - name: Load fixtures
         run: php bin/console doctrine:fixtures:load --env=test -n

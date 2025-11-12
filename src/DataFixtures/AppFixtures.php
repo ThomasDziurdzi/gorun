@@ -64,6 +64,18 @@ class AppFixtures extends Fixture
         $manager->persist($admin);
         $users[] = $admin;
 
+        $testUser = new User();
+        $testUser->setEmail('user@example.com')
+            ->setFirstname('User')
+            ->setLastname('Test')
+            ->setPassword($this->passwordHasher->hashPassword($testUser, 'password'))
+            ->setRoles(['ROLE_USER'])
+            ->setIsVerified(true)
+            ->setCity('Paris')
+            ->setRunningLevel(RunningLevel::BEGINNER);
+        $manager->persist($testUser);
+        $users[] = $testUser;
+
         for ($i = 0; $i < $count; ++$i) {
             $user = new User();
             $user->setEmail($this->faker->unique()->email())
@@ -75,7 +87,7 @@ class AppFixtures extends Fixture
                 ->setRunningLevel($this->faker->randomElement(RunningLevel::cases()))
                 ->setPreferredPace($this->faker->randomElement(['5:00 min/km', '5:30 min/km', '6:00 min/km', '6:30 min/km']))
                 ->setBio($this->faker->optional()->paragraph())
-                ->setPhoneNumber($this->faker->optional()->phoneNumber())
+                ->setPhoneNumber($this->faker->optional()->numerify('06########'))
                 ->setBirthDate($this->faker->optional()->dateTimeBetween('-50 years', '-18 years'));
 
             if ($user->isVerified() && $this->faker->boolean(70)) {
@@ -120,7 +132,7 @@ class AppFixtures extends Fixture
 
         for ($i = count($parisLocations); $i < $count; ++$i) {
             $location = new Location();
-            $location->setLocationName($this->faker->streetName().' - '.$this->faker->city())
+            $location->setLocationName($this->faker->streetName() . ' - ' . $this->faker->city())
                 ->setAddress($this->faker->streetAddress())
                 ->setPostalCode($this->faker->postcode())
                 ->setCity($this->faker->city())
@@ -166,7 +178,7 @@ class AppFixtures extends Fixture
                 EventStatus::CANCELLED,
             ]);
 
-            $event->setTitle($this->faker->randomElement($eventTitles).' '.$this->faker->numberBetween(1, 100))
+            $event->setTitle($this->faker->randomElement($eventTitles) . ' ' . $this->faker->numberBetween(1, 100))
                 ->setDescription($this->faker->paragraphs(3, true))
                 ->setEventDate($eventDate)
                 ->setEstimateDuration($this->faker->numberBetween(30, 180))
@@ -206,7 +218,7 @@ class AppFixtures extends Fixture
             $selectedUsers = $this->faker->randomElements($users, $participantsCount);
 
             foreach ($selectedUsers as $user) {
-                $pairKey = $user->getId().'-'.$event->getId();
+                $pairKey = $user->getId() . '-' . $event->getId();
                 if (isset($processedPairs[$pairKey])) {
                     continue;
                 }
