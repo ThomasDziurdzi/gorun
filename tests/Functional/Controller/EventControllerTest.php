@@ -4,7 +4,6 @@ namespace App\Tests\Functional\Controller;
 
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpFoundation\Response;
 
 class EventControllerTest extends WebTestCase
 {
@@ -58,7 +57,7 @@ class EventControllerTest extends WebTestCase
         $client->loginUser($user);
         $client->request('GET', self::EVENT_NEW_URL);
 
-        $this->assertResponseRedirects(self:: EVENT_INDEX_URL);
+        $this->assertResponseRedirects(self::EVENT_INDEX_URL);
     }
 
     public function testEventNewIsAccessibleForAdmin(): void

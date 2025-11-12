@@ -15,13 +15,15 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class RegistrationFormType extends AbstractType
 {
+    private const BASE_INPUT_CLASS = 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500';
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('firstname', TextType::class, [
                 'label' => 'Prénom',
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
+                    'class' => self::BASE_INPUT_CLASS,
                     'placeholder' => 'Camille',
                 ],
             ])
@@ -29,7 +31,7 @@ class RegistrationFormType extends AbstractType
             ->add('lastname', TextType::class, [
                 'label' => 'Nom',
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
+                    'class' => self::BASE_INPUT_CLASS,
                     'placeholder' => 'Runner',
                 ],
             ])
@@ -37,7 +39,7 @@ class RegistrationFormType extends AbstractType
             ->add('email', EmailType::class, [
                 'label' => 'Email',
                 'attr' => [
-                    'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
+                    'class' => self::BASE_INPUT_CLASS,
                     'placeholder' => 'vous@exemple.com',
                 ],
             ])
@@ -48,22 +50,22 @@ class RegistrationFormType extends AbstractType
                 'first_options' => [
                     'label' => 'Mot de passe',
                     'attr' => [
-                        'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
+                        'class' => self::BASE_INPUT_CLASS,
                         'autocomplete' => 'new-password',
                     ],
                     'constraints' => [
-                        new NotBlank(['message' => 'Veuillez entrer un mot de passe']),
-                        new Length([
-                            'min' => 6,
-                            'minMessage' => 'Le mot de passe doit contenir au moins {{ limit }} caractères',
-                            'max' => 4096,
-                        ]),
+                        new NotBlank(message: 'Veuillez entrer un mot de passe'),
+                        new Length(
+                            min: 6,
+                            minMessage: 'Le mot de passe doit contenir au moins {{ limit }} caractères',
+                            max: 4096
+                        ),
                     ],
                 ],
                 'second_options' => [
                     'label' => 'Confirmer le mot de passe',
                     'attr' => [
-                        'class' => 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500',
+                        'class' => self::BASE_INPUT_CLASS,
                         'autocomplete' => 'new-password',
                     ],
                 ],

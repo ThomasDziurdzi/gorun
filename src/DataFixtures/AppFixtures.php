@@ -132,7 +132,7 @@ class AppFixtures extends Fixture
 
         for ($i = count($parisLocations); $i < $count; ++$i) {
             $location = new Location();
-            $location->setLocationName($this->faker->streetName() . ' - ' . $this->faker->city())
+            $location->setLocationName($this->faker->streetName().' - '.$this->faker->city())
                 ->setAddress($this->faker->streetAddress())
                 ->setPostalCode($this->faker->postcode())
                 ->setCity($this->faker->city())
@@ -178,7 +178,7 @@ class AppFixtures extends Fixture
                 EventStatus::CANCELLED,
             ]);
 
-            $event->setTitle($this->faker->randomElement($eventTitles) . ' ' . $this->faker->numberBetween(1, 100))
+            $event->setTitle($this->faker->randomElement($eventTitles).' '.$this->faker->numberBetween(1, 100))
                 ->setDescription($this->faker->paragraphs(3, true))
                 ->setEventDate($eventDate)
                 ->setEstimateDuration($this->faker->numberBetween(30, 180))
@@ -218,7 +218,7 @@ class AppFixtures extends Fixture
             $selectedUsers = $this->faker->randomElements($users, $participantsCount);
 
             foreach ($selectedUsers as $user) {
-                $pairKey = $user->getId() . '-' . $event->getId();
+                $pairKey = $user->getId().'-'.$event->getId();
                 if (isset($processedPairs[$pairKey])) {
                     continue;
                 }
