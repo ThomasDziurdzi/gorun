@@ -6,7 +6,6 @@ use App\Entity\Comment;
 use App\Entity\Event;
 use App\Entity\Location;
 use App\Entity\Registration;
-use App\Enum\EventStatus;
 use App\Enum\RegistrationStatus;
 use App\Form\CommentType;
 use App\Form\EventSearchType;
@@ -27,15 +26,8 @@ class EventController extends AbstractController
         $searchForm = $this->createForm(EventSearchType::class);
         $searchForm->handleRequest($request);
 
-        if ($searchForm->isSubmitted()) {
-            $criteria = $searchForm->getData();
-            $events = $eventRepository->search($criteria);
-        } else {
-            $events = $eventRepository->findBy(
-                ['status' => EventStatus::PUBLISHED],
-                ['eventDate' => 'DESC']
-            );
-        }
+        $criteria = $searchForm->getData() ?? [];
+        $events = $eventRepository->search($criteria);
 
         return $this->render('event/index.html.twig', [
             'events' => $events,

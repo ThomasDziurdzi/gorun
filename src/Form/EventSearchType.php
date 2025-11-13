@@ -45,8 +45,8 @@ class EventSearchType extends AbstractType
             ->add('status', ChoiceType::class, [
                 'label' => 'Statut',
                 'required' => false,
-                'placeholder' => 'Tous les statuts',
                 'choices' => [
+                    'Tous les statuts' => 'all',
                     'Publié' => EventStatus::PUBLISHED->value,
                     'Brouillon' => EventStatus::DRAFT->value,
                     'Annulé' => EventStatus::CANCELLED->value,

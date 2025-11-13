@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Event;
+use App\Enum\EventStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -38,9 +39,12 @@ class EventRepository extends ServiceEntityRepository
                ->setParameter('level', $criteria['level']);
         }
 
-        if (!empty($criteria['status'])) {
+        if (!empty($criteria['status']) && 'all' !== $criteria['status']) {
             $qb->andWhere('e.status = :status')
                ->setParameter('status', $criteria['status']);
+        } elseif (empty($criteria['status']) || null === $criteria['status']) {
+            $qb->andWhere('e.status = :status')
+               ->setParameter('status', EventStatus::PUBLISHED);
         }
 
         if (!empty($criteria['dateFrom'])) {
