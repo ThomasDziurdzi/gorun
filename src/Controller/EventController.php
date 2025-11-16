@@ -12,6 +12,7 @@ use App\Form\EventSearchType;
 use App\Form\EventType;
 use App\Repository\EventRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,16 +22,22 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class EventController extends AbstractController
 {
     #[Route('/evenements', name: 'event_index', methods: ['GET'])]
-    public function index(Request $request, EventRepository $eventRepository): Response
+    public function index(Request $request, EventRepository $eventRepository, PaginatorInterface $paginator): Response
     {
         $searchForm = $this->createForm(EventSearchType::class);
         $searchForm->handleRequest($request);
 
         $criteria = $searchForm->getData() ?? [];
-        $events = $eventRepository->search($criteria);
+        $query = $eventRepository->searchQuery($criteria);
+
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            9
+        );
 
         return $this->render('event/index.html.twig', [
-            'events' => $events,
+            'pagination' => $pagination,
             'searchForm' => $searchForm,
         ]);
     }

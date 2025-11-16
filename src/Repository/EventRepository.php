@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Event;
 use App\Enum\EventStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -18,13 +19,11 @@ class EventRepository extends ServiceEntityRepository
     }
 
     /**
-     * Search and filter events.
+     * Build a Doctrine Query object for searching and filtering events.
      *
-     * @param array $criteria search/filter criterias
-     *
-     * @return Event[]
+     * @param array $criteria Search/filter criteria
      */
-    public function search(array $criteria): array
+    public function searchQuery(array $criteria): Query
     {
         $qb = $this->createQueryBuilder('e')
             ->orderBy('e.eventDate', 'DESC');
@@ -42,7 +41,7 @@ class EventRepository extends ServiceEntityRepository
         if (!empty($criteria['status']) && 'all' !== $criteria['status']) {
             $qb->andWhere('e.status = :status')
                ->setParameter('status', $criteria['status']);
-        } elseif (empty($criteria['status']) || null === $criteria['status']) {
+        } elseif (empty($criteria['status'])) {
             $qb->andWhere('e.status = :status')
                ->setParameter('status', EventStatus::PUBLISHED);
         }
@@ -57,6 +56,14 @@ class EventRepository extends ServiceEntityRepository
                ->setParameter('dateTo', $criteria['dateTo']);
         }
 
-        return $qb->getQuery()->getResult();
+        return $qb->getQuery();
+    }
+
+    /**
+     * Convenience wrapper for legacy calls: returns results directly.
+     */
+    public function search(array $criteria): array
+    {
+        return $this->searchQuery($criteria)->getResult();
     }
 }
