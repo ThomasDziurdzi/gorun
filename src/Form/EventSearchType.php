@@ -74,6 +74,23 @@ class EventSearchType extends AbstractType
                     'class' => self::BASE_INPUT_CLASS,
                 ],
             ])
+
+            ->add('sort', ChoiceType::class, [
+                'label' => 'Trier par',
+                'required' => false,
+                'placeholder' => 'Date (plus récent)',
+                'choices' => [
+                    'Date (plus récent)' => 'date_desc',
+                    'Date (plus ancien)' => 'date_asc',
+                    'Distance (croissant)' => 'distance_asc',
+                    'Distance (décroissant)' => 'distance_desc',
+                    'Places restantes (plus → moins)' => 'spots_desc',
+                    'Places restantes (moins → plus)' => 'spots_asc',
+                ],
+                'attr' => [
+                    'class' => self::BASE_INPUT_CLASS,
+                ],
+            ])
         ;
     }
 
