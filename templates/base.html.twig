@@ -8,7 +8,7 @@
   {% block stylesheets %}{% endblock %}
 </head>
 <body class="min-h-screen flex flex-col bg-gray-50 text-gray-800">
-  {% include 'partials/_header.html.twig' %}
+  {{ include('partials/_header.html.twig') }}
   <main class="flex-1 px-4 md:px-6 py-8 max-w-6xl mx-auto">
     {% for label, messages in app.flashes %}
       {% for message in messages %}
@@ -17,7 +17,7 @@
     {% endfor %}
     {% block body %}{% endblock %}
   </main>
-  {% include 'partials/_footer.html.twig' %}
+  {{ include('partials/_footer.html.twig') }}
   {% block javascripts %}{% endblock %}
 </body>
 </html>

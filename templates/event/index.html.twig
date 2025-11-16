@@ -20,62 +20,69 @@
 
       {{ form_start(searchForm, {'attr': {'class': 'space-y-4'}}) }}
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div>
-            {{ form_label(searchForm.query, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-            {{ form_widget(searchForm.query) }}
-            {{ form_errors(searchForm.query) }}
-          </div>
-
-          <div>
-            {{ form_label(searchForm.level, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-            {{ form_widget(searchForm.level) }}
-            {{ form_errors(searchForm.level) }}
-          </div>
-
-          <div>
-            {{ form_label(searchForm.status, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-            {{ form_widget(searchForm.status) }}
-            {{ form_errors(searchForm.status) }}
-          </div>
-
-          <div>
-            {{ form_label(searchForm.dateFrom, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-            {{ form_widget(searchForm.dateFrom) }}
-            {{ form_errors(searchForm.dateFrom) }}
-          </div>
-
-          <div>
-            {{ form_label(searchForm.dateTo, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-            {{ form_widget(searchForm.dateTo) }}
-            {{ form_errors(searchForm.dateTo) }}
-          </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div>
+          {{ form_label(searchForm.query, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+          {{ form_widget(searchForm.query) }}
+          {{ form_errors(searchForm.query) }}
         </div>
 
-        <div class="flex flex-wrap gap-4 pt-2">
-          <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-2xl font-medium transition">
-            Rechercher
-          </button>
-          <a href="{{ path('event_index') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded-2xl font-medium transition">
-            Réinitialiser
-          </a>
+        <div>
+          {{ form_label(searchForm.level, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+          {{ form_widget(searchForm.level) }}
+          {{ form_errors(searchForm.level) }}
         </div>
+
+        <div>
+          {{ form_label(searchForm.status, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+          {{ form_widget(searchForm.status) }}
+          {{ form_errors(searchForm.status) }}
+        </div>
+
+        <div>
+          {{ form_label(searchForm.dateFrom, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+          {{ form_widget(searchForm.dateFrom) }}
+          {{ form_errors(searchForm.dateFrom) }}
+        </div>
+
+        <div>
+          {{ form_label(searchForm.dateTo, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+          {{ form_widget(searchForm.dateTo) }}
+          {{ form_errors(searchForm.dateTo) }}
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-4 pt-2">
+        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-2xl font-medium transition">
+          Rechercher
+        </button>
+        <a href="{{ path('event_index') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded-2xl font-medium transition">
+          Réinitialiser
+        </a>
+      </div>
 
       {{ form_end(searchForm) }}
     </div>
 
     <div class="text-sm text-gray-600">
-      <strong>{{ events|length }}</strong>
-      {{ events|length == 1 ? 'événement trouvé' : 'événements trouvés' }}
+      <strong>{{ pagination.getTotalItemCount }}</strong>
+      {{ pagination.getTotalItemCount == 1 ? 'événement trouvé' : 'événements trouvés' }}
+
+      {% if pagination.getTotalItemCount > 0 %}
+        <span class="text-gray-500">
+          (page {{ pagination.getCurrentPageNumber }} sur {{ pagination.getPageCount }})
+        </span>
+      {% endif %}
     </div>
   </div>
 </section>
 
 <main class="py-10">
-  {% if events is empty %}
+  {% if pagination.getTotalItemCount == 0 %}
     <div class="text-center py-12">
       <div class="text-6xl mb-4">🏃</div>
       <p class="text-xl text-gray-600 mb-2">Aucun événement trouvé</p>
+
       <p class="text-gray-500">
         {% if app.request.query.count > 0 %}
           Essayez de modifier vos critères de recherche
@@ -83,15 +90,17 @@
           Aucun événement publié pour le moment
         {% endif %}
       </p>
+
       {% if app.request.query.count > 0 %}
         <a href="{{ path('event_index') }}" class="inline-block mt-4 text-green-600 hover:text-green-700 font-medium">
           ← Voir tous les événements
         </a>
       {% endif %}
     </div>
+
   {% else %}
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {% for event in events %}
+      {% for event in pagination %}
         {% set confirmedCount = event.registrations|filter(r => r.status.value == 'CONFIRMED')|length %}
         {% set spotsLeft = event.maxParticipants - confirmedCount %}
 
@@ -99,10 +108,12 @@
           <img
             src="{{ event.coverImage ? asset('uploads/events/' ~ event.coverImage) : 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=1200&auto=format&fit=crop' }}"
             alt="{{ event.title }}"
-            class="h-40 w-full object-cover" />
+            class="h-40 w-full object-cover"
+          />
 
           <div class="p-5 flex flex-col flex-1">
             <h2 class="text-lg font-semibold mb-1 line-clamp-2">{{ event.title }}</h2>
+
             <p class="text-sm text-gray-600 mb-3">
               {{ event.eventDate|date('l d F Y H:i')|capitalize }} •
               {{ event.location.city }} •
@@ -120,6 +131,7 @@
                   </span>
                 {% endif %}
               </span>
+
               <a href="{{ path('event_show', {id: event.id}) }}" class="text-green-600 font-medium hover:underline">
                 Voir le détail →
               </a>
@@ -128,6 +140,14 @@
         </article>
       {% endfor %}
     </div>
+
+    {# Pagination - affichée seulement si plus de 9 événements #}
+    {% if pagination.getTotalItemCount > 9 %}
+      <div class="mt-8 flex justify-center">
+        {{ knp_pagination_render(pagination, 'pagination/custom_pagination.html.twig') }}
+      </div>
+    {% endif %}
+
   {% endif %}
 </main>
 {% endblock %}

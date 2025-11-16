@@ -1,0 +1,105 @@
+{% if pageCount > 1 %}
+<nav aria-label="Pagination">
+  <ul class="flex items-center gap-1 flex-wrap justify-center">
+
+    {% if previous is defined %}
+      <li>
+        <a href="{{ path(route, query|merge({ (pageParameterName): previous })) }}"
+           rel="prev"
+           class="px-4 py-2 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 rounded-lg transition-colors flex items-center gap-1">
+          
+          <span aria-hidden="true">←</span>
+          <span class="sr-only">Page précédente</span>
+          <span>Précédent</span>
+
+        </a>
+      </li>
+    {% else %}
+      <li>
+        <span aria-disabled="true"
+              class="px-4 py-2 border border-gray-300 bg-white text-gray-400 cursor-not-allowed rounded-lg flex items-center gap-1">
+          
+          <span aria-hidden="true">←</span>
+          <span class="sr-only">Page précédente indisponible</span>
+          <span>Précédent</span>
+
+        </span>
+      </li>
+    {% endif %}
+
+    {% if startPage > 1 %}
+      <li>
+        <a href="{{ path(route, query|merge({ (pageParameterName): 1 })) }}"
+           class="px-4 py-2 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+          1
+        </a>
+      </li>
+
+      {% if startPage > 2 %}
+        <li>
+          <span aria-hidden="true" class="px-2 select-none">…</span>
+        </li>
+      {% endif %}
+    {% endif %}
+
+    {% for page in pagesInRange %}
+      {% if page == current %}
+        <li>
+          <span aria-current="page"
+                class="px-4 py-2 bg-green-600 text-white border border-green-600 rounded-lg font-medium">
+            {{ page }}
+          </span>
+        </li>
+      {% else %}
+        <li>
+          <a href="{{ path(route, query|merge({ (pageParameterName): page })) }}"
+             class="px-4 py-2 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+            {{ page }}
+          </a>
+        </li>
+      {% endif %}
+    {% endfor %}
+
+    {% if endPage < pageCount %}
+      {% if endPage < pageCount - 1 %}
+        <li>
+          <span aria-hidden="true" class="px-2 select-none">…</span>
+        </li>
+      {% endif %}
+
+      <li>
+        <a href="{{ path(route, query|merge({ (pageParameterName): pageCount })) }}"
+           class="px-4 py-2 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+          {{ pageCount }}
+        </a>
+      </li>
+    {% endif %}
+
+    {% if next is defined %}
+      <li>
+        <a href="{{ path(route, query|merge({ (pageParameterName): next })) }}"
+           rel="next"
+           class="px-4 py-2 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 rounded-lg transition-colors flex items-center gap-1">
+
+          <span>Suivant</span>
+          <span aria-hidden="true">→</span>
+          <span class="sr-only">Page suivante</span>
+
+        </a>
+      </li>
+    {% else %}
+      <li>
+        <span aria-disabled="true"
+              class="px-4 py-2 border border-gray-300 bg-white text-gray-400 cursor-not-allowed rounded-lg flex items-center gap-1">
+
+          <span>Suivant</span>
+          <span aria-hidden="true">→</span>
+          <span class="sr-only">Page suivante indisponible</span>
+
+        </span>
+      </li>
+    {% endif %}
+
+  </ul>
+</nav>
+{% endif %}

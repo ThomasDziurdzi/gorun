@@ -4,9 +4,9 @@
 <h1 class="text-2xl md:text-3xl font-bold mb-6">Mes événements</h1>
 <div class="grid md:grid-cols-3 gap-6">
   {% for title, empty in {
-    'Inscrit': 'Aucune inscription en cours.',
-    'Organisé': "Vous n'avez pas encore organisé d'évènement.",
-    'Passés': 'Aucun évènement passé.'
+    Inscrit: 'Aucune inscription en cours.',
+    Organisé: "Vous n'avez pas encore organisé d'évènement.",
+    Passés: 'Aucun évènement passé.',
   } %}
     <div class="bg-white rounded-2xl shadow p-6">
       <h3 class="font-semibold mb-2">{{ title }}</h3>
