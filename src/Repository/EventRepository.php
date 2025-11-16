@@ -70,20 +70,6 @@ class EventRepository extends ServiceEntityRepository
         case 'distance_desc':
             $qb->orderBy('e.distance', 'DESC');
             break;
-        case 'spots_asc':
-            $qb->leftJoin('e.registrations', 'r', 'WITH', 'r.status = :confirmedStatus')
-               ->setParameter('confirmedStatus', 'CONFIRMED')
-               ->addSelect('COUNT(r.id) as HIDDEN registrationCount')
-               ->groupBy('e.id')
-               ->orderBy('(e.maxParticipants - COUNT(r.id))', 'ASC');
-            break;
-        case 'spots_desc':
-            $qb->leftJoin('e.registrations', 'r', 'WITH', 'r.status = :confirmedStatus')
-               ->setParameter('confirmedStatus', 'CONFIRMED')
-               ->addSelect('COUNT(r.id) as HIDDEN registrationCount')
-               ->groupBy('e.id')
-               ->orderBy('(e.maxParticipants - COUNT(r.id))', 'DESC');
-            break;
         default:
             $qb->orderBy('e.eventDate', 'DESC');
     }
