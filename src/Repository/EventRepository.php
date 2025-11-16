@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Event;
+use App\Enum\EventStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,28 +17,46 @@ class EventRepository extends ServiceEntityRepository
         parent::__construct($registry, Event::class);
     }
 
-    //    /**
-    //     * @return Event[] Returns an array of Event objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('e.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * Search and filter events.
+     *
+     * @param array $criteria search/filter criterias
+     *
+     * @return Event[]
+     */
+    public function search(array $criteria): array
+    {
+        $qb = $this->createQueryBuilder('e')
+            ->orderBy('e.eventDate', 'DESC');
 
-    //    public function findOneBySomeField($value): ?Event
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        if (!empty($criteria['query'])) {
+            $qb->andWhere('e.title LIKE :query OR e.description LIKE :query')
+               ->setParameter('query', '%'.$criteria['query'].'%');
+        }
+
+        if (!empty($criteria['level'])) {
+            $qb->andWhere('e.requiredLevel = :level')
+               ->setParameter('level', $criteria['level']);
+        }
+
+        if (!empty($criteria['status']) && 'all' !== $criteria['status']) {
+            $qb->andWhere('e.status = :status')
+               ->setParameter('status', $criteria['status']);
+        } elseif (empty($criteria['status']) || null === $criteria['status']) {
+            $qb->andWhere('e.status = :status')
+               ->setParameter('status', EventStatus::PUBLISHED);
+        }
+
+        if (!empty($criteria['dateFrom'])) {
+            $qb->andWhere('e.eventDate >= :dateFrom')
+               ->setParameter('dateFrom', $criteria['dateFrom']);
+        }
+
+        if (!empty($criteria['dateTo'])) {
+            $qb->andWhere('e.eventDate <= :dateTo')
+               ->setParameter('dateTo', $criteria['dateTo']);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

@@ -24,12 +24,11 @@ final class Version20251010065811 extends AbstractMigration
                OR required_level NOT IN ('ALL_LEVELS', 'BEGINNER', 'INTERMEDIATE', 'ADVANCED')
         ");
 
-        $this->addSql("ALTER TABLE event MODIFY required_level VARCHAR(20) NOT NULL");
+        $this->addSql('ALTER TABLE event MODIFY required_level VARCHAR(20) NOT NULL');
     }
 
     public function down(Schema $schema): void
     {
-
         $this->addSql("ALTER TABLE event MODIFY required_level LONGTEXT NOT NULL COMMENT '(DC2Type:simple_array)'");
     }
 }
