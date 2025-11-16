@@ -194,7 +194,7 @@ class EventController extends AbstractController
     public function unregister(Event $event, Request $request, EntityManagerInterface $em): Response
     {
         if (!$this->isCsrfTokenValid('unregister'.$event->getId(), $request->request->get('_token'))) {
-            $this->addFlash('error', 'Token de sécurité invalide.');
+            sh('error', 'Token de sécurité invalide.');
 
             return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
         }
