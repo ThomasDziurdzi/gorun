@@ -40,14 +40,14 @@
                 {% if app.user and (comment.author == app.user or is_granted('ROLE_ADMIN')) %}
                     <div class="flex gap-3 pt-3 border-t border-gray-100">
                         {% if comment.author == app.user %}
-                            <a href="{{ path('comment_edit', {id: comment.id}) }}" 
+                            <a href="{{ path('comment_edit', {id: comment.id}) }}"
                                class="text-sm text-blue-600 hover:text-blue-800">
                                 ✏️ Modifier
                             </a>
                         {% endif %}
 
-                        <form method="post" 
-                              action="{{ path('comment_delete', {id: comment.id}) }}" 
+                        <form method="post"
+                              action="{{ path('comment_delete', {id: comment.id}) }}"
                               onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');"
                               class="inline">
                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ comment.id) }}">
