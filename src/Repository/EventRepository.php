@@ -25,9 +25,8 @@ class EventRepository extends ServiceEntityRepository
      */
     public function searchQuery(array $criteria): Query
     {
-        $qb = $this->createQueryBuilder('e')
-            ->orderBy('e.eventDate', 'DESC');
-
+        $qb = $this->createQueryBuilder('e');
+            
         if (!empty($criteria['query'])) {
             $qb->andWhere('e.title LIKE :query OR e.description LIKE :query')
                ->setParameter('query', '%'.$criteria['query'].'%');
@@ -55,6 +54,25 @@ class EventRepository extends ServiceEntityRepository
             $qb->andWhere('e.eventDate <= :dateTo')
                ->setParameter('dateTo', $criteria['dateTo']);
         }
+
+        $sort = $criteria['sort'] ?? 'date_desc';
+
+        switch ($sort) {
+        case 'date_asc':
+            $qb->orderBy('e.eventDate', 'ASC');
+            break;
+        case 'date_desc':
+            $qb->orderBy('e.eventDate', 'DESC');
+            break;
+        case 'distance_asc':
+            $qb->orderBy('e.distance', 'ASC');
+            break;
+        case 'distance_desc':
+            $qb->orderBy('e.distance', 'DESC');
+            break;
+        default:
+            $qb->orderBy('e.eventDate', 'DESC');
+    }
 
         return $qb->getQuery();
     }
