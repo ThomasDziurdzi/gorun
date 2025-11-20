@@ -77,23 +77,23 @@ class UserProfileType extends AbstractType
                 ],
             ])
 
-            // ->add('phoneNumber', TelType::class, [
-            //     'label' => 'Téléphone',
-            //     'required' => false,
-            //     'attr' => [
-            //         'class' => self::BASE_INPUT_CLASS,
-            //         'placeholder' => '06 12 34 56 78',
-            //     ],
-            // ])
+            ->add('phoneNumber', TelType::class, [
+                'label' => 'Téléphone',
+                'required' => false,
+                'attr' => [
+                    'class' => self::BASE_INPUT_CLASS,
+                    'placeholder' => '06 12 34 56 78',
+                ],
+            ])
 
-            // ->add('birthDate', DateType::class, [
-            //     'label' => 'Date de naissance',
-            //     'required' => false,
-            //     'widget' => 'single_text',
-            //     'attr' => [
-            //         'class' => self::BASE_INPUT_CLASS,
-            //     ],
-            // ])
+            ->add('birthDate', DateType::class, [
+                'label' => 'Date de naissance',
+                'required' => false,
+                'widget' => 'single_text',
+                'attr' => [
+                    'class' => self::BASE_INPUT_CLASS,
+                ],
+            ])
 
             ->add('runningLevel', ChoiceType::class, [
                 'label' => 'Niveau',

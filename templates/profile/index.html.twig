@@ -1,47 +1,181 @@
 {% extends 'base.html.twig' %}
-{% block title %}Mon profil · Gorun{% endblock %}
+
+{% block title %}Mon profil · GoRun{% endblock %}
+
 {% block body %}
-<h1 class="text-2xl md:text-3xl font-bold mb-6">Mon profil</h1>
-<div class="grid md:grid-cols-3 gap-6">
-  <div class="md:col-span-2">
-    <div class="bg-white rounded-2xl shadow p-6 space-y-4">
-      <label class="block">
-        <span class="block text-sm font-medium text-gray-700">Nom</span>
-        <input class="w-full px-4 py-3 rounded-2xl border border-gray-300" />
-      </label>
-       <label class="block">
-        <span class="block text-sm font-medium text-gray-700">Prénom</span>
-        <input class="w-full px-4 py-3 rounded-2xl border border-gray-300" />
-      </label>
-      <label class="block">
-        <span class="block text-sm font-medium text-gray-700">Ville</span>
-        <input class="w-full px-4 py-3 rounded-2xl border border-gray-300" />
-      </label>
-      <label class="block">
-        <span class="block text-sm font-medium text-gray-700">Allure préférée</span>
-        <input class="w-full px-4 py-3 rounded-2xl border border-gray-300" placeholder="5'30/km" />
-      </label>
-      <label class="block">
-        <span class="block text-sm font-medium text-gray-700">Niveau</span>
-        <select class="w-full px-4 py-3 rounded-2xl border border-gray-300">
-          <option>Débutant</option><option>Intermédiaire</option><option>Avancé</option>
-        </select>
-      </label>
-      <label class="block">
-        <span class="block text-sm font-medium text-gray-700">Bio</span>
-        <textarea rows="4" class="w-full px-4 py-3 rounded-2xl border border-gray-300" placeholder="Parlez de vous, de vos objectifs…"></textarea>
-      </label>
-      <button class="bg-green-600 text-white px-6 py-3 rounded-2xl font-semibold hover:bg-green-700">Enregistrer</button>
-    </div>
+<div class="max-w-6xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl md:text-3xl font-bold">Mon profil</h1>
+    <a href="{{ path('app_profile_events') }}" class="text-green-600 hover:text-green-700 font-medium">
+      Mes événements →
+    </a>
   </div>
-  <div>
-    <div class="bg-white rounded-2xl shadow p-6">
-      <h3 class="font-semibold mb-2">Aperçu public</h3>
-      <p class="text-sm text-gray-700"><strong>Votre nom</strong></p>
-      <p class="text-sm text-gray-600">Ville • Intermédiaire</p>
-      <p class="text-sm text-gray-600">Allure: 5'30/km</p>
-      <p class="text-sm text-gray-700 mt-2">Votre bio apparaîtra ici.</p>
+
+  {% for message in app.flashes('success') %}
+    <div class="mb-6 bg-green-50 border border-green-200 text-green-800 px-6 py-4 rounded-2xl flex items-start gap-3">
+      <svg class="w-5 h-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+      </svg>
+      <p>{{ message }}</p>
+    </div>
+  {% endfor %}
+
+  {% for message in app.flashes('error') %}
+    <div class="mb-6 bg-red-50 border border-red-200 text-red-800 px-6 py-4 rounded-2xl flex items-start gap-3">
+      <svg class="w-5 h-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+      </svg>
+      <p>{{ message }}</p>
+    </div>
+  {% endfor %}
+
+  {% for message in app.flashes('warning') %}
+    <div class="mb-6 bg-yellow-50 border border-yellow-200 text-yellow-800 px-6 py-4 rounded-2xl flex items-start gap-3">
+      <svg class="w-5 h-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+      </svg>
+      <p>{{ message }}</p>
+    </div>
+  {% endfor %}
+
+  {% for message in app.flashes('info') %}
+    <div class="mb-6 bg-blue-50 border border-blue-200 text-blue-800 px-6 py-4 rounded-2xl flex items-start gap-3">
+      <svg class="w-5 h-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+      </svg>
+      <p>{{ message }}</p>
+    </div>
+  {% endfor %}
+
+  <div class="grid md:grid-cols-3 gap-6">
+    <div class="md:col-span-2">
+      <div class="bg-white rounded-2xl shadow p-6">
+        <h2 class="text-xl font-semibold mb-6">Informations personnelles</h2>
+        {{ form_start(form, {'attr': {'class': 'space-y-4'}}) }}
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            {{ form_label(form.firstname, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+            {{ form_widget(form.firstname) }}
+            {{ form_errors(form.firstname) }}
+          </div>
+          <div>
+            {{ form_label(form.lastname, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+            {{ form_widget(form.lastname) }}
+            {{ form_errors(form.lastname) }}
+          </div>
+        </div>
+
+        <div>
+          {{ form_label(form.email, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+          {{ form_widget(form.email) }}
+          {{ form_errors(form.email) }}
+          <p class="mt-1 text-sm text-gray-500">⚠️ Assurez-vous d'avoir un e-mail valide pour recevoir les notifications</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            {{ form_label(form.city, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+            {{ form_widget(form.city) }}
+            {{ form_errors(form.city) }}
+          </div>
+          <div>
+            {{ form_label(form.phoneNumber, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+            {{ form_widget(form.phoneNumber) }}
+            {{ form_errors(form.phoneNumber) }}
+          </div>
+        </div>
+
+        <div>
+          {{ form_label(form.birthDate, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+          {{ form_widget(form.birthDate) }}
+          {{ form_errors(form.birthDate) }}
+        </div>
+
+        <hr class="my-6 border-gray-200">
+
+        <h3 class="text-lg font-semibold mb-4">Informations running</h3>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            {{ form_label(form.runningLevel, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+            {{ form_widget(form.runningLevel) }}
+            {{ form_errors(form.runningLevel) }}
+          </div>
+          <div>
+            {{ form_label(form.preferredPace, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+            {{ form_widget(form.preferredPace) }}
+            {{ form_errors(form.preferredPace) }}
+            {% if form.preferredPace.vars.help %}
+              <p class="mt-1 text-sm text-gray-500">{{ form.preferredPace.vars.help }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <div>
+          {{ form_label(form.bio, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+          {{ form_widget(form.bio) }}
+          {{ form_errors(form.bio) }}
+          <p id="bio-counter" class="mt-1 text-sm text-gray-500">
+            {{ form.bio.vars.value|default('')|length }}/500 caractères
+          </p>
+        </div>
+
+        <div class="flex gap-4 pt-4">
+          <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded-2xl font-semibold hover:bg-green-700 transition">
+            Enregistrer les modifications
+          </button>
+          <a href="{{ path('event_index') }}" class="bg-gray-200 text-gray-800 px-6 py-3 rounded-2xl font-semibold hover:bg-gray-300 transition">
+            Annuler
+          </a>
+        </div>
+
+        {{ form_end(form) }}
+      </div>
+    </div>
+
+    <div>
+      <div class="bg-white rounded-2xl shadow p-6 sticky top-6">
+        <h3 class="font-semibold mb-4 text-gray-900">Aperçu public</h3>
+
+        <div class="space-y-3">
+          <div class="w-20 h-20 rounded-full bg-green-600 text-white flex items-center justify-center text-2xl font-bold mx-auto">
+            {{ user.firstname|first|upper }}{{ user.lastname|first|upper }}
+          </div>
+
+          <div class="text-center">
+            <p class="text-lg font-semibold text-gray-900">
+              {{ user.firstname }} {{ user.lastname }}
+            </p>
+          </div>
+
+          <div class="space-y-2 text-sm">
+            {% if user.city %}
+              <p ><span class="font-semibold text-gray-900">Ville :</span> {{ user.city }}</p>
+            {% endif %}
+            {% if user.runningLevel %}
+              <p><span class="font-semibold text-gray-900">Niveau :</span> {{ user.runningLevel.label }}</p>
+            {% endif %}
+            {% if user.preferredPace %}
+              <p><span class="font-semibold text-gray-900">Allure :</span> {{ user.preferredPace }}</p>
+            {% endif %}
+          </div>
+
+          <div class="pt-3 border-t border-gray-200">
+            {% if user.bio %}
+              <p class="text-sm text-gray-700 italic">"{{ user.bio }}"</p>
+            {% else %}
+              <p class="text-sm text-gray-400 italic">Aucune bio renseignée</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  <script src="{{ asset('js/bio-counter.js') }}"></script>
 {% endblock %}
