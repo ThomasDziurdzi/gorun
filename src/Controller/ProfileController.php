@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Form\UserProfileType;
+use App\Repository\EventRepository;
+use App\Repository\RegistrationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,12 +40,36 @@ class ProfileController extends AbstractController
     }
 
     #[Route('/mes-evenements', name: 'app_profile_events')]
-    public function myEvents(): Response
-    {
-        $user = $this->getUser();
+public function myEvents(
+    EventRepository $eventRepository,
+    RegistrationRepository $registrationRepository
+): Response
+{
+    $user = $this->getUser();
+    $isAdmin = $this->isGranted('ROLE_ADMIN');
 
-        return $this->render('profile/my_events.html.twig', [
-            'user' => $user,
-        ]);
+    $upcomingRegistrations = $registrationRepository->findUpcomingByUser($user);
+
+    $pastRegistrations = $registrationRepository->findPastByUser($user);
+
+    $stats = [
+        'totalParticipations' => $registrationRepository->countConfirmedByUser($user),
+        'totalKilometers' => $registrationRepository->getTotalKilometersByUser($user),
+    ];
+
+    $organizedEvents = [];
+    if ($isAdmin) {
+        $organizedEvents = $eventRepository->findOrganizedByUser($user);
+        $stats['totalOrganized'] = $eventRepository->countOrganizedByUser($user);
     }
+
+    return $this->render('profile/my_events.html.twig', [
+        'user' => $user,
+        'isAdmin' => $isAdmin,
+        'upcomingRegistrations' => $upcomingRegistrations,
+        'organizedEvents' => $organizedEvents,
+        'pastRegistrations' => $pastRegistrations,
+        'stats' => $stats,
+    ]);
+}
 }
