@@ -30,7 +30,7 @@ class EventRepository extends ServiceEntityRepository
 
         if (!empty($criteria['query'])) {
             $qb->andWhere('e.title LIKE :query OR e.description LIKE :query')
-                ->setParameter('query', '%' . $criteria['query'] . '%');
+                ->setParameter('query', '%'.$criteria['query'].'%');
         }
 
         if (!empty($criteria['level'])) {

@@ -179,6 +179,12 @@ class EventController extends AbstractController
             return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
         }
 
+        if ($event->isFull()) {
+            $this->addFlash('error', 'L\'événement est complet.');
+
+            return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
+        }
+
         $registration = new Registration();
         $registration->setUser($user);
         $registration->setEvent($event);
@@ -201,7 +207,7 @@ class EventController extends AbstractController
     public function unregister(Event $event, Request $request, EntityManagerInterface $em): Response
     {
         if (!$this->isCsrfTokenValid('unregister'.$event->getId(), $request->request->get('_token'))) {
-            sh('error', 'Token de sécurité invalide.');
+            $this->addFlash('error', 'Token de sécurité invalide.');
 
             return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
         }

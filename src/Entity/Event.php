@@ -378,4 +378,36 @@ class Event
     {
         return $this->imageFile;
     }
+
+    public function isFull(): bool
+    {
+        if (null === $this->maxParticipants) {
+            return false;
+        }
+
+        $confirmedCount = 0;
+        foreach ($this->registrations as $registration) {
+            if ('CONFIRMED' === $registration->getStatus()->value) {
+                ++$confirmedCount;
+            }
+        }
+
+        return $confirmedCount >= $this->maxParticipants;
+    }
+
+    public function getSpotsLeft(): ?int
+    {
+        if (null === $this->maxParticipants) {
+            return null;
+        }
+
+        $confirmedCount = 0;
+        foreach ($this->registrations as $registration) {
+            if ('CONFIRMED' === $registration->getStatus()->value) {
+                ++$confirmedCount;
+            }
+        }
+
+        return max(0, $this->maxParticipants - $confirmedCount);
+    }
 }
