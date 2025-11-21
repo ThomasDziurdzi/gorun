@@ -32,7 +32,7 @@ class RegistrationRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-     public function findPastByUser(User $user): array
+    public function findPastByUser(User $user): array
     {
         return $this->createQueryBuilder('r')
             ->join('r.event', 'e')
@@ -47,7 +47,7 @@ class RegistrationRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-     public function countConfirmedByUser(User $user): int
+    public function countConfirmedByUser(User $user): int
     {
         return (int) $this->createQueryBuilder('r')
             ->select('COUNT(r.id)')
@@ -59,7 +59,7 @@ class RegistrationRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-     public function getTotalKilometersByUser(User $user): float
+    public function getTotalKilometersByUser(User $user): float
     {
         $result = $this->createQueryBuilder('r')
             ->select('SUM(e.distance)')

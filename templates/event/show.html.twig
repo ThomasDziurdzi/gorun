@@ -2,8 +2,7 @@
 {% block title %}Détail évènement · GoRun{% endblock %}
 {% block body %}
 {% set confirmedCount = e.registrations|filter(r => r.status.value == 'CONFIRMED')|length %}
-
-{% set spotsLeft = e.maxParticipants - confirmedCount %}
+{% set spotsLeft = e.spotsLeft %}
 
 <section class="relative rounded-2xl overflow-hidden">
   <img src="{{ e.coverImage ? vich_uploader_asset(e, 'imageFile') : 'https://images.unsplash.com/photo-1520975922284-9f8a3551c2f0?q=80&w=1200&auto=format&fit=crop' }}" alt="{{ e.title }}" class="h-72 w-full object-cover" />
@@ -58,7 +57,12 @@
         </div>
         <div class="p-4 rounded-2xl bg-gray-50">
           <h3 class="font-semibold mb-1">Participants</h3>
-          <p class="text-gray-700">{{ confirmedCount }} / {{ e.maxParticipants }}</p>
+          <p class="text-gray-700">
+            {% if e.maxParticipants is null %}
+              {{ confirmedCount }}
+            {% else %}
+              {{ confirmedCount }} / {{ e.maxParticipants }}
+            {% endif %}
         </div>
       </div>
     </div>
@@ -114,13 +118,15 @@
    <div class="bg-white rounded-2xl shadow p-6">
   <div class="flex items-center justify-between mb-3">
     <h3 class="font-semibold">Inscription</h3>
-    {% if spotsLeft > 0 %}
-      <span class="text-sm font-medium {{ spotsLeft <= 5 ? 'text-amber-600' : 'text-green-600' }}">
-        {{ spotsLeft }} place{{ spotsLeft > 1 ? 's' : '' }} restante{{ spotsLeft > 1 ? 's' : '' }}
-      </span>
-    {% else %}
-      <span class="text-sm font-medium text-red-600">Complet</span>
-    {% endif %}
+   {% if e.maxParticipants is null %}
+  <span class="text-sm font-medium text-blue-600">Illimité</span>
+{% elseif spotsLeft > 0 %}
+  <span class="text-sm font-medium {{ spotsLeft <= 5 ? 'text-amber-600' : 'text-green-600' }}">
+    {{ spotsLeft }} place{{ spotsLeft > 1 ? 's' : '' }} restante{{ spotsLeft > 1 ? 's' : '' }}
+  </span>
+{% else %}
+  <span class="text-sm font-medium text-red-600">Complet</span>
+{% endif %}
   </div>
 
   {% if app.user %}
@@ -147,18 +153,18 @@
         </button>
       </form>
     {% else %}
-      {% if spotsLeft > 0 %}
-        <form method="post" action="{{ path('event_register', {id: e.id}) }}">
-          <input type="hidden" name="_token" value="{{ csrf_token('register' ~ e.id) }}">
-          <button type="submit" class="block w-full text-center bg-green-600 text-white py-3 rounded-2xl font-semibold hover:bg-green-700 transition">
-            Je m'inscris
-          </button>
-        </form>
-      {% else %}
-        <button disabled class="block w-full text-center bg-gray-400 text-white py-3 rounded-2xl font-semibold cursor-not-allowed">
-          Complet
-        </button>
-      {% endif %}
+     {% if e.maxParticipants is null or spotsLeft > 0 %}
+  <form method="post" action="{{ path('event_register', {id: e.id}) }}">
+    <input type="hidden" name="_token" value="{{ csrf_token('register' ~ e.id) }}">
+    <button type="submit" class="block w-full text-center bg-green-600 text-white py-3 rounded-2xl font-semibold hover:bg-green-700 transition">
+      Je m'inscris
+    </button>
+  </form>
+{% else %}
+  <button disabled class="block w-full text-center bg-gray-400 text-white py-3 rounded-2xl font-semibold cursor-not-allowed">
+    Complet
+  </button>
+{% endif %}
     {% endif %}
   {% else %}
     <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-3">
