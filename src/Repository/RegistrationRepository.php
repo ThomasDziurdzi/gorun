@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Registration;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,28 +17,62 @@ class RegistrationRepository extends ServiceEntityRepository
         parent::__construct($registry, Registration::class);
     }
 
-    //    /**
-    //     * @return Registration[] Returns an array of Registration objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('r.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findUpcomingByUser(User $user): array
+    {
+        return $this->createQueryBuilder('r')
+            ->join('r.event', 'e')
+            ->where('r.user = :user')
+            ->andWhere('r.status = :status')
+            ->andWhere('e.eventDate >= :now')
+            ->setParameter('user', $user)
+            ->setParameter('status', 'CONFIRMED')
+            ->setParameter('now', new \DateTimeImmutable())
+            ->orderBy('e.eventDate', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 
-    //    public function findOneBySomeField($value): ?Registration
-    //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+     public function findPastByUser(User $user): array
+    {
+        return $this->createQueryBuilder('r')
+            ->join('r.event', 'e')
+            ->where('r.user = :user')
+            ->andWhere('r.status = :status')
+            ->andWhere('e.eventDate < :now')
+            ->setParameter('user', $user)
+            ->setParameter('status', 'CONFIRMED')
+            ->setParameter('now', new \DateTimeImmutable())
+            ->orderBy('e.eventDate', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+     public function countConfirmedByUser(User $user): int
+    {
+        return (int) $this->createQueryBuilder('r')
+            ->select('COUNT(r.id)')
+            ->where('r.user = :user')
+            ->andWhere('r.status = :status')
+            ->setParameter('user', $user)
+            ->setParameter('status', 'CONFIRMED')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+     public function getTotalKilometersByUser(User $user): float
+    {
+        $result = $this->createQueryBuilder('r')
+            ->select('SUM(e.distance)')
+            ->join('r.event', 'e')
+            ->where('r.user = :user')
+            ->andWhere('r.status = :status')
+            ->andWhere('e.eventDate < :now')
+            ->setParameter('user', $user)
+            ->setParameter('status', 'CONFIRMED')
+            ->setParameter('now', new \DateTimeImmutable())
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return (float) ($result ?? 0);
+    }
 }
