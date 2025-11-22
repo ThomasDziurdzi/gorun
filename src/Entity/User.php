@@ -194,6 +194,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $data = (array) $this;
         $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
 
+        // Exclude file from Serialization
+        unset($data["\0".self::class."\0profilePictureFile"]);
+
         return $data;
     }
 
