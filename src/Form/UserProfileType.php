@@ -14,6 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class UserProfileType extends AbstractType
 {
@@ -65,6 +66,22 @@ class UserProfileType extends AbstractType
                 'constraints' => [
                     new Assert\NotBlank(['message' => 'L\'email est obligatoire']),
                     new Assert\Email(['message' => 'L\'email {{ value }} n\'est pas valide']),
+                ],
+            ])
+
+            ->add('profilePictureFile', VichImageType::class, [
+                'label' => 'Photo de profil',
+                'required' => false,
+                'allow_delete' => true,
+                'delete_label' => 'Supprimer la photo',
+                'download_uri' => false,
+                'help' => 'Formats acceptés : JPG, PNG, WEBP. Taille max : 2 MB',
+                'help_attr' => [
+                    'class' => 'text-xs text-gray-500 mt-1',
+                ],
+                'attr' => [
+                    'accept' => 'image/jpeg,image/png,image/webp',
+                    'class' => 'block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none',
                 ],
             ])
 

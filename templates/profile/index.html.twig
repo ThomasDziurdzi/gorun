@@ -139,8 +139,16 @@
         <h3 class="font-semibold mb-4 text-gray-900">Aperçu public</h3>
 
         <div class="space-y-3">
-          <div class="w-20 h-20 rounded-full bg-green-600 text-white flex items-center justify-center text-2xl font-bold mx-auto">
-            {{ user.firstname|first|upper }}{{ user.lastname|first|upper }}
+          <div class="w-20 h-20 rounded-full mx-auto overflow-hidden">
+            {% if user.profilePicture %}
+              <img src="{{ vich_uploader_asset(user, 'profilePictureFile') }}" 
+                alt="{{ user.firstname }} {{ user.lastname }}" 
+                class="w-full h-full object-cover">
+            {% else %}
+              <div class="w-full h-full bg-green-600 text-white flex items-center justify-center text-2xl font-bold">
+                {{ user.firstname|first|upper }}{{ user.lastname|first|upper }}
+              </div>
+            {% endif %}
           </div>
 
           <div class="text-center">
