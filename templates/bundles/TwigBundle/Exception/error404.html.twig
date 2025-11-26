@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Page non trouvée · GoRun{% endblock %}
+
+{% block body %}
+<div class="min-h-[60vh] flex items-center justify-center px-4">
+  <div class="text-center max-w-2xl">
+    
+    {# Illustration #}
+    <div class="mb-8">
+      <div class="text-9xl mb-4">🏃💨</div>
+      <h1 class="text-6xl font-bold text-gray-900 mb-2">404</h1>
+    </div>
+
+    {# Message #}
+    <h2 class="text-3xl font-bold text-gray-900 mb-4">
+      Oups ! Cette page court trop vite pour nous
+    </h2>
+    
+    <p class="text-lg text-gray-600 mb-8">
+      La page que vous cherchez semble avoir pris de l'avance.<br>
+      Elle a peut-être été déplacée, supprimée, ou n'a jamais existé.
+    </p>
+
+    {# Actions #}
+    <div class="flex flex-wrap gap-4 justify-center">
+      <a href="{{ path('event_index') }}" 
+         class="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-2xl font-semibold hover:bg-green-700 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+        </svg>
+        Retour à l'accueil
+      </a>
+
+      <button onclick="window.history.back()" 
+              class="inline-flex items-center gap-2 bg-gray-200 text-gray-800 px-6 py-3 rounded-2xl font-semibold hover:bg-gray-300 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        Page précédente
+      </button>
+    </div>
+
+    {# Suggestions #}
+    <div class="mt-12 pt-8 border-t border-gray-200">
+      <p class="text-sm text-gray-600 mb-4">Peut-être cherchez-vous :</p>
+      <div class="flex flex-wrap gap-3 justify-center text-sm">
+        <a href="{{ path('event_index') }}" class="text-green-600 hover:text-green-700 hover:underline">
+          📅 Événements
+        </a>
+        {% if is_granted('ROLE_USER') %}
+          <a href="{{ path('app_profile') }}" class="text-green-600 hover:text-green-700 hover:underline">
+            👤 Mon profil
+          </a>
+          <a href="{{ path('app_profile_events') }}" class="text-green-600 hover:text-green-700 hover:underline">
+            🏃 Mes événements
+          </a>
+        {% else %}
+          <a href="{{ path('app_login') }}" class="text-green-600 hover:text-green-700 hover:underline">
+            🔐 Connexion
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
