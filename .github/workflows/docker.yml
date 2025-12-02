@@ -2,9 +2,9 @@ name: Docker CI
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main, dev ]
+    branches: [ main, develop ]
 
 permissions:
   contents: read
@@ -33,11 +33,6 @@ jobs:
     - name: Build Docker images
       run: docker compose build --no-cache
 
-    - name: Verify image size
-      run: |
-        echo "Docker image sizes:"
-        docker images gorun-php --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}"
-
     - name: Start Docker containers
       run: docker compose up -d
 
@@ -50,19 +45,12 @@ jobs:
         echo "Waiting for PHP-FPM..."
         timeout 30 bash -c 'until docker compose exec -T php php -v > /dev/null 2>&1; do sleep 2; done'
         echo "✅ PHP-FPM ready"
-        
-        echo "Waiting for Nginx..."
-        timeout 30 bash -c 'until curl -s http://localhost:8080 > /dev/null; do sleep 2; done'
-        echo "✅ Nginx ready"
 
     - name: Verify containers are running
       run: docker compose ps
 
-    - name: Check PHP version in container
+    - name: Check PHP version
       run: docker compose exec -T php php -v
-
-    - name: Check Composer packages
-      run: docker compose exec -T php composer show --installed
 
     - name: Verify database connection
       run: |
@@ -72,9 +60,26 @@ jobs:
           echo '✅ Database connection successful\n';
         } catch (Exception \$e) {
           echo '❌ Database connection failed: ' . \$e->getMessage() . '\n';
-          exit(1);
+          exit 1;
         }
         "
+
+    - name: Create database
+      run: docker compose exec -T php php bin/console doctrine:database:create --if-not-exists
+
+    - name: Run migrations
+      run: docker compose exec -T php php bin/console doctrine:migrations:migrate --no-interaction
+
+    - name: Warmup cache
+      run: docker compose exec -T php php bin/console cache:warmup
+
+    - name: Check logs before HTTP test
+      run: |
+        echo "=== PHP-FPM logs ==="
+        docker compose logs php | tail -30
+        echo ""
+        echo "=== Nginx logs ==="
+        docker compose logs nginx | tail -30
 
     - name: Test HTTP response
       run: |
@@ -84,6 +89,9 @@ jobs:
           echo "✅ Application responds correctly"
         else
           echo "❌ Application returned unexpected code: $HTTP_CODE"
+          echo ""
+          echo "=== Full response for debugging ==="
+          curl -v http://localhost:8080
           exit 1
         fi
 
