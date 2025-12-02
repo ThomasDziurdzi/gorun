@@ -31,7 +31,7 @@ jobs:
         EOF
 
     - name: Build Docker images
-      run: docker-compose build --no-cache
+      run: docker compose build --no-cache
 
     - name: Verify image size
       run: |
@@ -39,16 +39,16 @@ jobs:
         docker images gorun-php --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}"
 
     - name: Start Docker containers
-      run: docker-compose up -d
+      run: docker compose up -d
 
     - name: Wait for services to be ready
       run: |
         echo "Waiting for MySQL..."
-        timeout 90 bash -c 'until docker-compose exec -T mysql mysqladmin ping -h localhost --silent; do sleep 2; done'
+        timeout 90 bash -c 'until docker compose exec -T mysql mysqladmin ping -h localhost --silent; do sleep 2; done'
         echo "✅ MySQL ready"
         
         echo "Waiting for PHP-FPM..."
-        timeout 30 bash -c 'until docker-compose exec -T php php -v > /dev/null 2>&1; do sleep 2; done'
+        timeout 30 bash -c 'until docker compose exec -T php php -v > /dev/null 2>&1; do sleep 2; done'
         echo "✅ PHP-FPM ready"
         
         echo "Waiting for Nginx..."
@@ -56,17 +56,17 @@ jobs:
         echo "✅ Nginx ready"
 
     - name: Verify containers are running
-      run: docker-compose ps
+      run: docker compose ps
 
     - name: Check PHP version in container
-      run: docker-compose exec -T php php -v
+      run: docker compose exec -T php php -v
 
     - name: Check Composer packages
-      run: docker-compose exec -T php composer show --installed
+      run: docker compose exec -T php composer show --installed
 
     - name: Verify database connection
       run: |
-        docker-compose exec -T php php -r "
+        docker compose exec -T php php -r "
         try {
           \$pdo = new PDO('mysql:host=mysql;port=3306', 'root', 'root');
           echo '✅ Database connection successful\n';
@@ -89,30 +89,8 @@ jobs:
 
     - name: Show Docker logs on failure
       if: failure()
-      run: docker-compose logs
+      run: docker compose logs
 
     - name: Stop Docker containers
       if: always()
-      run: docker-compose down -v
-
-  docker-push:
-    name: Push to Docker Hub
-    runs-on: ubuntu-latest
-    needs: docker-build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Login to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: Build and push
-      run: |
-        docker-compose build
-        docker tag gorun-php:latest ${{ secrets.DOCKER_USERNAME }}/gorun:latest
-        docker push ${{ secrets.DOCKER_USERNAME }}/gorun:latest
+      run: docker compose down -v

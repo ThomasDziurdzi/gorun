@@ -3,6 +3,7 @@
 ![CI Pipeline](https://github.com/ThomasDziurdzi/gorun/actions/workflows/ci.yml/badge.svg)
 ![PHP Version](https://img.shields.io/badge/PHP-8.2%2B-blue)
 ![Symfony Version](https://img.shields.io/badge/Symfony-7.3-black)
+![Docker Pipeline](https://github.com/ThomasDziurdzi/gorun/actions/workflows/docker.yml/badge.svg)
 
 Application web permettant aux coureurs de créer, découvrir et s'inscrire à des événements de course à pied.
 
