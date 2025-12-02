@@ -1,0 +1,36 @@
+# Dépendances
+/vendor/
+/node_modules/
+
+# Cache et logs
+/var/
+/public/uploads/
+
+# Configuration
+/.env
+/.env.local
+/.env.local.php
+/.env.*.local
+
+# IDE
+/.idea/
+/.vscode/
+*.swp
+*.swo
+*~
+
+# Git
+/.git/
+/.gitignore
+
+# Tests
+/tests/
+
+# Documentation
+/README.md
+/docs/
+
+# Docker
+/docker-compose.yml
+/docker-compose.*.yml
+/docker/
