@@ -1,0 +1,118 @@
+name: Docker CI
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+permissions:
+  contents: read
+
+jobs:
+  docker-build:
+    name: Docker Build & Validate
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Create .env.docker for CI
+      run: |
+        cat > .env.docker << EOF
+        APP_ENV=prod
+        APP_SECRET=test-secret-key-for-ci-docker
+        DATABASE_URL=mysql://root:root@mysql:3306/gorun?serverVersion=9.1
+        NGINX_PORT=8080
+        MYSQL_PORT=3307
+        USER_ID=1000
+        GROUP_ID=1000
+        EOF
+
+    - name: Build Docker images
+      run: docker-compose build --no-cache
+
+    - name: Verify image size
+      run: |
+        echo "Docker image sizes:"
+        docker images gorun-php --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}"
+
+    - name: Start Docker containers
+      run: docker-compose up -d
+
+    - name: Wait for services to be ready
+      run: |
+        echo "Waiting for MySQL..."
+        timeout 90 bash -c 'until docker-compose exec -T mysql mysqladmin ping -h localhost --silent; do sleep 2; done'
+        echo "✅ MySQL ready"
+        
+        echo "Waiting for PHP-FPM..."
+        timeout 30 bash -c 'until docker-compose exec -T php php -v > /dev/null 2>&1; do sleep 2; done'
+        echo "✅ PHP-FPM ready"
+        
+        echo "Waiting for Nginx..."
+        timeout 30 bash -c 'until curl -s http://localhost:8080 > /dev/null; do sleep 2; done'
+        echo "✅ Nginx ready"
+
+    - name: Verify containers are running
+      run: docker-compose ps
+
+    - name: Check PHP version in container
+      run: docker-compose exec -T php php -v
+
+    - name: Check Composer packages
+      run: docker-compose exec -T php composer show --installed
+
+    - name: Verify database connection
+      run: |
+        docker-compose exec -T php php -r "
+        try {
+          \$pdo = new PDO('mysql:host=mysql;port=3306', 'root', 'root');
+          echo '✅ Database connection successful\n';
+        } catch (Exception \$e) {
+          echo '❌ Database connection failed: ' . \$e->getMessage() . '\n';
+          exit(1);
+        }
+        "
+
+    - name: Test HTTP response
+      run: |
+        HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080)
+        echo "HTTP Response Code: $HTTP_CODE"
+        if [ "$HTTP_CODE" -eq 200 ] || [ "$HTTP_CODE" -eq 302 ]; then
+          echo "✅ Application responds correctly"
+        else
+          echo "❌ Application returned unexpected code: $HTTP_CODE"
+          exit 1
+        fi
+
+    - name: Show Docker logs on failure
+      if: failure()
+      run: docker-compose logs
+
+    - name: Stop Docker containers
+      if: always()
+      run: docker-compose down -v
+
+  docker-push:
+    name: Push to Docker Hub
+    runs-on: ubuntu-latest
+    needs: docker-build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push
+      run: |
+        docker-compose build
+        docker tag gorun-php:latest ${{ secrets.DOCKER_USERNAME }}/gorun:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/gorun:latest
