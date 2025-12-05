@@ -21,7 +21,7 @@ class RegistrationApiController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $em,
-        private RegistrationRepository $registrationRepository
+        private RegistrationRepository $registrationRepository,
     ) {
     }
 
@@ -175,109 +175,109 @@ class RegistrationApiController extends AbstractController
     }
 
     #[Route('/my-registrations', name: 'my_list', methods: ['GET'])]
-#[OA\Get(
-    path: '/api/my-registrations',
-    summary: 'Mes inscriptions',
-    description: 'Récupère toutes les inscriptions de l\'utilisateur connecté',
-    security: [['Bearer' => []]],
-    responses: [
-        new OA\Response(
-            response: 200,
-            description: 'Liste des inscriptions',
-            content: new OA\JsonContent(
-                properties: [
-                    new OA\Property(
-                        property: 'upcoming',
-                        type: 'array',
-                        description: 'Inscriptions aux événements à venir',
-                        items: new OA\Items(
-                            properties: [
-                                new OA\Property(property: 'id', type: 'integer', example: 1),
-                                new OA\Property(
-                                    property: 'status',
-                                    type: 'string',
-                                    enum: ['PENDING', 'CONFIRMED', 'CANCELLED'],
-                                    example: 'CONFIRMED'
-                                ),
-                                new OA\Property(
-                                    property: 'registrationDate',
-                                    type: 'string',
-                                    format: 'date-time',
-                                    example: '2025-12-01T10:00:00+01:00'
-                                ),
-                                new OA\Property(
-                                    property: 'event',
-                                    type: 'object',
-                                    properties: [
-                                        new OA\Property(property: 'id', type: 'integer', example: 1),
-                                        new OA\Property(property: 'title', type: 'string', example: 'Course 10K Paris'),
-                                        new OA\Property(
-                                            property: 'eventDate',
-                                            type: 'string',
-                                            format: 'date-time',
-                                            example: '2025-12-15T10:00:00+01:00'
-                                        ),
-                                        new OA\Property(property: 'distance', type: 'string', example: '10.0'),
-                                        new OA\Property(
-                                            property: 'location',
-                                            type: 'object',
-                                            properties: [
-                                                new OA\Property(property: 'city', type: 'string', example: 'Paris'),
-                                                new OA\Property(property: 'name', type: 'string', example: 'Parc des Buttes-Chaumont'),
-                                            ]
-                                        ),
-                                    ]
-                                ),
-                            ]
-                        )
-                    ),
-                    new OA\Property(
-                        property: 'past',
-                        type: 'array',
-                        description: 'Inscriptions aux événements passés',
-                        items: new OA\Items(
-                            properties: [
-                                new OA\Property(property: 'id', type: 'integer', example: 2),
-                                new OA\Property(property: 'status', type: 'string', example: 'CONFIRMED'),
-                                new OA\Property(property: 'registrationDate', type: 'string', format: 'date-time'),
-                                new OA\Property(
-                                    property: 'event',
-                                    type: 'object',
-                                    properties: [
-                                        new OA\Property(property: 'id', type: 'integer'),
-                                        new OA\Property(property: 'title', type: 'string'),
-                                        new OA\Property(property: 'eventDate', type: 'string', format: 'date-time'),
-                                        new OA\Property(property: 'distance', type: 'string'),
-                                        new OA\Property(
-                                            property: 'location',
-                                            type: 'object',
-                                            properties: [
-                                                new OA\Property(property: 'city', type: 'string'),
-                                                new OA\Property(property: 'name', type: 'string'),
-                                            ]
-                                        ),
-                                    ]
-                                ),
-                            ]
-                        )
-                    ),
-                ]
-            )
-        ),
-    ]
-)]
-public function myRegistrations(): JsonResponse
-{
-    $user = $this->getUser();
+    #[OA\Get(
+        path: '/api/my-registrations',
+        summary: 'Mes inscriptions',
+        description: 'Récupère toutes les inscriptions de l\'utilisateur connecté',
+        security: [['Bearer' => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Liste des inscriptions',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'upcoming',
+                            type: 'array',
+                            description: 'Inscriptions aux événements à venir',
+                            items: new OA\Items(
+                                properties: [
+                                    new OA\Property(property: 'id', type: 'integer', example: 1),
+                                    new OA\Property(
+                                        property: 'status',
+                                        type: 'string',
+                                        enum: ['PENDING', 'CONFIRMED', 'CANCELLED'],
+                                        example: 'CONFIRMED'
+                                    ),
+                                    new OA\Property(
+                                        property: 'registrationDate',
+                                        type: 'string',
+                                        format: 'date-time',
+                                        example: '2025-12-01T10:00:00+01:00'
+                                    ),
+                                    new OA\Property(
+                                        property: 'event',
+                                        type: 'object',
+                                        properties: [
+                                            new OA\Property(property: 'id', type: 'integer', example: 1),
+                                            new OA\Property(property: 'title', type: 'string', example: 'Course 10K Paris'),
+                                            new OA\Property(
+                                                property: 'eventDate',
+                                                type: 'string',
+                                                format: 'date-time',
+                                                example: '2025-12-15T10:00:00+01:00'
+                                            ),
+                                            new OA\Property(property: 'distance', type: 'string', example: '10.0'),
+                                            new OA\Property(
+                                                property: 'location',
+                                                type: 'object',
+                                                properties: [
+                                                    new OA\Property(property: 'city', type: 'string', example: 'Paris'),
+                                                    new OA\Property(property: 'name', type: 'string', example: 'Parc des Buttes-Chaumont'),
+                                                ]
+                                            ),
+                                        ]
+                                    ),
+                                ]
+                            )
+                        ),
+                        new OA\Property(
+                            property: 'past',
+                            type: 'array',
+                            description: 'Inscriptions aux événements passés',
+                            items: new OA\Items(
+                                properties: [
+                                    new OA\Property(property: 'id', type: 'integer', example: 2),
+                                    new OA\Property(property: 'status', type: 'string', example: 'CONFIRMED'),
+                                    new OA\Property(property: 'registrationDate', type: 'string', format: 'date-time'),
+                                    new OA\Property(
+                                        property: 'event',
+                                        type: 'object',
+                                        properties: [
+                                            new OA\Property(property: 'id', type: 'integer'),
+                                            new OA\Property(property: 'title', type: 'string'),
+                                            new OA\Property(property: 'eventDate', type: 'string', format: 'date-time'),
+                                            new OA\Property(property: 'distance', type: 'string'),
+                                            new OA\Property(
+                                                property: 'location',
+                                                type: 'object',
+                                                properties: [
+                                                    new OA\Property(property: 'city', type: 'string'),
+                                                    new OA\Property(property: 'name', type: 'string'),
+                                                ]
+                                            ),
+                                        ]
+                                    ),
+                                ]
+                            )
+                        ),
+                    ]
+                )
+            ),
+        ]
+    )]
+    public function myRegistrations(): JsonResponse
+    {
+        $user = $this->getUser();
 
-    $upcoming = $this->registrationRepository->findUpcomingByUser($user);
-    $past = $this->registrationRepository->findPastByUser($user);
+        $upcoming = $this->registrationRepository->findUpcomingByUser($user);
+        $past = $this->registrationRepository->findPastByUser($user);
 
-    return $this->json([
-        'upcoming' => array_map(fn($r) => $this->serializeRegistration($r), $upcoming),
-        'past' => array_map(fn($r) => $this->serializeRegistration($r), $past),
-    ]);
-}
+        return $this->json([
+            'upcoming' => array_map(fn ($r) => $this->serializeRegistration($r), $upcoming),
+            'past' => array_map(fn ($r) => $this->serializeRegistration($r), $past),
+        ]);
+    }
 
     private function serializeRegistration(Registration $registration): array
     {

@@ -21,7 +21,7 @@ class CommentApiController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $em,
-        private ValidatorInterface $validator
+        private ValidatorInterface $validator,
     ) {
     }
 
@@ -85,7 +85,7 @@ class CommentApiController extends AbstractController
         );
 
         return $this->json(
-            array_map(fn(Comment $c) => $this->serializeComment($c), $comments)
+            array_map(fn (Comment $c) => $this->serializeComment($c), $comments)
         );
     }
 
@@ -338,6 +338,7 @@ class CommentApiController extends AbstractController
                 'message' => $error->getMessage(),
             ];
         }
+
         return $formatted;
     }
 }
