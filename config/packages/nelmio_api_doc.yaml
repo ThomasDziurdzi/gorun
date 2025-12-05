@@ -1,0 +1,93 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: GoRun API
+            description: |
+                API REST pour la plateforme de running collaboratif GoRun.
+                
+                ## Authentification
+                L'API utilise JWT (JSON Web Tokens) pour l'authentification.
+                1. Créez un compte via `/api/register`
+                2. Connectez-vous via `/api/login` pour obtenir un token
+                3. Utilisez ce token dans le header `Authorization: Bearer {token}`
+            version: 1.0.0
+            contact:
+                name: GoRun Support
+                email: support@gorun.com
+        servers:
+            - url: http://localhost:8000
+              description: Serveur de développement
+        
+        # Documentation manuelle du endpoint /api/login
+        paths:
+            /api/login:
+                post:
+                    tags:
+                        - Authentication
+                    summary: Se connecter et obtenir un token JWT
+                    description: |
+                        Authentifie un utilisateur avec son email et mot de passe.
+                        Retourne un token JWT à utiliser pour les requêtes authentifiées.
+                    operationId: login
+                    requestBody:
+                        required: true
+                        description: Identifiants de connexion
+                        content:
+                            application/json:
+                                schema:
+                                    type: object
+                                    required:
+                                        - username
+                                        - password
+                                    properties:
+                                        username:
+                                            type: string
+                                            format: email
+                                            description: Adresse email de l'utilisateur
+                                            example: admin@test.com
+                                        password:
+                                            type: string
+                                            format: password
+                                            description: Mot de passe de l'utilisateur
+                                            example: password
+                    responses:
+                        '200':
+                            description: Authentification réussie
+                            content:
+                                application/json:
+                                    schema:
+                                        type: object
+                                        properties:
+                                            token:
+                                                type: string
+                                                description: Token JWT à utiliser pour les requêtes authentifiées
+                                                example: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...
+                        '401':
+                            description: Identifiants invalides
+                            content:
+                                application/json:
+                                    schema:
+                                        type: object
+                                        properties:
+                                            code:
+                                                type: integer
+                                                example: 401
+                                            message:
+                                                type: string
+                                                example: Invalid credentials.
+        
+        components:
+            securitySchemes:
+                Bearer:
+                    type: http
+                    scheme: bearer
+                    bearerFormat: JWT
+                    description: "Entrez votre token JWT (sans le préfixe 'Bearer')"
+        security:
+            - Bearer: []
+        
+    areas:
+        path_patterns:
+            - ^/api(?!/doc$)
+        host_patterns:
+            - ^.*$

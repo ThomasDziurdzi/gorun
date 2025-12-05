@@ -75,40 +75,40 @@ class ProfileController extends AbstractController
     }
 
     #[Route('/profil/changer-mot-de-passe', name: 'app_profile_change_password')]
-public function changePassword(
-    Request $request,
-    UserPasswordHasherInterface $passwordHasher,
-    EntityManagerInterface $em
-): Response
-{
-    /** @var \App\Entity\User $user */
-    $user = $this->getUser();
-    
-    $form = $this->createForm(ChangePasswordType::class);
-    $form->handleRequest($request);
+    public function changePassword(
+        Request $request,
+        UserPasswordHasherInterface $passwordHasher,
+        EntityManagerInterface $em,
+    ): Response {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
 
-    if ($form->isSubmitted() && $form->isValid()) {
-        $currentPassword = $form->get('currentPassword')->getData();
-        
-        if (!$passwordHasher->isPasswordValid($user, $currentPassword)) {
-            $this->addFlash('error', 'Le mot de passe actuel est incorrect');
-            return $this->redirectToRoute('app_profile_change_password');
+        $form = $this->createForm(ChangePasswordType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $currentPassword = $form->get('currentPassword')->getData();
+
+            if (!$passwordHasher->isPasswordValid($user, $currentPassword)) {
+                $this->addFlash('error', 'Le mot de passe actuel est incorrect');
+
+                return $this->redirectToRoute('app_profile_change_password');
+            }
+
+            $newPassword = $form->get('newPassword')->getData();
+            $hashedPassword = $passwordHasher->hashPassword($user, $newPassword);
+            $user->setPassword($hashedPassword);
+
+            $em->flush();
+
+            $this->addFlash('success', 'Votre mot de passe a été changé avec succès !');
+
+            return $this->redirectToRoute('app_profile');
         }
 
-        $newPassword = $form->get('newPassword')->getData();
-        $hashedPassword = $passwordHasher->hashPassword($user, $newPassword);
-        $user->setPassword($hashedPassword);
-        
-        $em->flush();
-
-        $this->addFlash('success', 'Votre mot de passe a été changé avec succès !');
-
-        return $this->redirectToRoute('app_profile');
+        return $this->render('profile/change_password.html.twig', [
+            'form' => $form,
+            'user' => $user,
+        ]);
     }
-
-    return $this->render('profile/change_password.html.twig', [
-        'form' => $form,
-        'user' => $user,
-    ]);
-}
 }
