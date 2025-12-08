@@ -17,6 +17,8 @@ class EventSearchType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $isAdmin = $options['is_admin'] ?? false;
+
         $builder
             ->add('query', SearchType::class, [
                 'label' => 'Rechercher',
@@ -26,7 +28,6 @@ class EventSearchType extends AbstractType
                     'class' => self::BASE_INPUT_CLASS,
                 ],
             ])
-
             ->add('level', ChoiceType::class, [
                 'label' => 'Niveau',
                 'required' => false,
@@ -41,24 +42,16 @@ class EventSearchType extends AbstractType
                     'class' => self::BASE_INPUT_CLASS,
                 ],
             ])
-
             ->add('status', ChoiceType::class, [
                 'label' => 'Statut',
                 'required' => false,
-                'choices' => [
-                    'Tous les statuts' => 'all',
-                    'Publié' => EventStatus::PUBLISHED->value,
-                    'Brouillon' => EventStatus::DRAFT->value,
-                    'Annulé' => EventStatus::CANCELLED->value,
-                    'Terminé' => EventStatus::COMPLETED->value,
-                ],
+                'choices' => $this->getStatusChoices($isAdmin),
                 'data' => EventStatus::PUBLISHED->value,
                 'placeholder' => false,
                 'attr' => [
                     'class' => self::BASE_INPUT_CLASS,
                 ],
             ])
-
             ->add('dateFrom', DateType::class, [
                 'label' => 'Date de début',
                 'required' => false,
@@ -67,7 +60,6 @@ class EventSearchType extends AbstractType
                     'class' => self::BASE_INPUT_CLASS,
                 ],
             ])
-
             ->add('dateTo', DateType::class, [
                 'label' => 'Date de fin',
                 'required' => false,
@@ -76,7 +68,6 @@ class EventSearchType extends AbstractType
                     'class' => self::BASE_INPUT_CLASS,
                 ],
             ])
-
             ->add('sort', ChoiceType::class, [
                 'label' => 'Trier par',
                 'required' => false,
@@ -89,8 +80,23 @@ class EventSearchType extends AbstractType
                 'attr' => [
                     'class' => self::BASE_INPUT_CLASS,
                 ],
-            ])
-        ;
+            ]);
+    }
+
+    private function getStatusChoices(bool $isAdmin): array
+    {
+        $choices = [
+            'Tous les statuts' => 'all',
+            'Publié' => EventStatus::PUBLISHED->value,
+            'Annulé' => EventStatus::CANCELLED->value,
+            'Terminé' => EventStatus::COMPLETED->value,
+        ];
+
+        if ($isAdmin) {
+            $choices['Brouillon'] = EventStatus::DRAFT->value;
+        }
+
+        return $choices;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -98,6 +104,7 @@ class EventSearchType extends AbstractType
         $resolver->setDefaults([
             'method' => 'GET',
             'csrf_protection' => false,
+            'is_admin' => false,
         ]);
     }
 }

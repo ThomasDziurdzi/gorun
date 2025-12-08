@@ -5,6 +5,7 @@ namespace App\Tests\Functional\Controller;
 use App\Entity\Comment;
 use App\Entity\Event;
 use App\Entity\User;
+use App\Enum\EventStatus;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class CommentControllerTest extends WebTestCase
@@ -18,10 +19,12 @@ class CommentControllerTest extends WebTestCase
         $client = static::createClient();
         $entityManager = static::getContainer()->get('doctrine')->getManager();
 
-        $event = $entityManager->getRepository(Event::class)->findOneBy([]);
+        $event = $entityManager->getRepository(Event::class)->findOneBy([
+            'status' => EventStatus::PUBLISHED,
+        ]);
 
         if (!$event) {
-            $this->markTestSkipped('Aucun événement trouvé');
+            $this->markTestSkipped('Aucun événement publié trouvé');
         }
 
         $client->request('GET', self::EVENT_SHOW_URL.$event->getId());
@@ -35,10 +38,12 @@ class CommentControllerTest extends WebTestCase
         $client = static::createClient();
         $entityManager = static::getContainer()->get('doctrine')->getManager();
 
-        $event = $entityManager->getRepository(Event::class)->findOneBy([]);
+        $event = $entityManager->getRepository(Event::class)->findOneBy([
+            'status' => EventStatus::PUBLISHED,
+        ]);
 
         if (!$event) {
-            $this->markTestSkipped('Aucun événement trouvé');
+            $this->markTestSkipped('Aucun événement publié trouvé');
         }
 
         $client->request('POST', self::COMMENT_BASE_URL.'evenement/'.$event->getId().'/ajouter');
@@ -52,7 +57,9 @@ class CommentControllerTest extends WebTestCase
         $entityManager = static::getContainer()->get('doctrine')->getManager();
 
         $user = $entityManager->getRepository(User::class)->findOneBy([]);
-        $event = $entityManager->getRepository(Event::class)->findOneBy([]);
+        $event = $entityManager->getRepository(Event::class)->findOneBy([
+            'status' => EventStatus::PUBLISHED,
+        ]);
 
         if (!$user || !$event) {
             $this->markTestSkipped(self::USER_OR_EVENT_NOT_FOUND);
@@ -80,7 +87,9 @@ class CommentControllerTest extends WebTestCase
         $entityManager = static::getContainer()->get('doctrine')->getManager();
 
         $user = $entityManager->getRepository(User::class)->findOneBy([]);
-        $event = $entityManager->getRepository(Event::class)->findOneBy([]);
+        $event = $entityManager->getRepository(Event::class)->findOneBy([
+            'status' => EventStatus::PUBLISHED,
+        ]);
 
         if (!$user || !$event) {
             $this->markTestSkipped(self::USER_OR_EVENT_NOT_FOUND);
@@ -107,7 +116,9 @@ class CommentControllerTest extends WebTestCase
         $entityManager = static::getContainer()->get('doctrine')->getManager();
 
         $user = $entityManager->getRepository(User::class)->findOneBy([]);
-        $event = $entityManager->getRepository(Event::class)->findOneBy([]);
+        $event = $entityManager->getRepository(Event::class)->findOneBy([
+            'status' => EventStatus::PUBLISHED,
+        ]);
 
         if (!$user || !$event) {
             $this->markTestSkipped(self::USER_OR_EVENT_NOT_FOUND);
@@ -160,10 +171,12 @@ class CommentControllerTest extends WebTestCase
         $author = $users[0];
         $otherUser = $users[1];
 
-        $event = $entityManager->getRepository(Event::class)->findOneBy([]);
+        $event = $entityManager->getRepository(Event::class)->findOneBy([
+            'status' => EventStatus::PUBLISHED,
+        ]);
 
         if (!$event) {
-            $this->markTestSkipped('Événement non trouvé');
+            $this->markTestSkipped('Événement publié non trouvé');
         }
 
         $comment = new Comment();
@@ -187,7 +200,9 @@ class CommentControllerTest extends WebTestCase
         $entityManager = static::getContainer()->get('doctrine')->getManager();
 
         $user = $entityManager->getRepository(User::class)->findOneBy([]);
-        $event = $entityManager->getRepository(Event::class)->findOneBy([]);
+        $event = $entityManager->getRepository(Event::class)->findOneBy([
+            'status' => EventStatus::PUBLISHED,
+        ]);
 
         if (!$user || !$event) {
             $this->markTestSkipped(self::USER_OR_EVENT_NOT_FOUND);
@@ -225,7 +240,9 @@ class CommentControllerTest extends WebTestCase
         $entityManager = static::getContainer()->get('doctrine')->getManager();
 
         $user = $entityManager->getRepository(User::class)->findOneBy([]);
-        $event = $entityManager->getRepository(Event::class)->findOneBy([]);
+        $event = $entityManager->getRepository(Event::class)->findOneBy([
+            'status' => EventStatus::PUBLISHED,
+        ]);
 
         if (!$user || !$event) {
             $this->markTestSkipped(self::USER_OR_EVENT_NOT_FOUND);

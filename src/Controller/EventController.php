@@ -6,6 +6,7 @@ use App\Entity\Comment;
 use App\Entity\Event;
 use App\Entity\Location;
 use App\Entity\Registration;
+use App\Enum\EventStatus;
 use App\Enum\RegistrationStatus;
 use App\Form\CommentType;
 use App\Form\EventSearchType;
@@ -24,10 +25,18 @@ class EventController extends AbstractController
     #[Route('/evenements', name: 'event_index', methods: ['GET'])]
     public function index(Request $request, EventRepository $eventRepository, PaginatorInterface $paginator): Response
     {
-        $searchForm = $this->createForm(EventSearchType::class);
+        $searchForm = $this->createForm(EventSearchType::class, null, [
+            'is_admin' => $this->isGranted('ROLE_ADMIN'),
+        ]);
+
         $searchForm->handleRequest($request);
 
         $criteria = $searchForm->getData() ?? [];
+
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            $criteria['exclude_drafts'] = true;
+        }
+
         $query = $eventRepository->searchQuery($criteria);
 
         $pagination = $paginator->paginate(
@@ -78,6 +87,10 @@ class EventController extends AbstractController
     #[Route('/evenement/{id}', name: 'event_show')]
     public function show(Event $event, Request $request, EntityManagerInterface $em): Response
     {
+        if (EventStatus::DRAFT === $event->getStatus() && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Cet événement n\'est pas encore publié.');
+        }
+
         $comments = $em->getRepository(Comment::class)->findBy(
             ['event' => $event],
             ['publicationDate' => 'DESC']
@@ -167,6 +180,25 @@ class EventController extends AbstractController
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
+        if (!$event->canRegister()) {
+            $effectiveStatus = $event->getEffectiveStatus();
+
+            $message = match ($effectiveStatus) {
+                EventStatus::DRAFT => 'Cet événement n\'est pas encore publié.',
+                EventStatus::CANCELLED => 'Cet événement a été annulé.',
+                EventStatus::COMPLETED => 'Cet événement est terminé.',
+                default => 'Vous ne pouvez pas vous inscrire à cet événement.',
+            };
+
+            if ($event->isFull()) {
+                $message = 'L\'événement est complet.';
+            }
+
+            $this->addFlash('error', $message);
+
+            return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
+        }
+
         $existingRegistration = $em->getRepository(Registration::class)->findOneBy([
             'user' => $user,
             'event' => $event,
@@ -174,32 +206,42 @@ class EventController extends AbstractController
         ]);
 
         if ($existingRegistration) {
-            $this->addFlash('warning', 'Vous êtes déjà inscrit à cet évènement.');
+            $this->addFlash('warning', 'Vous êtes déjà inscrit à cet événement.');
 
             return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
         }
 
-        if ($event->isFull()) {
-            $this->addFlash('error', 'L\'événement est complet.');
+        $em->getConnection()->beginTransaction();
+
+        try {
+            $event = $em->find(Event::class, $event->getId(), \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE);
+
+            if (!$event->canRegister()) {
+                throw new \Exception('L\'événement n\'est plus disponible pour inscription.');
+            }
+
+            $registration = new Registration();
+            $registration->setUser($user);
+            $registration->setEvent($event);
+            $registration->setStatus(RegistrationStatus::CONFIRMED);
+
+            $em->persist($registration);
+            $em->flush();
+            $em->getConnection()->commit();
+
+            $this->addFlash('success', sprintf(
+                'Inscription confirmée pour "%s" ! Rendez-vous le %s.',
+                $event->getTitle(),
+                $event->getEventDate()->format('d/m/Y à H:i')
+            ));
+
+            return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
+        } catch (\Exception $e) {
+            $em->getConnection()->rollBack();
+            $this->addFlash('error', $e->getMessage());
 
             return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
         }
-
-        $registration = new Registration();
-        $registration->setUser($user);
-        $registration->setEvent($event);
-        $registration->setStatus(RegistrationStatus::CONFIRMED);
-
-        $em->persist($registration);
-        $em->flush();
-
-        $this->addFlash('success', sprintf(
-            'Inscription confirmée pour "%s" ! Rendez vous le %s.',
-            $event->getTitle(),
-            $event->getEventDate()->format('d/m/Y à h:i')
-        ));
-
-        return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
     }
 
     #[Route('/evenement/{id}/desinscription', name: 'event_unregister', methods: ['POST'])]

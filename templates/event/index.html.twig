@@ -109,16 +109,40 @@
                 {% for event in pagination %}
                     {% set confirmedCount = event.registrations|filter(r => r.status.value == 'CONFIRMED')|length %}
                     {% set spotsLeft = event.spotsLeft %}
+                    {% set isPast = event.isPast %}
+                    {% set effectiveStatus = event.effectiveStatus %}
 
-                    <article class="bg-white rounded-2xl shadow hover:shadow-lg transition overflow-hidden flex flex-col h-full">
-                        <img
-                            src="{{ event.coverImage ? asset('uploads/events/' ~ event.coverImage) : 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=1200&auto=format&fit=crop' }}"
-                            alt="{{ event.title }}"
-                            class="h-40 w-full object-cover"
-                        />
+                    <article class="bg-white rounded-2xl shadow hover:shadow-lg transition overflow-hidden flex flex-col h-full {{ isPast ? 'opacity-60' : '' }}">
+                        <div class="relative">
+                            <img
+                                src="{{ event.coverImage ? asset('uploads/events/' ~ event.coverImage) : 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=1200&auto=format&fit=crop' }}"
+                                alt="{{ event.title }}"
+                                class="h-40 w-full object-cover {{ isPast ? 'grayscale' : '' }}"
+                            />
+                            
+                            {% if effectiveStatus.value == 'COMPLETED' %}
+                                <div class="absolute top-3 right-3 bg-gray-900 bg-opacity-80 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                                    🏁 Terminé
+                                </div>
+                            {% elseif effectiveStatus.value == 'CANCELLED' %}
+                                <div class="absolute top-3 right-3 bg-red-600 bg-opacity-90 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                                    🚫 Annulé
+                                </div>
+                            {% elseif effectiveStatus.value == 'DRAFT' %}
+                                <div class="absolute top-3 right-3 bg-yellow-500 bg-opacity-90 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                                    📝 Brouillon
+                                </div>
+                            {% elseif event.isFull %}
+                                <div class="absolute top-3 right-3 bg-red-500 bg-opacity-90 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                                    ⚠️ Complet
+                                </div>
+                            {% endif %}
+                        </div>
 
                         <div class="p-5 flex flex-col flex-1">
-                            <h2 class="text-lg font-semibold mb-1 line-clamp-2">{{ event.title }}</h2>
+                            <h2 class="text-lg font-semibold mb-1 line-clamp-2 {{ isPast ? 'text-gray-500' : '' }}">
+                                {{ event.title }}
+                            </h2>
 
                             <p class="text-sm text-gray-600 mb-3">
                                 {{ event.eventDate|date('l d F Y H:i')|capitalize }} •
@@ -128,19 +152,30 @@
                             </p>
 
                             <div class="mt-auto flex items-center justify-between">
-                                <span class="text-sm text-gray-700">
-                                    {% if event.maxParticipants is null %}
-                                        <span class="text-blue-600 font-medium">Illimité</span>
-                                    {% elseif spotsLeft <= 0 %}
-                                        <span class="text-red-600 font-medium">Complet</span>
-                                    {% elseif spotsLeft <= 5 %}
-                                        <span class="text-amber-600 font-medium">{{ spotsLeft }} place{{ spotsLeft > 1 ? 's' : '' }}</span>
-                                    {% else %}
-                                        <span class="text-green-600 font-medium">{{ spotsLeft }} place{{ spotsLeft > 1 ? 's' : '' }}</span>
-                                    {% endif %}
-                                </span>
+                                {% if effectiveStatus.value == 'COMPLETED' %}
+                                    <span class="text-sm text-gray-500 font-medium">
+                                        {{ confirmedCount }} participant{{ confirmedCount > 1 ? 's' : '' }}
+                                    </span>
+                                {% elseif effectiveStatus.value == 'CANCELLED' %}
+                                    <span class="text-sm text-red-600 font-medium">
+                                        Annulé
+                                    </span>
+                                {% else %}
+                                    <span class="text-sm text-gray-700">
+                                        {% if event.maxParticipants is null %}
+                                            <span class="text-blue-600 font-medium">Illimité</span>
+                                        {% elseif spotsLeft <= 0 %}
+                                            <span class="text-red-600 font-medium">Complet</span>
+                                        {% elseif spotsLeft <= 5 %}
+                                            <span class="text-amber-600 font-medium">{{ spotsLeft }} place{{ spotsLeft > 1 ? 's' : '' }}</span>
+                                        {% else %}
+                                            <span class="text-green-600 font-medium">{{ spotsLeft }} place{{ spotsLeft > 1 ? 's' : '' }}</span>
+                                        {% endif %}
+                                    </span>
+                                {% endif %}
 
-                                <a href="{{ path('event_show', {id: event.id}) }}" class="text-green-600 font-medium hover:underline">
+                                <a href="{{ path('event_show', {id: event.id}) }}" 
+                                   class="text-green-600 font-medium hover:underline {{ isPast ? 'text-gray-500' : '' }}">
                                     Voir le détail →
                                 </a>
                             </div>

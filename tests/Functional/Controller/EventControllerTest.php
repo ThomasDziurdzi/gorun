@@ -3,6 +3,7 @@
 namespace App\Tests\Functional\Controller;
 
 use App\Entity\User;
+use App\Enum\EventStatus;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class EventControllerTest extends WebTestCase
@@ -23,15 +24,17 @@ class EventControllerTest extends WebTestCase
     public function testEventShowIsAccessible(): void
     {
         $client = static::createClient();
-
         $entityManager = static::getContainer()->get('doctrine')->getManager();
-        $event = $entityManager->getRepository(\App\Entity\Event::class)->findOneBy([]);
+
+        $event = $entityManager->getRepository(\App\Entity\Event::class)->findOneBy([
+            'status' => EventStatus::PUBLISHED,
+        ]);
 
         if ($event) {
-            $client->request('GET', 'evenement/'.$event->getId());
+            $client->request('GET', '/evenement/'.$event->getId());
             $this->assertResponseIsSuccessful();
         } else {
-            $this->markTestSkipped('Aucun événement trouvé en base');
+            $this->markTestSkipped('Aucun événement publié trouvé en base');
         }
     }
 
@@ -46,8 +49,8 @@ class EventControllerTest extends WebTestCase
     public function testEventNewRequiresAdminRole(): void
     {
         $client = static::createClient();
-
         $entityManager = static::getContainer()->get('doctrine')->getManager();
+
         $user = $entityManager->getRepository(User::class)->findOneBy(['email' => 'user@example.com']);
 
         if (!$user) {
@@ -63,8 +66,8 @@ class EventControllerTest extends WebTestCase
     public function testEventNewIsAccessibleForAdmin(): void
     {
         $client = static::createClient();
-
         $entityManager = static::getContainer()->get('doctrine')->getManager();
+
         $admin = $entityManager->getRepository(User::class)->findOneBy([]);
 
         if (!$admin) {
