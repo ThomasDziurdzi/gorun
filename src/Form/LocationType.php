@@ -9,7 +9,9 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class LocationType extends AbstractType
 {
@@ -31,13 +33,11 @@ class LocationType extends AbstractType
 
             ->add('address', TextType::class, [
                 'label' => 'Adresse',
+                'required' => false, 
                 'attr' => [
                     'class' => self::BASE_INPUT_CLASS,
-                    'placeholder' => 'Avenue de l\'Europe',
+                    'placeholder' => 'Avenue de l\'Europe (ou cliquez sur la carte)',
                     'id' => 'location_address',
-                ],
-                'constraints' => [
-                    new NotBlank(message: 'L\'adresse est obligatoire'),
                 ],
             ])
 
@@ -72,16 +72,12 @@ class LocationType extends AbstractType
 
             ->add('latitude', HiddenType::class, [
                 'attr' => ['id' => 'location_latitude'],
-                'constraints' => [
-                    new NotBlank(message: 'Veuillez placer un point sur la carte'),
-                ],
+               
             ])
 
             ->add('longitude', HiddenType::class, [
                 'attr' => ['id' => 'location_longitude'],
-                'constraints' => [
-                    new NotBlank(message: 'Veuillez placer un point sur la carte'),
-                ],
+              
             ])
 
             ->add('meetingPoint', TextType::class, [
@@ -110,6 +106,24 @@ class LocationType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Location::class,
             'csrf_protection' => true,
+            'constraints' => [
+                new Callback(function (Location $location, ExecutionContextInterface $context) {
+                    $hasAddress = !empty($location->getAddress());
+                    $hasCoords = !empty($location->getLatitude()) && !empty($location->getLongitude());
+
+                    if (!$hasAddress && !$hasCoords) {
+                        $context->buildViolation('Vous devez soit saisir une adresse, soit placer un point sur la carte.')
+                            ->atPath('address')
+                            ->addViolation();
+                    }
+
+                    if (!$hasCoords) {
+                        $context->buildViolation('Veuillez valider la position sur la carte en cliquant sur "Géocoder" ou en cliquant directement sur la carte.')
+                            ->atPath('latitude')
+                            ->addViolation();
+                    }
+                }),
+            ],
         ]);
     }
 }
