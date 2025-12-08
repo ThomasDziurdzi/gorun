@@ -52,6 +52,8 @@ class EventSearchType extends AbstractType
                     'Annulé' => EventStatus::CANCELLED->value,
                     'Terminé' => EventStatus::COMPLETED->value,
                 ],
+                'data' => EventStatus::PUBLISHED->value,
+                'placeholder' => false,
                 'attr' => [
                     'class' => self::BASE_INPUT_CLASS,
                 ],
