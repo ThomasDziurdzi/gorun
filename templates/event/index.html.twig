@@ -112,7 +112,11 @@
                     {% set isPast = event.isPast %}
                     {% set effectiveStatus = event.effectiveStatus %}
 
-                    <article class="bg-white rounded-2xl shadow hover:shadow-lg transition overflow-hidden flex flex-col h-full {{ isPast ? 'opacity-60' : '' }}">
+                    <article class="
+                        bg-white rounded-2xl shadow hover:shadow-lg transition overflow-hidden flex flex-col h-full
+                        {{ isPast ? 'opacity-60' : '' }}
+                        {{ effectiveStatus.value == 'CANCELLED' ? 'opacity-60 bg-red-50' : '' }}
+                    ">
                         <div class="relative">
                             <img
                                 src="{{ event.coverImage ? asset('uploads/events/' ~ event.coverImage) : 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=1200&auto=format&fit=crop' }}"
@@ -122,19 +126,15 @@
                             
                             {% if effectiveStatus.value == 'COMPLETED' %}
                                 <div class="absolute top-3 right-3 bg-gray-900 bg-opacity-80 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
-                                    🏁 Terminé
+                                    Terminé
                                 </div>
                             {% elseif effectiveStatus.value == 'CANCELLED' %}
                                 <div class="absolute top-3 right-3 bg-red-600 bg-opacity-90 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
-                                    🚫 Annulé
+                                    Annulé
                                 </div>
                             {% elseif effectiveStatus.value == 'DRAFT' %}
                                 <div class="absolute top-3 right-3 bg-yellow-500 bg-opacity-90 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
-                                    📝 Brouillon
-                                </div>
-                            {% elseif event.isFull %}
-                                <div class="absolute top-3 right-3 bg-red-500 bg-opacity-90 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
-                                    ⚠️ Complet
+                                    Brouillon
                                 </div>
                             {% endif %}
                         </div>
