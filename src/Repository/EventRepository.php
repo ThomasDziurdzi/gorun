@@ -63,7 +63,7 @@ class EventRepository extends ServiceEntityRepository
                 ->setParameter('dateTo', $criteria['dateTo']);
         }
 
-        $sort = $criteria['sort'] ?? 'date_desc';
+        $sort = $criteria['sort'] ?? 'created_desc';
 
         switch ($sort) {
             case 'date_asc':
@@ -77,6 +77,12 @@ class EventRepository extends ServiceEntityRepository
                 break;
             case 'distance_desc':
                 $qb->orderBy('e.distance', 'DESC');
+                break;
+            case 'created_desc':
+                $qb->orderBy('e.creationDate', 'DESC');
+                break;
+            case 'created_asc':
+                $qb->orderBy('e.creationDate', 'ASC');
                 break;
             default:
                 $qb->orderBy('e.eventDate', 'DESC');

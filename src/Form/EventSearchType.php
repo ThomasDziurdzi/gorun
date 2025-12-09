@@ -76,6 +76,8 @@ class EventSearchType extends AbstractType
                     'Date ascendante' => 'date_asc',
                     'Distance (croissant)' => 'distance_asc',
                     'Distance (décroissant)' => 'distance_desc',
+                    'Création récente' => 'created_desc',
+                    'Création ancienne' => 'created_asc',
                 ],
                 'attr' => [
                     'class' => self::BASE_INPUT_CLASS,
