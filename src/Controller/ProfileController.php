@@ -74,7 +74,7 @@ class ProfileController extends AbstractController
         ]);
     }
 
-    #[Route('/profil/mot-de-passe-oublie', name: 'app_profile_change_password')]
+    #[Route('/changer-mot-de-passe', name: 'app_profile_change_password')]
     public function changePassword(
         Request $request,
         UserPasswordHasherInterface $passwordHasher,
