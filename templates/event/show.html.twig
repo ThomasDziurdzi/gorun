@@ -8,9 +8,9 @@
 {% set canRegister = e.canRegister %}
 
 <section class="relative rounded-2xl overflow-hidden {{ isPast ? 'opacity-80' : '' }}">
-  <img src="{{ e.coverImage ? vich_uploader_asset(e, 'imageFile') : 'https://images.unsplash.com/photo-1520975922284-9f8a3551c2f0?q=80&w=1200&auto=format&fit=crop' }}" 
+  <img src="{{ e.coverImage ? vich_uploader_asset(e, 'imageFile') : asset('uploads/events/14865.jpg') }}" 
        alt="{{ e.title }}" 
-       class="h-72 w-full object-cover {{ isPast ? 'grayscale' : '' }}" />
+       class="h-[50vh] w-full object-cover {{ isPast ? 'grayscale' : '' }}" />
   <div class="absolute inset-0 bg-black/40"></div>
   
   {# Badge de statut sur l'image #}
@@ -238,7 +238,7 @@
     {# ========== BLOC ADMINISTRATION ========== #}
     {% if is_granted('ROLE_ADMIN') %}
       <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6">
-        <h3 class="font-semibold mb-3 text-amber-800">🔧 Administration</h3>
+        <h3 class="font-semibold mb-3 text-amber-800">Administration</h3>
         <div class="space-y-3">
           <a href="{{ path('event_edit', {id: e.id}) }}"
              class="block w-full text-center bg-blue-600 text-white py-3 rounded-2xl font-semibold hover:bg-blue-700 transition">
