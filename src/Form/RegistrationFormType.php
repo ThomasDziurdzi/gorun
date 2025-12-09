@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -26,6 +27,15 @@ class RegistrationFormType extends AbstractType
                     'class' => self::BASE_INPUT_CLASS,
                     'placeholder' => 'Camille',
                 ],
+                'constraints' => [
+                    new NotBlank(message: 'Le prénom est obligatoire'),
+                    new Length(
+                        min: 2,
+                        max: 100,
+                        minMessage: 'Le prénom doit contenir au moins {{ limit }} caractères',
+                        maxMessage: 'Le prénom ne peut pas dépasser {{ limit }} caractères'
+                    ),
+                ],
             ])
 
             ->add('lastname', TextType::class, [
@@ -34,6 +44,15 @@ class RegistrationFormType extends AbstractType
                     'class' => self::BASE_INPUT_CLASS,
                     'placeholder' => 'Runner',
                 ],
+                'constraints' => [
+                    new NotBlank(message: 'Le nom est obligatoire'),
+                    new Length(
+                        min: 2,
+                        max: 100,
+                        minMessage: 'Le nom doit contenir au moins {{ limit }} caractères',
+                        maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères'
+                    ),
+                ],
             ])
 
             ->add('email', EmailType::class, [
@@ -41,6 +60,19 @@ class RegistrationFormType extends AbstractType
                 'attr' => [
                     'class' => self::BASE_INPUT_CLASS,
                     'placeholder' => 'vous@exemple.com',
+                    'autocomplete' => 'email',
+                    'inputmode' => 'email',
+                ],
+                'constraints' => [
+                    new NotBlank(message: 'L\'email est obligatoire'),
+                    new Email(
+                        mode: Email::VALIDATION_MODE_STRICT,
+                        message: 'L\'adresse email "{{ value }}" n\'est pas valide.'
+                    ),
+                    new Length(
+                        max: 180,
+                        maxMessage: 'L\'email ne peut pas dépasser {{ limit }} caractères'
+                    ),
                 ],
             ])
 
@@ -56,7 +88,7 @@ class RegistrationFormType extends AbstractType
                     'constraints' => [
                         new NotBlank(message: 'Veuillez entrer un mot de passe'),
                         new Length(
-                            min: 6,
+                            min: 8,
                             minMessage: 'Le mot de passe doit contenir au moins {{ limit }} caractères',
                             max: 4096
                         ),

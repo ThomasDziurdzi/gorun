@@ -33,7 +33,7 @@ class LocationType extends AbstractType
 
             ->add('address', TextType::class, [
                 'label' => 'Adresse',
-                'required' => false, 
+                'required' => false,
                 'attr' => [
                     'class' => self::BASE_INPUT_CLASS,
                     'placeholder' => 'Avenue de l\'Europe (ou cliquez sur la carte)',
@@ -72,12 +72,10 @@ class LocationType extends AbstractType
 
             ->add('latitude', HiddenType::class, [
                 'attr' => ['id' => 'location_latitude'],
-               
             ])
 
             ->add('longitude', HiddenType::class, [
                 'attr' => ['id' => 'location_longitude'],
-              
             ])
 
             ->add('meetingPoint', TextType::class, [
