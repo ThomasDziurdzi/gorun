@@ -54,6 +54,11 @@ jobs:
     - name: Check PHP version
       run: docker compose exec -T php php -v
 
+    - name: Create cache directories
+      run: |
+        docker compose exec -T php mkdir -p /var/www/html/var/cache /var/www/html/var/log
+        docker compose exec -T php chmod -R 777 /var/www/html/var
+
     - name: Verify database connection
       run: |
         docker compose exec -T php php bin/console dbal:run-sql "SELECT 1" || exit 1
