@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\User;
+use App\Validator\PasswordRequirements;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -81,17 +82,13 @@ class RegistrationFormType extends AbstractType
                 'mapped' => false,
                 'first_options' => [
                     'label' => 'Mot de passe',
-                    'attr' => [
+                    'attr' => array_merge([
                         'class' => self::BASE_INPUT_CLASS,
                         'autocomplete' => 'new-password',
-                    ],
-                    'constraints' => [
-                        new NotBlank(message: 'Veuillez entrer un mot de passe'),
-                        new Length(
-                            min: 8,
-                            minMessage: 'Le mot de passe doit contenir au moins {{ limit }} caractères',
-                            max: 4096
-                        ),
+                    ], PasswordRequirements::getHtmlAttributes()),
+                    'help' => PasswordRequirements::getHelpMessage(),
+                    'help_attr' => [
+                        'class' => 'text-sm text-gray-600 mt-1',
                     ],
                 ],
                 'second_options' => [
@@ -102,6 +99,7 @@ class RegistrationFormType extends AbstractType
                     ],
                 ],
                 'invalid_message' => 'Les mots de passe doivent correspondre.',
+                'constraints' => PasswordRequirements::getConstraints(required: true),
             ])
         ;
     }

@@ -13,7 +13,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -49,7 +48,7 @@ class UserProfileType extends AbstractType
                     'class' => self::BASE_INPUT_CLASS,
                     'placeholder' => 'Votre nom',
                 ],
-               'constraints' => [
+                'constraints' => [
                     new NotBlank(message: 'Le nom est obligatoire'),
                     new Length(
                         min: 2,
@@ -61,25 +60,25 @@ class UserProfileType extends AbstractType
             ])
 
              ->add('email', EmailType::class, [
-                'label' => 'Email',
-                'attr' => [
-                    'class' => self::BASE_INPUT_CLASS,
-                    'placeholder' => 'vous@exemple.com',
-                    'autocomplete' => 'email',
-                    'inputmode' => 'email',
-                ],
-                'constraints' => [
-                    new NotBlank(message: 'L\'email est obligatoire'),
-                    new Email(
-                        mode: Email::VALIDATION_MODE_STRICT,
-                        message: 'L\'adresse email "{{ value }}" n\'est pas valide.'
-                    ),
-                    new Length(
-                        max: 180,
-                        maxMessage: 'L\'email ne peut pas dépasser {{ limit }} caractères'
-                    ),
-                ],
-            ])
+                 'label' => 'Email',
+                 'attr' => [
+                     'class' => self::BASE_INPUT_CLASS,
+                     'placeholder' => 'vous@exemple.com',
+                     'autocomplete' => 'email',
+                     'inputmode' => 'email',
+                 ],
+                 'constraints' => [
+                     new NotBlank(message: 'L\'email est obligatoire'),
+                     new Email(
+                         mode: Email::VALIDATION_MODE_STRICT,
+                         message: 'L\'adresse email "{{ value }}" n\'est pas valide.'
+                     ),
+                     new Length(
+                         max: 180,
+                         maxMessage: 'L\'email ne peut pas dépasser {{ limit }} caractères'
+                     ),
+                 ],
+             ])
 
             ->add('profilePictureFile', VichImageType::class, [
                 'label' => 'Photo de profil',
@@ -156,7 +155,7 @@ class UserProfileType extends AbstractType
                     'placeholder' => 'Parlez de vous, de vos objectifs running...',
                 ],
                 'constraints' => [
-                    new Assert\Length([
+                    new Length([
                         'max' => 500,
                         'maxMessage' => 'La bio ne peut pas dépasser {{ limit }} caractères',
                     ]),

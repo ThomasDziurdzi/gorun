@@ -18,7 +18,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class UpdateEventStatusCommand extends Command
 {
     public function __construct(
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
     ) {
         parent::__construct();
     }
@@ -26,7 +26,7 @@ class UpdateEventStatusCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        
+
         $io->title('Mise à jour du statut des événements passés');
 
         $events = $this->entityManager->getRepository(Event::class)
@@ -40,8 +40,9 @@ class UpdateEventStatusCommand extends Command
 
         $count = count($events);
 
-        if ($count === 0) {
+        if (0 === $count) {
             $io->success('Aucun événement à mettre à jour.');
+
             return Command::SUCCESS;
         }
 
