@@ -15,8 +15,10 @@ nelmio_api_doc:
                 name: GoRun Support
                 email: support@gorun.com
         servers:
-            - url: http://localhost:8000
-              description: Serveur de développement
+            - url: http://localhost:8080  
+              description: Serveur de développement (Docker)
+            - url: http://localhost:8000 
+              description: Serveur de développement (Symfony)
         
         # Documentation manuelle du endpoint /api/login
         paths:
