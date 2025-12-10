@@ -22,39 +22,27 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN curl -sS https://get.symfony.com/cli/installer | bash \
     && mv /root/.symfony5/bin/symfony /usr/local/bin/symfony \
     && groupadd -g ${GROUP_ID} appuser || true \
-    && useradd -u ${USER_ID} -g ${GROUP_ID} -m -s /bin/bash appuser || true
-
-RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
+    && useradd -u ${USER_ID} -g ${GROUP_ID} -m -s /bin/bash appuser || true \
+    && cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && echo "memory_limit = 512M" >> "$PHP_INI_DIR/php.ini" \
     && echo "upload_max_filesize = 10M" >> "$PHP_INI_DIR/php.ini" \
     && echo "post_max_size = 10M" >> "$PHP_INI_DIR/php.ini"
 
 WORKDIR /var/www/html
 
-COPY --chown=appuser:appuser composer.json composer.lock ./
-
-USER appuser
-RUN composer install \
-    --no-interaction \
-    --no-dev \
-    --no-scripts \
-    --no-autoloader \
-    --prefer-dist
-
-USER root
 COPY --chown=appuser:appuser . /var/www/html
 
-RUN rm -f /var/www/html/.env.local \
-    && rm -f /var/www/html/.env.*.local \
-    && rm -f /var/www/html/.env.test.local
+USER root
+RUN rm -rf /var/www/html/.env* \
+    && ls -la /var/www/html/ | grep -i env || echo "Aucun .env restant - OK"
 
 USER appuser
-RUN composer dump-autoload --optimize --classmap-authoritative
+RUN composer install --no-interaction --optimize-autoloader --no-scripts
 
 USER root
-RUN mkdir -p /var/www/html/var/cache /var/www/html/var/log \
-    && chown -R appuser:appuser /var/www/html/var \
-    && chmod -R 775 /var/www/html/var
+RUN mkdir -p /var/www/html/var/cache /var/www/html/var/log /var/www/html/public/uploads \
+    && chown -R appuser:appuser /var/www/html/var /var/www/html/public/uploads \
+    && chmod -R 775 /var/www/html/var /var/www/html/public/uploads
 
 USER appuser
 
