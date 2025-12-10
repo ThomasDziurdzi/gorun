@@ -3,6 +3,7 @@
 {% block body %}
 {% set confirmedCount = e.registrations|filter(r => r.status.value == 'CONFIRMED')|length %}
 {% set spotsLeft = e.spotsLeft %}
+{% set isPast = e.isPast %}
 {% set effectiveStatus = e.effectiveStatus %}
 {% set canRegister = e.canRegister %}
 {% set shouldGray = effectiveStatus.value == 'COMPLETED' %}
@@ -253,7 +254,7 @@
           {% endif %}
 
           {# Publier (si brouillon) #}
-         {% if e.status.value == 'DRAFT' and e.effectiveStatus.value == 'DRAFT' %}
+         {% if e.status.value == 'DRAFT' and isPast %}
           <div class="mb-3 p-3 bg-yellow-100 border border-yellow-300 rounded-xl text-sm text-yellow-800">
             ⚠️ La date de cet événement est passée. Vous devez modifier la date avant de pouvoir le publier.
           </div>
