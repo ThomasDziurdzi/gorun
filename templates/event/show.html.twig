@@ -16,15 +16,15 @@
   {# Badge de statut sur l'image #}
   {% if effectiveStatus.value == 'COMPLETED' %}
     <div class="absolute top-6 right-6 bg-gray-900 bg-opacity-90 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2">
-      🏁 Événement terminé
+      Événement terminé
     </div>
   {% elseif effectiveStatus.value == 'CANCELLED' %}
     <div class="absolute top-6 right-6 bg-red-600 bg-opacity-90 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2">
-      🚫 Événement annulé
+      Événement annulé
     </div>
   {% elseif effectiveStatus.value == 'DRAFT' %}
     <div class="absolute top-6 right-6 bg-yellow-500 bg-opacity-90 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2">
-      📝 Brouillon
+      Brouillon
     </div>
   {% endif %}
   
@@ -240,17 +240,72 @@
       <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6">
         <h3 class="font-semibold mb-3 text-amber-800">Administration</h3>
         <div class="space-y-3">
-          <a href="{{ path('event_edit', {id: e.id}) }}"
-             class="block w-full text-center bg-blue-600 text-white py-3 rounded-2xl font-semibold hover:bg-blue-700 transition">
-             Modifier l'événement
-          </a>
+          
+          {# Bouton Modifier (sauf si terminé ou annulé) #}
+          {% if effectiveStatus.value != 'COMPLETED' and effectiveStatus.value != 'CANCELLED' %}
+            <a href="{{ path('event_edit', {id: e.id}) }}"
+               class="block w-full text-center bg-blue-600 text-white py-3 rounded-2xl font-semibold hover:bg-blue-700 transition flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+              </svg>
+              Modifier
+            </a>
+          {% endif %}
 
+          {# Publier (si brouillon) #}
+          {% if e.status.value == 'DRAFT' %}
+            <form method="post" action="{{ path('event_publish', {id: e.id}) }}">
+              <input type="hidden" name="_token" value="{{ csrf_token('publish' ~ e.id) }}">
+              <button type="submit" 
+                      class="block w-full text-center bg-green-600 text-white py-3 rounded-2xl font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Publier
+              </button>
+            </form>
+          {% endif %}
+
+          {# Dépublier (si publié et pas passé) #}
+          {% if e.status.value == 'PUBLISHED' and not isPast %}
+            <form method="post" action="{{ path('event_unpublish', {id: e.id}) }}">
+              <input type="hidden" name="_token" value="{{ csrf_token('unpublish' ~ e.id) }}">
+              <button type="submit" 
+                      class="block w-full text-center bg-gray-600 text-white py-3 rounded-2xl font-semibold hover:bg-gray-700 transition flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+                </svg>
+                Dépublier
+              </button>
+            </form>
+          {% endif %}
+
+          {# Annuler (si publié ou brouillon et pas terminé) #}
+          {% if (e.status.value == 'PUBLISHED' or e.status.value == 'DRAFT') and effectiveStatus.value != 'COMPLETED' %}
+            <form method="post" 
+                  action="{{ path('event_cancel', {id: e.id}) }}"
+                  onsubmit="return confirm('⚠️ Êtes-vous sûr de vouloir annuler cet événement ? Cette action est définitive.')">
+              <input type="hidden" name="_token" value="{{ csrf_token('cancel' ~ e.id) }}">
+              <button type="submit" 
+                      class="block w-full text-center bg-orange-600 text-white py-3 rounded-2xl font-semibold hover:bg-orange-700 transition flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+                Annuler l'événement
+              </button>
+            </form>
+          {% endif %}
+
+          {# Supprimer #}
           <form method="post" action="{{ path('event_delete', {id: e.id}) }}"
-                onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ? Cette action est irréversible.');">
+                onsubmit="return confirm('⚠️ Êtes-vous sûr de vouloir supprimer définitivement cet événement ?');">
             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ e.id) }}">
             <button type="submit"
-                    class="block w-full text-center bg-red-600 text-white py-3 rounded-2xl font-semibold hover:bg-red-700 transition">
-               Supprimer l'événement
+                    class="block w-full text-center bg-red-600 text-white py-3 rounded-2xl font-semibold hover:bg-red-700 transition flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+              Supprimer
             </button>
           </form>
         </div>

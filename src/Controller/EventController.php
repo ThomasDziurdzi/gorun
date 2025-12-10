@@ -62,6 +62,7 @@ class EventController extends AbstractController
         $user = $this->getUser();
 
         $event->setOrganizer($user);
+        $event->setStatus(EventStatus::DRAFT);
         $location->setCreatedBy($user);
 
         $event->setLocation($location);
@@ -70,11 +71,19 @@ class EventController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $action = $request->request->get('action');
+
+            if ('publish' === $action) {
+                $event->setStatus(EventStatus::PUBLISHED);
+                $message = 'L\'évènement a été publié avec succès!';
+            } else {
+                $message = 'Brouillon enregistré avec succès!';
+            }
             $em->persist($location);
             $em->persist($event);
             $em->flush();
 
-            $this->addFlash('success', 'L\'évènement a été créé avec succès!');
+            $this->addFlash('success', $message);
 
             return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
         }
@@ -112,6 +121,18 @@ class EventController extends AbstractController
     #[IsGranted('ROLE_ADMIN', message: 'Seuls les administrateurs peuvent modifier des évènements.')]
     public function edit(Event $event, Request $request, EntityManagerInterface $em): Response
     {
+        if (EventStatus::COMPLETED === $event->getStatus() && !$this->isGranted('ROLE_ADMIN')) {
+            $this->addFlash('error', 'Impossible de modifier un événement terminé.');
+
+            return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
+        }
+
+        if (EventStatus::CANCELLED === $event->getStatus() && !$this->isGranted('ROLE_ADMIN')) {
+            $this->addFlash('error', 'Impossible de modifier un événement annulé.');
+
+            return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
+        }
+
         $form = $this->createForm(EventType::class, $event);
         $form->handleRequest($request);
 
@@ -134,6 +155,84 @@ class EventController extends AbstractController
             'eventForm' => $form->createView(),
             'event' => $event,
         ]);
+    }
+
+    #[Route('/evenement/{id}/publier', name: 'event_publish', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN', message: 'Seuls les administrateurs peuvent publier des évènements.')]
+    public function publish(Event $event, Request $request, EntityManagerInterface $em): Response
+    {
+        if (!$this->isCsrfTokenValid('publish'.$event->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
+
+        if (EventStatus::DRAFT !== $event->getStatus()) {
+            $this->addFlash('error', 'Seul un brouillon peut être publié.');
+
+            return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
+        }
+
+        if ($event->getEventDate() < new \DateTimeImmutable()) {
+            $this->addFlash('error', 'Impossible de publier un événement passé.');
+
+            return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
+        }
+
+        $event->setStatus(EventStatus::PUBLISHED);
+        $em->flush();
+
+        $this->addFlash('success', 'Événement publié avec succès ! Il est maintenant visible par tous.');
+
+        return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
+    }
+
+    #[Route('/evenement/{id}/depublier', name: 'event_unpublish', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN', message: 'Seuls les administrateurs peuvent dépublier des évènements.')]
+    public function unpublish(Event $event, Request $request, EntityManagerInterface $em): Response
+    {
+        if (!$this->isCsrfTokenValid('unpublish'.$event->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
+
+        if (EventStatus::PUBLISHED !== $event->getStatus()) {
+            $this->addFlash('error', 'Seul un événement publié peut être dépublié.');
+
+            return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
+        }
+
+        $event->setStatus(EventStatus::DRAFT);
+        $em->flush();
+
+        $this->addFlash('success', 'Événement remis en brouillon. Il n\'est plus visible publiquement.');
+
+        return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
+    }
+
+    #[Route('/evenement/{id}/annuler', name: 'event_cancel', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN', message: 'Seuls les administrateurs peuvent annuler des évènements.')]
+    public function cancel(Event $event, Request $request, EntityManagerInterface $em): Response
+    {
+        if (!$this->isCsrfTokenValid('cancel'.$event->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
+
+        if (EventStatus::COMPLETED === $event->getStatus()) {
+            $this->addFlash('error', 'Un événement terminé ne peut pas être annulé.');
+
+            return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
+        }
+
+        if (EventStatus::CANCELLED === $event->getStatus()) {
+            $this->addFlash('warning', 'Cet événement est déjà annulé.');
+
+            return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
+        }
+
+        $event->setStatus(EventStatus::CANCELLED);
+        $em->flush();
+
+        $this->addFlash('success', 'Événement annulé.');
+
+        return $this->redirectToRoute('event_show', ['id' => $event->getId()]);
     }
 
     #[Route('/evenement/{id}/supprimer', name: 'event_delete', methods: ['POST'])]
