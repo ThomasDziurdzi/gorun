@@ -1,0 +1,5 @@
+# Mise à jour du statut des événements tous les jours à minuit
+0 0 * * * cd /var/www/html && php bin/console app:events:update-status >> /var/log/cron.log 2>&1
+
+# Ligne vide obligatoire
+

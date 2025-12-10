@@ -21,6 +21,25 @@ services:
     networks:
       - gorun_network
 
+  # Service CRON
+  cron:
+    build:
+      context: .
+      dockerfile: docker/cron/Dockerfile
+    container_name: gorun_cron
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - php_vendor:/var/www/html/vendor
+    env_file:
+      - .env.docker
+    depends_on:
+      - php
+      - mysql
+    networks:
+      - gorun_network
+
   # Nginx
   nginx:
     image: nginx:alpine
