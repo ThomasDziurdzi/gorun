@@ -109,19 +109,19 @@
                 {% for event in pagination %}
                     {% set confirmedCount = event.registrations|filter(r => r.status.value == 'CONFIRMED')|length %}
                     {% set spotsLeft = event.spotsLeft %}
-                    {% set isPast = event.isPast %}
                     {% set effectiveStatus = event.effectiveStatus %}
+                    {% set pastGrey = effectiveStatus.value == 'COMPLETED' %}
 
                     <article class="
                         bg-white rounded-2xl shadow hover:shadow-lg transition overflow-hidden flex flex-col h-full
-                        {{ isPast ? 'opacity-60' : '' }}
+                        {{ pastGrey ? 'opacity-60' : '' }}
                         {{ effectiveStatus.value == 'CANCELLED' ? 'opacity-60 bg-red-50' : '' }}
                     ">
                         <div class="relative">
                             <img
                                 src="{{ event.coverImage ? asset('uploads/events/' ~ event.coverImage) : asset('uploads/events/14865.jpg') }}"
                                 alt="{{ event.title }}"
-                                class="h-40 w-full object-cover {{ isPast ? 'grayscale' : '' }}"
+                                class="h-40 w-full object-cover {{ pastGrey ? 'grayscale' : '' }}"
                             />
                             
                             {% if effectiveStatus.value == 'COMPLETED' %}
@@ -140,7 +140,7 @@
                         </div>
 
                         <div class="p-5 flex flex-col flex-1">
-                            <h2 class="text-lg font-semibold mb-1 line-clamp-2 {{ isPast ? 'text-gray-500' : '' }}">
+                            <h2 class="text-lg font-semibold mb-1 line-clamp-2 {{ pastGrey ? 'text-gray-500' : '' }}">
                                 {{ event.title }}
                             </h2>
 
@@ -175,7 +175,7 @@
                                 {% endif %}
 
                                 <a href="{{ path('event_show', {id: event.id}) }}" 
-                                   class="text-green-600 font-medium hover:underline {{ isPast ? 'text-gray-500' : '' }}">
+                                   class="text-green-600 font-medium hover:underline {{ pastGrey ? 'text-gray-500' : '' }}">
                                     Voir le détail →
                                 </a>
                             </div>

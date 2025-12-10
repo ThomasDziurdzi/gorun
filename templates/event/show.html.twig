@@ -3,14 +3,14 @@
 {% block body %}
 {% set confirmedCount = e.registrations|filter(r => r.status.value == 'CONFIRMED')|length %}
 {% set spotsLeft = e.spotsLeft %}
-{% set isPast = e.isPast %}
 {% set effectiveStatus = e.effectiveStatus %}
 {% set canRegister = e.canRegister %}
+{% set shouldGray = effectiveStatus.value == 'COMPLETED' %}
 
-<section class="relative rounded-2xl overflow-hidden {{ isPast ? 'opacity-80' : '' }}">
+<section class="relative rounded-2xl overflow-hidden {{ shouldGray ? 'opacity-80' : '' }}">
   <img src="{{ e.coverImage ? vich_uploader_asset(e, 'imageFile') : asset('uploads/events/14865.jpg') }}" 
        alt="{{ e.title }}" 
-       class="h-[50vh] w-full object-cover {{ isPast ? 'grayscale' : '' }}" />
+       class="h-[50vh] w-full object-cover {{ shouldGray ? 'grayscale' : '' }}" />
   <div class="absolute inset-0 bg-black/40"></div>
   
   {# Badge de statut sur l'image #}
@@ -30,7 +30,7 @@
   
   <div class="absolute inset-0 flex items-end">
     <div class="max-w-6xl mx-auto px-4 md:px-6 pb-6">
-      <h1 class="text-3xl md:text-4xl font-extrabold text-white drop-shadow {{ isPast ? 'opacity-90' : '' }}">
+      <h1 class="text-3xl md:text-4xl font-extrabold text-white drop-shadow {{ shouldGray ? 'opacity-90' : '' }}">
         {{ e.title }}
       </h1>
       <p class="text-white/90 mt-2">
@@ -253,21 +253,33 @@
           {% endif %}
 
           {# Publier (si brouillon) #}
+         {% if e.status.value == 'DRAFT' and e.effectiveStatus.value == 'DRAFT' %}
+          <div class="mb-3 p-3 bg-yellow-100 border border-yellow-300 rounded-xl text-sm text-yellow-800">
+            ⚠️ La date de cet événement est passée. Vous devez modifier la date avant de pouvoir le publier.
+          </div>
+        {% endif %}
+        
+        <div class="space-y-3">
+          {# Bouton Publier (désactivé si date passée) #}
           {% if e.status.value == 'DRAFT' %}
-            <form method="post" action="{{ path('event_publish', {id: e.id}) }}">
-              <input type="hidden" name="_token" value="{{ csrf_token('publish' ~ e.id) }}">
-              <button type="submit" 
-                      class="block w-full text-center bg-green-600 text-white py-3 rounded-2xl font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                Publier
+            {% if effectiveStatus.value != 'DRAFT' %}
+              <button disabled 
+                      class="block w-full text-center bg-gray-400 text-white py-3 rounded-2xl font-semibold cursor-not-allowed">
+                🚀 Publier (impossible : date passée)
               </button>
-            </form>
+            {% else %}
+              <form method="post" action="{{ path('event_publish', {id: e.id}) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('publish' ~ e.id) }}">
+                <button type="submit" 
+                        class="block w-full text-center bg-green-600 text-white py-3 rounded-2xl font-semibold hover:bg-green-700 transition">
+                  🚀 Publier
+                </button>
+              </form>
+            {% endif %}
           {% endif %}
 
           {# Dépublier (si publié et pas passé) #}
-          {% if e.status.value == 'PUBLISHED' and not isPast %}
+          {% if e.status.value == 'PUBLISHED' and effectiveStatus.value == 'PUBLISHED' %}
             <form method="post" action="{{ path('event_unpublish', {id: e.id}) }}">
               <input type="hidden" name="_token" value="{{ csrf_token('unpublish' ~ e.id) }}">
               <button type="submit" 

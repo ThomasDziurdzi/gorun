@@ -420,7 +420,7 @@ class Event
 
     public function getEffectiveStatus(): EventStatus
     {
-        if ($this->isPast() && EventStatus::CANCELLED !== $this->status) {
+        if (EventStatus::PUBLISHED === $this->status && $this->isPast()) {
             return EventStatus::COMPLETED;
         }
 
