@@ -56,8 +56,11 @@ jobs:
 
     - name: Create cache directories
       run: |
-        docker compose exec -T php mkdir -p /var/www/html/var/cache /var/www/html/var/log
-        docker compose exec -T php chmod -R 777 /var/www/html/var
+        echo "Creating var directories as root..."
+        docker compose exec -T -u root php mkdir -p /var/www/html/var/cache /var/www/html/var/log
+        docker compose exec -T -u root php chown -R appuser:appuser /var/www/html/var
+        docker compose exec -T -u root php chmod -R 775 /var/www/html/var
+        echo "✅ Permissions set"
 
     - name: Verify database connection
       run: |
