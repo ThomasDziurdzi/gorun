@@ -20,7 +20,7 @@ class PasswordRequirements
                 'skipOnError' => true,
             ]),
             new Assert\Regex([
-                'pattern' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d\s])[A-Za-z\d\W_]+$/',
+                'pattern' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])(?!.*\s).+$/',
                 'message' => 'Le mot de passe doit contenir au moins : une majuscule, une minuscule, un chiffre et un caractère spécial (@$!%*?&#-_=+)',
             ]),
         ];
@@ -43,7 +43,7 @@ class PasswordRequirements
     {
         return [
             'minlength' => 12,
-            'pattern' => '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#\-_=+]).{12,}$',
+            'pattern' => '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])(?!.*\s).{12,}$',
             'title' => self::getHelpMessage(),
         ];
     }
