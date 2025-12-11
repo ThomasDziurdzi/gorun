@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Validator\PasswordRequirements;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
@@ -31,41 +32,32 @@ class ChangePasswordType extends AbstractType
                 ],
             ])
 
-            ->add('newPassword', RepeatedType::class, [
-                'type' => PasswordType::class,
-                'mapped' => false,
-                'first_options' => [
-                    'label' => 'Nouveau mot de passe',
-                    'attr' => [
-                        'class' => self::BASE_INPUT_CLASS,
-                        'placeholder' => 'Nouveau mot de passe',
-                        'autocomplete' => 'new-password',
-                    ],
-                ],
-                'second_options' => [
-                    'label' => 'Confirmer le nouveau mot de passe',
-                    'attr' => [
-                        'class' => self::BASE_INPUT_CLASS,
-                        'placeholder' => 'Confirmer le mot de passe',
-                        'autocomplete' => 'new-password',
-                    ],
-                ],
-                'invalid_message' => 'Les deux mots de passe doivent être identiques',
-                'constraints' => [
-                    new Assert\NotBlank([
-                        'message' => 'Veuillez entrer un nouveau mot de passe',
-                    ]),
-                    new Assert\Length([
-                        'min' => 8,
-                        'minMessage' => 'Le mot de passe doit contenir au moins {{ limit }} caractères',
-                        'max' => 4096,
-                    ]),
-                    new Assert\PasswordStrength([
-                        'minScore' => Assert\PasswordStrength::STRENGTH_WEAK,
-                        'message' => 'Le mot de passe est trop faible. Utilisez des lettres, chiffres et caractères spéciaux.',
-                    ]),
-                ],
-            ])
+           ->add('newPassword', RepeatedType::class, [
+               'type' => PasswordType::class,
+               'mapped' => false,
+               'first_options' => [
+                   'label' => 'Nouveau mot de passe',
+                   'attr' => array_merge([
+                       'class' => self::BASE_INPUT_CLASS,
+                       'placeholder' => 'Nouveau mot de passe',
+                       'autocomplete' => 'new-password',
+                   ], PasswordRequirements::getHtmlAttributes()),
+                   'help' => PasswordRequirements::getHelpMessage(),
+                   'help_attr' => [
+                       'class' => 'text-sm text-gray-600 mt-1',
+                   ],
+               ],
+               'second_options' => [
+                   'label' => 'Confirmer le nouveau mot de passe',
+                   'attr' => [
+                       'class' => self::BASE_INPUT_CLASS,
+                       'placeholder' => 'Confirmer le mot de passe',
+                       'autocomplete' => 'new-password',
+                   ],
+               ],
+               'invalid_message' => 'Les deux mots de passe doivent être identiques',
+               'constraints' => PasswordRequirements::getConstraints(required: true),
+           ])
         ;
     }
 

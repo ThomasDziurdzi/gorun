@@ -26,10 +26,12 @@ class EventRepository extends ServiceEntityRepository
      */
     public function searchQuery(array $criteria): Query
     {
-        $qb = $this->createQueryBuilder('e');
+        $qb = $this->createQueryBuilder('e')
+            ->leftJoin('e.location', 'l')
+            ->addSelect('l');
 
         if (!empty($criteria['query'])) {
-            $qb->andWhere('e.title LIKE :query OR e.description LIKE :query')
+            $qb->andWhere('e.title LIKE :query OR e.description LIKE :query OR l.city LIKE :query')
                 ->setParameter('query', '%'.$criteria['query'].'%');
         }
 
@@ -46,6 +48,11 @@ class EventRepository extends ServiceEntityRepository
                 ->setParameter('status', EventStatus::PUBLISHED);
         }
 
+        if (isset($criteria['exclude_drafts']) && true === $criteria['exclude_drafts']) {
+            $qb->andWhere('e.status != :draft')
+                ->setParameter('draft', EventStatus::DRAFT);
+        }
+
         if (!empty($criteria['dateFrom'])) {
             $qb->andWhere('e.eventDate >= :dateFrom')
                 ->setParameter('dateFrom', $criteria['dateFrom']);
@@ -56,7 +63,7 @@ class EventRepository extends ServiceEntityRepository
                 ->setParameter('dateTo', $criteria['dateTo']);
         }
 
-        $sort = $criteria['sort'] ?? 'date_desc';
+        $sort = $criteria['sort'] ?? 'created_desc';
 
         switch ($sort) {
             case 'date_asc':
@@ -70,6 +77,12 @@ class EventRepository extends ServiceEntityRepository
                 break;
             case 'distance_desc':
                 $qb->orderBy('e.distance', 'DESC');
+                break;
+            case 'created_desc':
+                $qb->orderBy('e.creationDate', 'DESC');
+                break;
+            case 'created_asc':
+                $qb->orderBy('e.creationDate', 'ASC');
                 break;
             default:
                 $qb->orderBy('e.eventDate', 'DESC');

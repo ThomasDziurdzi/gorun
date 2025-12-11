@@ -107,6 +107,19 @@ templates/           # Templates Twig
 public/              # Assets publics
 ```
 
+## Mise à jour des statuts d'événements
+
+Les événements passés doivent avoir leur statut mis à jour de `PUBLISHED` à `COMPLETED`.
+
+### En développement (manuel)
+```bash
+php bin/console app:events:update-status
+```
+
+### En production (automatique)
+
+Configurer un CRON dans le container Docker (voir `docker-compose.yml`) pour exécuter la commande tous les jours à minuit.
+
 ## Sécurité
 
 - Hashage des mots de passe avec bcrypt

@@ -40,11 +40,13 @@ USER appuser
 RUN composer install --no-interaction --optimize-autoloader --no-scripts
 
 USER root
-RUN mkdir -p /var/www/html/var/cache /var/www/html/var/log \
-    && chown -R appuser:appuser /var/www/html/var \
-    && chmod -R 775 /var/www/html/var
+RUN mkdir -p /var/www/html/var/cache /var/www/html/var/log /var/www/html/public/uploads \
+    && chown -R appuser:appuser /var/www/html/var /var/www/html/public/uploads \
+    && chmod -R 775 /var/www/html/var /var/www/html/public/uploads
 
-USER root
+COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
+
+USER appuser
 
 EXPOSE 9000
 

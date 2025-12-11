@@ -3,7 +3,6 @@
 namespace App\Form;
 
 use App\Entity\Event;
-use App\Enum\EventStatus;
 use App\Enum\RunningLevel;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -143,19 +142,6 @@ class EventType extends AbstractType
 
             ->add('location', LocationType::class, [
                 'label' => false,
-            ])
-
-            ->add('status', ChoiceType::class, [
-                'label' => 'Statut',
-                'choices' => [
-                    'Brouillon' => EventStatus::DRAFT,
-                    'Publié' => EventStatus::PUBLISHED,
-                    'Annulé' => EventStatus::CANCELLED,
-                    'Terminé' => EventStatus::COMPLETED,
-                ],
-                'attr' => [
-                    'class' => self::BASE_INPUT_CLASS,
-                ],
             ])
         ;
     }

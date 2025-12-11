@@ -1,0 +1,247 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ page_title }} · GoRun{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+{% endblock %}
+
+{% block body %}
+    <section class="max-w-5xl mx-auto">
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-2xl md:text-3xl font-bold">{{ page_heading }}</h1>
+            <a href="{{ cancel_route }}" class="text-gray-600 hover:text-gray-900 text-sm">
+                ← {{ back_link_text }}
+            </a>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow p-5 md:p-8">
+            {{ form_start(eventForm, {attr: {id: 'event-form', class: 'grid grid-cols-1 md:grid-cols-12 gap-5'}}) }}
+
+            <div class="md:col-span-8 space-y-5">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="md:col-span-2">
+                        {{ form_label(eventForm.title, null, {label_attr: {class: 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+                        {{ form_widget(eventForm.title) }}
+                        {{ form_errors(eventForm.title) }}
+                    </div>
+                    <div>
+                        {{ form_label(eventForm.requiredLevel, null, {label_attr: {class: 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+                        {{ form_widget(eventForm.requiredLevel) }}
+                        {{ form_errors(eventForm.requiredLevel) }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        {{ form_label(eventForm.eventDate, null, {label_attr: {class: 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+                        {{ form_widget(eventForm.eventDate) }}
+                        {{ form_errors(eventForm.eventDate) }}
+                    </div>
+                    <div>
+                        {{ form_label(eventForm.estimateDuration, null, {label_attr: {class: 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+                        {{ form_widget(eventForm.estimateDuration) }}
+                        {{ form_errors(eventForm.estimateDuration) }}
+                    </div>
+                    <div>
+                        {{ form_label(eventForm.distance, null, {label_attr: {class: 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+                        {{ form_widget(eventForm.distance) }}
+                        {{ form_errors(eventForm.distance) }}
+                    </div>
+                </div>
+
+                <div>
+                    {{ form_label(eventForm.imageFile, null, {label_attr: {class: 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+                    {{ form_widget(eventForm.imageFile) }}
+                    {{ form_errors(eventForm.imageFile) }}
+                    {{ form_help(eventForm.imageFile) }}
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        {{ form_label(eventForm.pace, null, {label_attr: {class: 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+                        {{ form_widget(eventForm.pace) }}
+                        {{ form_errors(eventForm.pace) }}
+                    </div>
+                    <div>
+                        {{ form_label(eventForm.maxParticipants, null, {label_attr: {class: 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+                        {{ form_widget(eventForm.maxParticipants) }}
+                        {{ form_errors(eventForm.maxParticipants) }}
+                    </div>
+                </div>
+
+                <div>
+                    {{ form_label(eventForm.description, null, {label_attr: {class: 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+                    {{ form_widget(eventForm.description) }}
+                    {{ form_errors(eventForm.description) }}
+                </div>
+
+                <div class="border-t pt-5 space-y-5">
+                    <h2 class="text-xl font-semibold text-gray-800">Lieu de rendez-vous</h2>
+
+                    <div>
+                        {{ form_label(eventForm.location.locationName, null, {label_attr: {class: 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+                        {{ form_widget(eventForm.location.locationName) }}
+                        {{ form_errors(eventForm.location.locationName) }}
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                        <div class="md:col-span-9">
+                            {{ form_label(eventForm.location.address, null, {label_attr: {class: 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+                            {{ form_widget(eventForm.location.address) }}
+                            <span class="block text-xs text-gray-500 mt-1">
+                                Tapez une adresse puis cliquez « Localiser » ou cliquez directement sur la carte pour placer le point de départ.
+                            </span>
+                            {{ form_errors(eventForm.location.address) }}
+                        </div>
+                        <div class="md:col-span-3 flex items-end">
+                            <button type="button" id="btn-geocode" class="w-full px-4 py-3 rounded-2xl border font-semibold hover:bg-gray-50">
+                                Localiser
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            {{ form_label(eventForm.location.city, null, {label_attr: {class: 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+                            {{ form_widget(eventForm.location.city) }}
+                            {{ form_errors(eventForm.location.city) }}
+                        </div>
+                        <div>
+                            {{ form_label(eventForm.location.postalCode, null, {label_attr: {class: 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+                            {{ form_widget(eventForm.location.postalCode) }}
+                            {{ form_errors(eventForm.location.postalCode) }}
+                        </div>
+                        <div>
+                            {{ form_label(eventForm.location.country, null, {label_attr: {class: 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+                            {{ form_widget(eventForm.location.country) }}
+                            {{ form_errors(eventForm.location.country) }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <p class="block text-sm font-semibold text-gray-800 mb-2">Positionnement sur la carte</p>
+                        <div class="rounded-xl overflow-hidden border border-gray-200">
+                            <div id="map" class="h-96 w-full"></div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            {{ form_label(eventForm.location.meetingPoint, null, {label_attr: {class: 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+                            {{ form_widget(eventForm.location.meetingPoint) }}
+                            {{ form_errors(eventForm.location.meetingPoint) }}
+                        </div>
+                        <div>
+                            {{ form_label(eventForm.location.description, null, {label_attr: {class: 'block text-sm font-semibold text-gray-800 mb-1'}}) }}
+                            {{ form_widget(eventForm.location.description) }}
+                            {{ form_errors(eventForm.location.description) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="md:col-span-4">
+                <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5">
+                    <h3 class="font-semibold mb-2">Aperçu</h3>
+                        <div class="space-y-3 text-sm">
+                            <div>
+                                <span class="font-semibold">Titre :</span>
+                                <span id="preview-title" class="text-gray-700">—</span>
+                            </div>
+                            
+                            <div>
+                                <span class="font-semibold">Date :</span>
+                                <span id="preview-date" class="text-gray-700">—</span>
+                            </div>
+                            
+                            <div>
+                                <span class="font-semibold">Durée :</span>
+                                <span id="preview-duration" class="text-gray-700">—</span>
+                            </div>
+                            
+                            <div>
+                                <span class="font-semibold">Distance :</span>
+                                <span id="preview-distance" class="text-gray-700">—</span>
+                            </div>
+                            
+                            <div>
+                                <span class="font-semibold">Niveau :</span>
+                                <span id="preview-level" class="text-gray-700">—</span>
+                            </div>
+                            
+                            <div>
+                                <span class="font-semibold">Lieu :</span>
+                                <span id="preview-location" class="text-gray-700">—</span>
+                            </div>
+                            
+                            <div>
+                                <span class="font-semibold">Adresse :</span>
+                                <span id="preview-address" class="text-gray-700">—</span>
+                            </div>
+
+                            <div>
+                                <span class="font-semibold">Description :</span>
+                                <span id="preview-description" class="text-gray-700">—</span>
+                            </div>
+                        </div>
+                </div>
+
+                {% if not event is defined or event.id is null %}
+                    <div class="mt-5 space-y-4">
+                        <div class="flex flex-col gap-3">
+                            <button 
+                                type="submit" 
+                                name="action" 
+                                value="save_draft"
+                                class="px-5 py-3 rounded-2xl border-2 border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition flex items-center justify-center gap-2"
+                            >
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+                                </svg>
+                                Enregistrer comme brouillon
+                            </button>
+
+                            <button 
+                                type="submit" 
+                                name="action" 
+                                value="publish"
+                                class="px-5 py-3 rounded-2xl bg-green-600 text-white font-semibold hover:bg-green-700 transition shadow-lg flex items-center justify-center gap-2"
+                            >
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                Publier l'événement
+                            </button>
+                        </div>
+
+                        <div class="text-xs text-gray-600 space-y-1">
+                            <p>💡 <strong>Brouillon :</strong> Non visible publiquement</p>
+                            <p>💡 <strong>Publier :</strong> Visible immédiatement</p>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="flex gap-3 justify-end mt-5">
+                        <a href="{{ cancel_route }}" class="px-5 py-3 rounded-2xl border font-semibold hover:bg-gray-50">
+                            Annuler
+                        </a>
+                        <button type="submit" class="px-5 py-3 rounded-2xl bg-green-600 text-white font-semibold hover:bg-green-700">
+                            {{ submit_button_text }}
+                        </button>
+                    </div>
+                {% endif %}
+            </aside>
+
+            {{ form_end(eventForm) }}
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+    <script src="{{ asset('js/event_form.js') }}"></script>
+{% endblock %}

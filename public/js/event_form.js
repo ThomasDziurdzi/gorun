@@ -11,7 +11,6 @@ function initMap() {
   }
 
   try {
-   
     const latField = document.getElementById('event_location_latitude');
     const lngField = document.getElementById('event_location_longitude');
     
@@ -20,7 +19,6 @@ function initMap() {
     
     console.log('Coordonnées initiales:', existingLat, existingLng);
     
-  
     map = L.map('map').setView([existingLat, existingLng], 12);
     
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -30,7 +28,6 @@ function initMap() {
 
     console.log('Carte initialisée avec succès');
 
-    
     if (latField?.value && lngField?.value) {
       console.log('Mode édition détecté - placement du marqueur existant');
       setMarker(existingLat, existingLng);
@@ -40,6 +37,7 @@ function initMap() {
     map.on('click', (e) => {
       console.log('Clic sur la carte:', e.latlng);
       setMarker(e.latlng.lat, e.latlng.lng);
+      reverseGeocode(e.latlng.lat, e.latlng.lng);
     });
 
     setTimeout(() => {
@@ -67,6 +65,7 @@ function setMarker(lat, lng) {
     const pos = marker.getLatLng();
     console.log('Marqueur déplacé:', pos);
     updateCoordinates(pos.lat, pos.lng);
+    reverseGeocode(pos.lat, pos.lng);
   });
 }
 
@@ -81,13 +80,31 @@ function updateCoordinates(lat, lng) {
     lngField.value = Number(lng).toFixed(8);
     
     console.log('Coordonnées mises à jour:', latField.value, lngField.value);
-    
-    updatePreviewCoords();
   } else {
     console.error('Champs latitude/longitude introuvables');
   }
 }
 
+async function reverseGeocode(lat, lng) {
+  console.log('Reverse geocoding:', lat, lng);
+  
+  const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`;
+  
+  try {
+    const response = await fetch(url, {
+      headers: { 'Accept': 'application/json' }
+    });
+    const data = await response.json();
+    
+    console.log('Résultat reverse geocoding:', data);
+    
+    if (data && data.address) {
+      fillAddressFields(data.address, true);
+    }
+  } catch (error) {
+    console.error('Erreur reverse geocoding:', error);
+  }
+}
 
 async function geocodeAddress() {
   const addressField = document.getElementById('event_location_address');
@@ -113,9 +130,8 @@ async function geocodeAddress() {
     if (data && data.length > 0) {
       const { lat, lon, address: details } = data[0];
       
-      setMarker(parseFloat(lat), parseFloat(lon));
-
-      fillAddressFields(details);
+      setMarker(Number.parseFloat(lat), Number.parseFloat(lon));
+      fillAddressFields(details, false);
     } else {
       alert('Adresse introuvable. Veuillez vérifier votre saisie.');
     }
@@ -125,27 +141,46 @@ async function geocodeAddress() {
   }
 }
 
-function fillAddressFields(details) {
+function fillAddressFields(details, forceAddress = false) {
   console.log('Détails de l\'adresse:', details);
   
+  const addressField = document.getElementById('event_location_address');
   const cityField = document.getElementById('event_location_city');
   const postalCodeField = document.getElementById('event_location_postalCode');
   const countryField = document.getElementById('event_location_country');
 
-  if (cityField && !cityField.value && details.city) {
-    cityField.value = details.city || details.town || details.village || '';
-    cityField.dispatchEvent(new Event('input'));
+  if (forceAddress && addressField) {
+    const road = details.road || details.pedestrian || details.path || '';
+    const houseNumber = details.house_number || '';
+    const fullAddress = houseNumber ? `${houseNumber} ${road}` : road;
+    
+    if (fullAddress) {
+      addressField.value = fullAddress;
+      addressField.dispatchEvent(new Event('input'));
+    }
   }
 
-  if (postalCodeField && !postalCodeField.value && details.postcode) {
-    postalCodeField.value = details.postcode || '';
+  // ✅ Ville
+  if (cityField) {
+    const city = details.city || details.town || details.village || details.municipality || '';
+    if (city) {
+      cityField.value = city;
+      cityField.dispatchEvent(new Event('input'));
+    }
   }
 
-  if (countryField && !countryField.value && details.country) {
-    countryField.value = details.country || '';
+  // ✅ Code postal
+  if (postalCodeField && details.postcode) {
+    postalCodeField.value = details.postcode;
+    postalCodeField.dispatchEvent(new Event('input'));
+  }
+
+  // ✅ Pays
+  if (countryField && details.country) {
+    countryField.value = details.country;
+    countryField.dispatchEvent(new Event('input'));
   }
 }
-
 
 function setupPreview() {
   console.log('Configuration de la prévisualisation...');
@@ -172,12 +207,50 @@ function setupPreview() {
   }
   
   bindPreviewField('event_location_locationName', 'preview-location');
+
+  bindPreviewField('event_description', 'preview-description')
   
-  bindPreviewField('event_location_address', 'preview-address');
-  
-  updatePreviewCoords();
+  bindPreviewAddress();
   
   console.log('Prévisualisation configurée');
+}
+
+function bindPreviewAddress() {
+  const addressField = document.getElementById('event_location_address');
+  const cityField = document.getElementById('event_location_city');
+  const preview = document.getElementById('preview-address');
+  
+  if (!preview) {
+    console.warn('Aperçu preview-address introuvable');
+    return;
+  }
+  
+  const updateAddress = () => {
+    const address = addressField?.value.trim() || '';
+    const city = cityField?.value.trim() || '';
+    
+    if (address && city) {
+      preview.textContent = `${address}, ${city}`;
+    } else if (address) {
+      preview.textContent = address;
+    } else if (city) {
+      preview.textContent = city;
+    } else {
+      preview.textContent = '—';
+    }
+  };
+  
+  if (addressField) {
+    addressField.addEventListener('input', updateAddress);
+    addressField.addEventListener('change', updateAddress);
+  }
+  
+  if (cityField) {
+    cityField.addEventListener('input', updateAddress);
+    cityField.addEventListener('change', updateAddress);
+  }
+  
+  updateAddress();
 }
 
 function bindPreviewField(fieldId, previewId, formatter = null) {
@@ -234,22 +307,6 @@ function bindPreviewSelect(fieldId, previewId) {
   update();
 }
 
-function updatePreviewCoords() {
-  const latField = document.getElementById('event_location_latitude');
-  const lngField = document.getElementById('event_location_longitude');
-  const preview = document.getElementById('preview-coords');
-  
-  if (latField && lngField && preview) {
-    const lat = latField.value;
-    const lng = lngField.value;
-    
-    if (lat && lng) {
-      preview.textContent = `${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)}`;
-    } else {
-      preview.textContent = '—';
-    }
-  }
-}
 
 function formatDateTime(isoString) {
   if (!isoString) return '—';
@@ -278,7 +335,6 @@ function formatDateTime(isoString) {
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
 } else {
-
   init();
 }
 
@@ -291,7 +347,6 @@ function init() {
   }
   
   initMap();
-  
   setupPreview();
   
   const geocodeBtn = document.getElementById('btn-geocode');

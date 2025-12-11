@@ -410,4 +410,38 @@ class Event
 
         return max(0, $this->maxParticipants - $confirmedCount);
     }
+
+    public function isPast(): bool
+    {
+        $now = new \DateTimeImmutable('today');
+
+        return $this->eventDate < $now;
+    }
+
+    public function getEffectiveStatus(): EventStatus
+    {
+        if (EventStatus::PUBLISHED === $this->status && $this->isPast()) {
+            return EventStatus::COMPLETED;
+        }
+
+        return $this->status;
+    }
+
+    public function canRegister(): bool
+    {
+        $effectiveStatus = $this->getEffectiveStatus();
+
+        return EventStatus::PUBLISHED === $effectiveStatus && !$this->isFull();
+    }
+
+    public function isVisibleToPublic(): bool
+    {
+        $effectiveStatus = $this->getEffectiveStatus();
+
+        return in_array($effectiveStatus, [
+            EventStatus::PUBLISHED,
+            EventStatus::COMPLETED,
+            EventStatus::CANCELLED,
+        ]);
+    }
 }
