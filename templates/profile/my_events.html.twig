@@ -7,7 +7,7 @@
   
   <div class="flex items-center justify-between mb-6">
     <h1 class="text-2xl md:text-3xl font-bold">Mes événements</h1>
-    <a href="{{ path('app_profile') }}" class="text-green-600 hover:text-green-700 font-medium">
+    <a href="{{ path('app_profile') }}" class="text-primary hover:text-primary-light font-medium">
       ← Retour au profil
     </a>
   </div>
@@ -20,20 +20,20 @@
           <span class="text-2xl">🏃</span>
         </div>
         <div>
-          <p class="text-3xl font-bold text-gray-900">{{ stats.totalParticipations }}</p>
-          <p class="text-sm text-gray-600">Participation{{ stats.totalParticipations > 1 ? 's' : '' }}</p>
+          <p class="text-3xl font-bold">{{ stats.totalParticipations }}</p>
+          <p class="text-sm text-navy/60">Participation{{ stats.totalParticipations > 1 ? 's' : '' }}</p>
         </div>
       </div>
     </div>
 
     <div class="bg-white rounded-2xl shadow p-6">
       <div class="flex items-center gap-3">
-        <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+        <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
           <span class="text-2xl">📏</span>
         </div>
         <div>
-          <p class="text-3xl font-bold text-gray-900">{{ stats.totalKilometers|number_format(1, ',', ' ') }}</p>
-          <p class="text-sm text-gray-600">Kilomètres parcourus</p>
+          <p class="text-3xl font-bold">{{ stats.totalKilometers|number_format(1, ',', ' ') }}</p>
+          <p class="text-sm text-navy/60">Kilomètres parcourus</p>
         </div>
       </div>
     </div>
@@ -45,8 +45,8 @@
             <span class="text-2xl">📅</span>
           </div>
           <div>
-            <p class="text-3xl font-bold text-gray-900">{{ stats.totalOrganized }}</p>
-            <p class="text-sm text-gray-600">Événement{{ stats.totalOrganized > 1 ? 's' : '' }} organisé{{ stats.totalOrganized > 1 ? 's' : '' }}</p>
+            <p class="text-3xl font-bold">{{ stats.totalOrganized }}</p>
+            <p class="text-sm text-navy/60">Événement{{ stats.totalOrganized > 1 ? 's' : '' }} organisé{{ stats.totalOrganized > 1 ? 's' : '' }}</p>
           </div>
         </div>
       </div>
@@ -64,8 +64,8 @@
       
       {% if upcomingRegistrations is empty %}
         <div class="text-center py-8">
-          <p class="text-sm text-gray-600">Aucune inscription en cours</p>
-          <a href="{{ path('event_index') }}" class="inline-block mt-3 text-green-600 hover:text-green-700 text-sm font-medium">
+          <p class="text-sm text-navy/60">Aucune inscription en cours</p>
+          <a href="{{ path('event_index') }}" class="inline-block mt-3 text-primary hover:text-primary-light text-sm font-medium">
             Découvrir les événements →
           </a>
         </div>
@@ -73,10 +73,10 @@
         <div class="space-y-3">
           {% for registration in upcomingRegistrations %}
             {% set event = registration.event %}
-            <a href="{{ path('event_show', {id: event.id}) }}" class="block p-3 border border-gray-200 rounded-xl hover:border-green-500 hover:bg-green-50 transition">
-              <p class="font-medium text-gray-900 mb-1">{{ event.title }}</p>
-              <p class="text-sm text-gray-600">📅 {{ event.eventDate|date('d/m/Y à H:i') }}</p>
-              <p class="text-sm text-gray-600">📍 {{ event.location.city }} • {{ event.distance }} km</p>
+            <a href="{{ path('event_show', {id: event.id}) }}" class="block p-3 border border-gray-200 rounded-xl hover:border-primary hover:bg-primary/10 transition">
+              <p class="font-medium mb-1">{{ event.title }}</p>
+              <p class="text-sm text-navy/60">📅 {{ event.eventDate|date('d/m/Y à H:i') }}</p>
+              <p class="text-sm text-navy/60">📍 {{ event.location.city }} • {{ event.distance }} km</p>
             </a>
           {% endfor %}
         </div>
@@ -92,9 +92,9 @@
         
         {% if organizedEvents is empty %}
           <div class="text-center py-8">
-            <p class="text-gray-400 mb-3">📅</p>
-            <p class="text-sm text-gray-600">Vous n'avez pas encore organisé d'événement</p>
-            <a href="{{ path('event_new') }}" class="inline-block mt-3 text-green-600 hover:text-green-700 text-sm font-medium">
+            <p class="text-navy/40 mb-3">📅</p>
+            <p class="text-sm text-navy/60">Vous n'avez pas encore organisé d'événement</p>
+            <a href="{{ path('event_new') }}" class="inline-block mt-3 text-primary hover:text-primary-light text-sm font-medium">
               Créer un événement →
             </a>
           </div>
@@ -103,18 +103,18 @@
             {% for event in organizedEvents %}
               <a href="{{ path('event_show', {id: event.id}) }}" class="block p-3 border border-gray-200 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition">
                 <div class="flex items-start justify-between mb-1">
-                  <p class="font-medium text-gray-900">{{ event.title }}</p>
+                  <p class="font-medium">{{ event.title }}</p>
                   <span class="px-2 py-0.5 text-xs rounded-full 
-                    {% if event.status.value == 'PUBLISHED' %}bg-green-100 text-green-800
-                    {% elseif event.status.value == 'DRAFT' %}bg-gray-100 text-gray-800
+                    {% if event.status.value == 'PUBLISHED' %}bg-primary/20 text-primary
+                    {% elseif event.status.value == 'DRAFT' %}bg-gray-100 text-navy/70
                     {% elseif event.status.value == 'CANCELLED' %}bg-red-100 text-red-800
                     {% else %}bg-blue-100 text-blue-800{% endif %}">
                     {{ event.status.label }}
                   </span>
                 </div>
-                <p class="text-sm text-gray-600">📅 {{ event.eventDate|date('d/m/Y à H:i') }}</p>
-                <p class="text-sm text-gray-600">📍 {{ event.location.city }} • {{ event.distance }} km</p>
-                <p class="text-sm text-gray-600">
+                <p class="text-sm text-navy/60">📅 {{ event.eventDate|date('d/m/Y à H:i') }}</p>
+                <p class="text-sm text-navy/60">📍 {{ event.location.city }} • {{ event.distance }} km</p>
+                <p class="text-sm text-navy/60">
                   👥 {{ event.registrations|filter(r => r.status.value == 'CONFIRMED')|length }}{% if event.maxParticipants %}/{{ event.maxParticipants }}{% endif %} inscrit{{ event.registrations|length > 1 ? 's' : '' }}
                 </p>
               </a>
@@ -132,17 +132,17 @@
       
       {% if pastRegistrations is empty %}
         <div class="text-center py-8">
-          <p class="text-gray-400 mb-3">⏳</p>
-          <p class="text-sm text-gray-600">Aucun événement passé</p>
+          <p class="text-navy/40 mb-3">⏳</p>
+          <p class="text-sm text-navy/60">Aucun événement passé</p>
         </div>
       {% else %}
         <div class="space-y-3">
           {% for registration in pastRegistrations %}
             {% set event = registration.event %}
             <a href="{{ path('event_show', {id: event.id}) }}" class="block p-3 border border-gray-200 rounded-xl hover:border-gray-400 hover:bg-gray-50 transition">
-              <p class="font-medium text-gray-900 mb-1">{{ event.title }}</p>
-              <p class="text-sm text-gray-600">📅 {{ event.eventDate|date('d/m/Y à H:i') }}</p>
-              <p class="text-sm text-gray-600">📍 {{ event.location.city }} • {{ event.distance }} km</p>
+              <p class="font-medium mb-1">{{ event.title }}</p>
+              <p class="text-sm text-navy/60">📅 {{ event.eventDate|date('d/m/Y à H:i') }}</p>
+              <p class="text-sm text-navy/60">📍 {{ event.location.city }} • {{ event.distance }} km</p>
             </a>
           {% endfor %}
         </div>

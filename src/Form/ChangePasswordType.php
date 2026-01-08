@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class ChangePasswordType extends AbstractType
 {
-    private const BASE_INPUT_CLASS = 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent';
+    private const BASE_INPUT_CLASS = 'w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary';
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {

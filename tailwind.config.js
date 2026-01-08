@@ -3,6 +3,7 @@ module.exports = {
   content: [
     "./templates/**/*.html.twig",
     "./assets/**/*.js",
+    "./src/Form/**/*.php"
   ],
   theme: {
     extend: {

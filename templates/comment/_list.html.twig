@@ -1,6 +1,6 @@
 <div class="space-y-4">
     {% if comments is empty %}
-        <p class="text-gray-500 italic">Aucun commentaire pour le moment. Soyez le premier à commenter !</p>
+        <p class="text-navy/50 italic">Aucun commentaire pour le moment. Soyez le premier à commenter !</p>
     {% else %}
         {% for comment in comments %}
             <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
@@ -13,16 +13,16 @@
                                     alt="{{ comment.author.firstname }} {{ comment.author.lastname }}" 
                                     class="w-full h-full object-cover">
                             {% else %}
-                                <div class="w-full h-full bg-gray-200 flex items-center justify-center font-semibold text-gray-600">
+                                <div class="w-full h-full bg-gray-200 flex items-center justify-center font-semibold text-primary">
                                 {{ comment.author.firstname|first|upper }}{{ comment.author.lastname|first|upper }}
                                 </div>
                             {% endif %}
                         </div>
                         <div>
-                            <p class="font-semibold text-gray-800">
+                            <p class="font-semibold">
                                 {{ comment.author.firstname }} {{ comment.author.lastname }}
                             </p>
-                            <p class="text-sm text-gray-500">
+                            <p class="text-sm text-navy/50">
                                 {{ comment.publicationDate|date('d/m/Y à H:i') }}
                                 {% if comment.updatedDate %}
                                     <span class="italic">(modifié le {{ comment.updatedDate|date('d/m/Y') }})</span>
@@ -30,37 +30,33 @@
                             </p>
                         </div>
                     </div>
-
                     {% if comment.rating %}
                         <div class="flex items-center gap-1 text-yellow-500">
                             {% for i in 1..comment.rating %}
                                 ⭐
                             {% endfor %}
-                            <span class="text-sm text-gray-600 ml-1">{{ comment.rating }}/5</span>
+                            <span class="text-sm text-navy/60 ml-1">{{ comment.rating }}/5</span>
                         </div>
                     {% endif %}
                 </div>
-
                 <div class="mb-3">
-                    <p class="text-gray-700 whitespace-pre-line">{{ comment.content }}</p>
+                    <p class="text-navy/80 whitespace-pre-line">{{ comment.content }}</p>
                 </div>
-
                 {% if app.user and (comment.author == app.user or is_granted('ROLE_ADMIN')) %}
-                    <div class="flex gap-3 pt-3 border-t border-gray-100">
+                    <div class="flex items-center gap-3 pt-3 border-t border-gray-100">
                         {% if comment.author == app.user %}
                             <a href="{{ path('comment_edit', {id: comment.id}) }}"
-                               class="text-sm text-blue-600 hover:text-blue-800">
-                                ✏️ Modifier
+                               class="text-sm text-primary hover:text-primary-light">
+                                 Modifier
                             </a>
                         {% endif %}
-
                         <form method="post"
                               action="{{ path('comment_delete', {id: comment.id}) }}"
                               onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');"
                               class="inline">
                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ comment.id) }}">
                             <button type="submit" class="text-sm text-red-600 hover:text-red-800">
-                                🗑️ Supprimer
+                                 Supprimer
                             </button>
                         </form>
                     </div>

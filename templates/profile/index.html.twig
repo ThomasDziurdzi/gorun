@@ -6,7 +6,7 @@
 <div class="max-w-6xl mx-auto">
   <div class="flex items-center justify-between mb-6">
     <h1 class="text-2xl md:text-3xl font-bold">Mon profil</h1>
-    <a href="{{ path('app_profile_events') }}" class="text-green-600 hover:text-green-700 font-medium">
+    <a href="{{ path('app_profile_events') }}" class="text-primary hover:text-primary-light font-medium">
       Mes événements →
     </a>
   </div>
@@ -55,39 +55,39 @@
 
         <div class="grid md:grid-cols-2 gap-4">
           <div>
-            {{ form_label(form.firstname, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+            {{ form_label(form.firstname, null, {'label_attr': {'class': 'block text-sm font-medium mb-1'}}) }}
             {{ form_widget(form.firstname) }}
             {{ form_errors(form.firstname) }}
           </div>
           <div>
-            {{ form_label(form.lastname, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+            {{ form_label(form.lastname, null, {'label_attr': {'class': 'block text-sm font-medium mb-1'}}) }}
             {{ form_widget(form.lastname) }}
             {{ form_errors(form.lastname) }}
           </div>
         </div>
 
         <div>
-          {{ form_label(form.email, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+          {{ form_label(form.email, null, {'label_attr': {'class': 'block text-sm font-medium mb-1'}}) }}
           {{ form_widget(form.email) }}
           {{ form_errors(form.email) }}
-          <p class="mt-1 text-sm text-gray-500">⚠️ Assurez-vous d'avoir un e-mail valide pour recevoir les notifications</p>
+          <p class="mt-1 text-sm text-navy/50">⚠️ Assurez-vous d'avoir un e-mail valide pour recevoir les notifications</p>
         </div>
 
         <div class="grid md:grid-cols-2 gap-4">
           <div>
-            {{ form_label(form.city, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+            {{ form_label(form.city, null, {'label_attr': {'class': 'block text-sm font-medium mb-1'}}) }}
             {{ form_widget(form.city) }}
             {{ form_errors(form.city) }}
           </div>
           <div>
-            {{ form_label(form.phoneNumber, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+            {{ form_label(form.phoneNumber, null, {'label_attr': {'class': 'block text-sm font-medium mb-1'}}) }}
             {{ form_widget(form.phoneNumber) }}
             {{ form_errors(form.phoneNumber) }}
           </div>
         </div>
 
         <div>
-          {{ form_label(form.birthDate, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+          {{ form_label(form.birthDate, null, {'label_attr': {'class': 'block text-sm font-medium mb-1'}}) }}
           {{ form_widget(form.birthDate) }}
           {{ form_errors(form.birthDate) }}
         </div>
@@ -98,40 +98,40 @@
 
         <div class="grid md:grid-cols-2 gap-4">
           <div>
-            {{ form_label(form.runningLevel, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+            {{ form_label(form.runningLevel, null, {'label_attr': {'class': 'block text-sm font-medium mb-1'}}) }}
             {{ form_widget(form.runningLevel) }}
             {{ form_errors(form.runningLevel) }}
           </div>
           <div>
-            {{ form_label(form.preferredPace, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+            {{ form_label(form.preferredPace, null, {'label_attr': {'class': 'block text-sm font-medium mb-1'}}) }}
             {{ form_widget(form.preferredPace) }}
             {{ form_errors(form.preferredPace) }}
             {% if form.preferredPace.vars.help %}
-              <p class="mt-1 text-sm text-gray-500">{{ form.preferredPace.vars.help }}</p>
+              <p class="mt-1 text-sm text-navy/50">{{ form.preferredPace.vars.help }}</p>
             {% endif %}
           </div>
         </div>
 
         <div>
-          {{ form_label(form.bio, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+          {{ form_label(form.bio, null, {'label_attr': {'class': 'block text-sm font-medium mb-1'}}) }}
           {{ form_widget(form.bio) }}
           {{ form_errors(form.bio) }}
-          <p id="bio-counter" class="mt-1 text-sm text-gray-500">
+          <p id="bio-counter" class="mt-1 text-sm text-navy/50">
             {{ form.bio.vars.value|default('')|length }}/500 caractères
           </p>
         </div>
 
-        <div class="flex gap-4 pt-4">
-          <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded-2xl font-semibold hover:bg-green-700 transition">
+        <div class="flex items-center gap-4 pt-4">
+          <button type="submit" class="bg-primary text-white px-6 py-3 rounded-2xl font-semibold hover:bg-primary-light transition">
             Enregistrer les modifications
           </button>
-          <a href="{{ path('event_index') }}" class="bg-gray-200 text-gray-800 px-6 py-3 rounded-2xl font-semibold hover:bg-gray-300 transition">
+          <a href="{{ path('event_index') }}" class="bg-gray-200 text-navy px-6 py-3 rounded-2xl font-semibold hover:bg-gray-300 transition">
             Annuler
           </a>
         </div>
 
         <div class="pt-4 border-t border-gray-200 mt-6">
-          <a href="{{ path('app_profile_change_password') }}" class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium">
+          <a href="{{ path('app_profile_change_password') }}" class="inline-flex items-center gap-2 text-primary hover:text-primary-light font-medium">
             Changer mon mot de passe
           </a>
         </div>
@@ -142,7 +142,7 @@
 
     <div>
       <div class="bg-white rounded-2xl shadow p-6 sticky top-6">
-        <h3 class="font-semibold mb-4 text-gray-900">Aperçu public</h3>
+        <h3 class="font-semibold mb-4">Aperçu public</h3>
 
         <div class="space-y-3">
           <div class="w-20 h-20 rounded-full mx-auto overflow-hidden">
@@ -151,35 +151,35 @@
                 alt="{{ user.firstname }} {{ user.lastname }}" 
                 class="w-full h-full object-cover">
             {% else %}
-              <div class="w-full h-full bg-green-600 text-white flex items-center justify-center text-2xl font-bold">
+              <div class="w-full h-full bg-primary text-white flex items-center justify-center text-2xl font-bold">
                 {{ user.firstname|first|upper }}{{ user.lastname|first|upper }}
               </div>
             {% endif %}
           </div>
 
           <div class="text-center">
-            <p class="text-lg font-semibold text-gray-900">
+            <p class="text-lg font-semibold">
               {{ user.firstname }} {{ user.lastname }}
             </p>
           </div>
 
           <div class="space-y-2 text-sm">
             {% if user.city %}
-              <p ><span class="font-semibold text-gray-900">Ville :</span> {{ user.city }}</p>
+              <p><span class="font-semibold">Ville :</span> {{ user.city }}</p>
             {% endif %}
             {% if user.runningLevel %}
-              <p><span class="font-semibold text-gray-900">Niveau :</span> {{ user.runningLevel.label }}</p>
+              <p><span class="font-semibold">Niveau :</span> {{ user.runningLevel.label }}</p>
             {% endif %}
             {% if user.preferredPace %}
-              <p><span class="font-semibold text-gray-900">Allure :</span> {{ user.preferredPace }}</p>
+              <p><span class="font-semibold">Allure :</span> {{ user.preferredPace }}</p>
             {% endif %}
           </div>
 
           <div class="pt-3 border-t border-gray-200">
             {% if user.bio %}
-              <p class="text-sm text-gray-700 italic">"{{ user.bio }}"</p>
+              <p class="text-sm text-navy/70 italic">"{{ user.bio }}"</p>
             {% else %}
-              <p class="text-sm text-gray-400 italic">Aucune bio renseignée</p>
+              <p class="text-sm text-navy/40 italic">Aucune bio renseignée</p>
             {% endif %}
           </div>
         </div>
