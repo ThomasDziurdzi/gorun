@@ -6,6 +6,7 @@
   <title>{% block title %}GoRun{% endblock %}</title>
   <script src="https://cdn.tailwindcss.com"></script>
   {% block stylesheets %}{% endblock %}
+            {{ encore_entry_link_tags('app') }}
 </head>
 <body class="min-h-screen flex flex-col bg-gray-50 text-gray-800">
   {{ include('partials/_header.html.twig') }}
@@ -19,5 +20,6 @@
   </main>
   {{ include('partials/_footer.html.twig') }}
   {% block javascripts %}{% endblock %}
+            {{ encore_entry_script_tags('app') }}
 </body>
 </html>
