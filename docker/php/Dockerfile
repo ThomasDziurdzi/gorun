@@ -1,3 +1,11 @@
+FROM node:20-alpine AS node-builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY webpack.config.js ./
+COPY assets/ ./assets/
+RUN npm run build
+
 FROM php:8.4-fpm
 
 ARG USER_ID=1000
