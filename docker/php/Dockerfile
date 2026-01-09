@@ -1,3 +1,11 @@
+FROM node:20-alpine AS node-builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY webpack.config.js ./
+COPY assets/ ./assets/
+RUN npm run build
+
 FROM php:8.4-fpm
 
 ARG USER_ID=1000
@@ -31,6 +39,7 @@ RUN curl -sS https://get.symfony.com/cli/installer | bash \
 WORKDIR /var/www/html
 
 COPY --chown=appuser:appuser . /var/www/html
+COPY --from=node-builder --chown=appuser:appuser /app/public/build /var/www/html/public/build
 
 USER root
 RUN rm -rf /var/www/html/.env* \
@@ -47,7 +56,5 @@ RUN mkdir -p /var/www/html/var/cache /var/www/html/var/log /var/www/html/public/
 COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
 
 USER appuser
-
 EXPOSE 9000
-
 CMD ["php-fpm"]

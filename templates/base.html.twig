@@ -4,10 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}GoRun{% endblock %}</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   {% block stylesheets %}{% endblock %}
+  {{ encore_entry_link_tags('app') }}
 </head>
-<body class="min-h-screen flex flex-col bg-gray-50 text-gray-800">
+<body class="min-h-screen flex flex-col bg-gray-50 text-navy">
   {{ include('partials/_header.html.twig') }}
   <main class="flex-1 px-4 md:px-6 py-8 max-w-6xl mx-auto">
     {% for label, messages in app.flashes %}
@@ -19,5 +22,6 @@
   </main>
   {{ include('partials/_footer.html.twig') }}
   {% block javascripts %}{% endblock %}
+  {{ encore_entry_script_tags('app') }}
 </body>
 </html>

@@ -8,10 +8,9 @@
     {{ error.messageKey|trans(error.messageData, 'security') }}
   </div>
   {% endif %}
-
   <form method="post" class="space-y-4">
     <div class="block">
-      <label for="inputEmail" class="block text-sm font-medium text-gray-700 mb-1">
+      <label for="inputEmail" class="block text-sm font-medium mb-1">
         E-mail
       </label>
       <input
@@ -19,7 +18,7 @@
       value="{{ last_username }}"
       name="_username"
       id="inputEmail"
-      class="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
+      class="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
       autocomplete="email"
       required
       autofocus
@@ -27,46 +26,43 @@
       >
     </div>
      <div class="block">
-      <label for="inputPassword" class="block text-sm font-medium text-gray-700 mb-1">
+      <label for="inputPassword" class="block text-sm font-medium mb-1">
         Mot de passe
       </label>
       <input
         type="password"
         name="_password"
         id="inputPassword"
-        class="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
+        class="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
         autocomplete="current-password"
         required
         placeholder="••••••••"
       >
     </div>
-
      <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
      <div class="flex items-center">
       <input
         type="checkbox"
         name="_remember_me"
         id="remember_me"
-        class="rounded text-green-600 focus:ring-green-500"
+        class="rounded text-primary focus:ring-primary"
       >
-      <label for="remember_me" class="ml-2 text-sm text-gray-600">
+      <label for="remember_me" class="ml-2 text-sm text-navy/60">
         Se souvenir de moi
       </label>
     </div>
-
-     <button type="submit" class="w-full bg-green-600 text-white px-6 py-3 rounded-2xl font-semibold hover:bg-green-700">
+     <button type="submit" class="w-full bg-primary text-white px-6 py-3 rounded-2xl font-semibold hover:bg-primary-light">
       Se connecter
     </button>
-
     <div class="text-sm text-center space-y-2">
       <div>
-        <a href="#" class="text-green-600 hover:underline">
+        <a href="#" class="text-primary hover:underline">
           Mot de passe oublié ?
         </a>
       </div>
       <div>
         Pas encore de compte ?
-        <a href="{{ path('app_register') }}" class="text-green-600 hover:underline">
+        <a href="{{ path('app_register') }}" class="text-primary hover:underline">
           S'inscrire
         </a>
       </div>
