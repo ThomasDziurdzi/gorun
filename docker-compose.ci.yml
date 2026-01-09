@@ -9,6 +9,8 @@ services:
     container_name: gorun_php
     restart: unless-stopped
     working_dir: /var/www/html
+    volumes:
+      - ./.env.docker:/var/www/html/.env:ro
     env_file:
       - .env.docker
     depends_on:
