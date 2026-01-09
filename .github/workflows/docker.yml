@@ -28,79 +28,58 @@ jobs:
         EOF
 
     - name: Build Docker images
-      run: docker compose build --no-cache
+      run: docker compose -f docker-compose.ci.yml build --no-cache
 
     - name: Start Docker containers
-      run: docker compose up -d
+      run: docker compose -f docker-compose.ci.yml up -d
 
     - name: Wait for MySQL
       run: |
         echo "Waiting for MySQL..."
-        timeout 90 bash -c 'until docker compose exec -T mysql mysqladmin ping -h localhost --silent; do sleep 2; done'
+        timeout 90 bash -c 'until docker compose -f docker-compose.ci.yml exec -T mysql mysqladmin ping -h localhost --silent; do sleep 2; done'
         echo "✅ MySQL ready"
 
     - name: Wait for PHP-FPM
       run: |
         echo "Waiting for PHP-FPM..."
-        timeout 30 bash -c 'until docker compose exec -T php php -v > /dev/null 2>&1; do sleep 2; done'
+        timeout 30 bash -c 'until docker compose -f docker-compose.ci.yml exec -T php php -v > /dev/null 2>&1; do sleep 2; done'
         echo "✅ PHP-FPM ready"
 
     - name: Verify containers are running
-      run: docker compose ps
+      run: docker compose -f docker-compose.ci.yml ps
 
     - name: Check PHP version
-      run: docker compose exec -T php php -v
+      run: docker compose -f docker-compose.ci.yml exec -T php php -v
 
     - name: Create cache directories
       run: |
         echo "Creating var directories as root..."
-        docker compose exec -T -u root php mkdir -p /var/www/html/var/cache /var/www/html/var/log
-        docker compose exec -T -u root php chown -R appuser:appuser /var/www/html/var
-        docker compose exec -T -u root php chmod -R 775 /var/www/html/var
+        docker compose -f docker-compose.ci.yml exec -T -u root php mkdir -p /var/www/html/var/cache /var/www/html/var/log
+        docker compose -f docker-compose.ci.yml exec -T -u root php chown -R appuser:appuser /var/www/html/var
+        docker compose -f docker-compose.ci.yml exec -T -u root php chmod -R 775 /var/www/html/var
         echo "✅ Permissions set"
 
     - name: Verify database connection
       run: |
-        docker compose exec -T php php bin/console dbal:run-sql "SELECT 1" || exit 1
+        docker compose -f docker-compose.ci.yml exec -T php php bin/console dbal:run-sql "SELECT 1" || exit 1
         echo "✅ Database connection successful"
 
     - name: Create database
-      run: docker compose exec -T php php bin/console doctrine:database:create --if-not-exists
+      run: docker compose -f docker-compose.ci.yml exec -T php php bin/console doctrine:database:create --if-not-exists
 
     - name: Run migrations
-      run: docker compose exec -T php php bin/console doctrine:migrations:migrate --no-interaction
+      run: docker compose -f docker-compose.ci.yml exec -T php php bin/console doctrine:migrations:migrate --no-interaction
 
     - name: Warmup cache
-      run: docker compose exec -T php php bin/console cache:warmup
+      run: docker compose -f docker-compose.ci.yml exec -T php php bin/console cache:warmup
 
     - name: Check logs before HTTP test
       run: |
         echo "=== PHP-FPM logs ==="
-        docker compose logs php | tail -30
+        docker compose -f docker-compose.ci.yml logs php | tail -30
         echo ""
         echo "=== Nginx logs ==="
-        docker compose logs nginx | tail -30
-
-    - name: Debug - Inspect container
-      run: |
-        echo "=== Check build directory (assets) ==="
-        docker compose exec -T php ls -la /var/www/html/public/build/ 2>/dev/null || echo "❌ Build directory missing!"
-        
-        echo ""
-        echo "=== Check entrypoints.json ==="
-        docker compose exec -T php cat /var/www/html/public/build/entrypoints.json 2>/dev/null || echo "❌ entrypoints.json missing!"
-        
-        echo ""
-        echo "=== Check var directory permissions ==="
-        docker compose exec -T php ls -la /var/www/html/var/
-        
-        echo ""
-        echo "=== Symfony logs ==="
-        docker compose exec -T php cat /var/www/html/var/log/prod.log 2>/dev/null | tail -50 || echo "No prod.log"
-        
-        echo ""
-        echo "=== Try Symfony debug ==="
-        docker compose exec -T php php bin/console about 2>&1 || echo "Console command failed"
+        docker compose -f docker-compose.ci.yml logs nginx | tail -30
 
     - name: Test HTTP response
       run: |
@@ -118,8 +97,8 @@ jobs:
 
     - name: Show Docker logs on failure
       if: failure()
-      run: docker compose logs
+      run: docker compose -f docker-compose.ci.yml logs
 
     - name: Stop Docker containers
       if: always()
-      run: docker compose down -v
+      run: docker compose -f docker-compose.ci.yml down -v
