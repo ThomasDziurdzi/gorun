@@ -1,14 +1,11 @@
 name: Docker CI
-
 on:
   push:
     branches: [ main, dev ]
   pull_request:
     branches: [ main, dev ]
-
 permissions:
   contents: read
-
 jobs:
   docker-build:
     name: Docker Build & Validate
@@ -83,6 +80,27 @@ jobs:
         echo ""
         echo "=== Nginx logs ==="
         docker compose logs nginx | tail -30
+
+    - name: Debug - Inspect container
+      run: |
+        echo "=== Check build directory (assets) ==="
+        docker compose exec -T php ls -la /var/www/html/public/build/ 2>/dev/null || echo "❌ Build directory missing!"
+        
+        echo ""
+        echo "=== Check entrypoints.json ==="
+        docker compose exec -T php cat /var/www/html/public/build/entrypoints.json 2>/dev/null || echo "❌ entrypoints.json missing!"
+        
+        echo ""
+        echo "=== Check var directory permissions ==="
+        docker compose exec -T php ls -la /var/www/html/var/
+        
+        echo ""
+        echo "=== Symfony logs ==="
+        docker compose exec -T php cat /var/www/html/var/log/prod.log 2>/dev/null | tail -50 || echo "No prod.log"
+        
+        echo ""
+        echo "=== Try Symfony debug ==="
+        docker compose exec -T php php bin/console about 2>&1 || echo "Console command failed"
 
     - name: Test HTTP response
       run: |
