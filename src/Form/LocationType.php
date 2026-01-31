@@ -114,12 +114,7 @@ class LocationType extends AbstractType
                             ->atPath('address')
                             ->addViolation();
                     }
-
-                    if (!$hasCoords) {
-                        $context->buildViolation('Veuillez valider la position sur la carte en cliquant sur "Géocoder" ou en cliquant directement sur la carte.')
-                            ->atPath('latitude')
-                            ->addViolation();
-                    }
+                    
                 }),
             ],
         ]);

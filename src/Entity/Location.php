@@ -31,10 +31,10 @@ class Location
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $country = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 8)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 8, nullable: true)]
     private ?string $latitude = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 8)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 8, nullable: true)]
     private ?string $longitude = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
